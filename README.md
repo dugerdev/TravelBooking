@@ -135,7 +135,7 @@ TravelBooking/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/dugerdev/TravelBooking.git
 cd TravelBooking
 ```
 
@@ -330,5 +330,3 @@ The Web UI acts as a **BFF (Backend for Frontend)**, consuming the API through t
 ## License
 
 This project is proprietary software. All rights reserved.
-#   T r a v e l B o o k i n g  
- 
