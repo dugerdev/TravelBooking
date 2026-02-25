@@ -1,0 +1,272 @@
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.tabs .tab').forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            var target = this.getAttribute('data-tab');
+            document.querySelectorAll('.tabs .tab').forEach(function(t) { t.classList.remove('active'); });
+            document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+            this.classList.add('active');
+            var content = document.getElementById('tab-' + target);
+            if (content) content.classList.add('active');
+        });
+    });
+});
+</script>
+}
+
+<!-- hero section -->
+<section class="hero-section">
+    <div class="content" data-aos="fade-right" data-aos-duration="1300">
+        <h1 class="user-info" style="height: 80px;"></h1>
+        <div>
+            <h1><span>Book</span> Your Dream <span>Travel</span> Now!</h1>
+            <p>Discover the best deals on flights, cars and hotels. Compare prices, book easily, and travel with confidence. Your dream journey starts here.</p>
+            <button class="book-btn" onclick="openBookPage()">Book Now</button>
+        </div>
+    </div>
+    <img src="~/assets/img/flynow/plane.png" alt="Plane" data-aos="fade-up-left" data-aos-duration="1300" class="plane">
+</section>
+
+<!-- Booking Section -->
+<section class="booking-section-home" id="booking-section">
+    <div class="booking-section">
+        <div class="tabs">
+            <button type="button" class="tab active" data-tab="flights"><i class="fa fa-plane"></i> Flights</button>
+            <button type="button" class="tab" data-tab="cars"><i class="fa fa-car"></i> Cars</button>
+            <button type="button" class="tab" data-tab="hotels"><i class="fa fa-hotel"></i> Hotels</button>
+        </div>
+
+        <div id="tab-flights" class="tab-content active">
+        <form class="booking-form" action="/Flight/SearchFlights" method="get">
+            <div class="trip-type">
+                <label><input type="radio" name="way" value="one-way" checked> One way</label>
+                <label><input type="radio" name="way" value="round-trip"> Round-trip</label>
+            </div>
+
+            <div class="form-row">
+                <input type="text" name="fromCity" placeholder="From (Select City)" style="border: none;">
+                <input type="text" name="toCity" placeholder="To (Select City)">
+                <label>&nbsp; Departure <br>
+                    <input type="date" name="departureDate" value="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")">
+                </label>
+                <label id="returnDateLabel"> &nbsp; Return <br>
+                    <input type="date" id="returnDate" name="returnDate" value="@DateTime.Now.AddDays(14).ToString("yyyy-MM-dd")">
+                </label>
+                <input type="text" name="adultCount" placeholder="Passengers" value="1">
+            </div>
+
+            <div class="class-type">
+                <h3>Class</h3>
+                <label><input type="radio" name="cabinClass" value="Economy" checked> Economy</label>
+                <label><input type="radio" name="cabinClass" value="Business"> Business</label>
+            </div>
+
+            <div class="promo">
+                <input type="text" placeholder="Enter Promo Code" name="promoCode">
+                <button type="submit" class="show-flight"><i class="fa fa-plane"></i> Search Flights</button>
+            </div>
+        </form>
+        </div>
+
+        <div id="tab-cars" class="tab-content">
+        <form class="booking-form" action="/Car/Listing" method="get">
+            <div class="form-row">
+                <input type="text" name="location" placeholder="Pick-up location" required>
+                <label>&nbsp; Pick-up Date <br>
+                    <input type="date" name="pickupDate" value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")">
+                </label>
+                <label> &nbsp; Return Date <br>
+                    <input type="date" name="returnDate" value="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")">
+                </label>
+            </div>
+            <div class="promo">
+                <button type="submit" class="show-flight"><i class="fa fa-car"></i> Search Cars</button>
+            </div>
+        </form>
+        </div>
+
+        <div id="tab-hotels" class="tab-content">
+        <form class="booking-form" action="/Hotel/Listing" method="get">
+            <div class="form-row">
+                <input type="text" name="city" placeholder="City or region (e.g. Istanbul, Antalya)">
+            </div>
+            <div class="promo">
+                <button type="submit" class="show-flight"><i class="fa fa-hotel"></i> Search Hotels</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    <div class="banefit">
+        <div class="banefit-container" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" data-aos-duration="600">
+            <div class="banefit-img">
+                <img src="~/assets/img/flynow/benefit-1.png" alt="">
+            </div>
+            <div class="banefit-text">
+                <h4>We Are Now Available</h4>
+                <p>Call +1 555 666 888 contact with us</p>
+            </div>
+        </div>
+        <div class="banefit-container" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" data-aos-duration="800">
+            <div class="banefit-img">
+                <img src="~/assets/img/flynow/benefit-2.png" alt="">
+            </div>
+            <div class="banefit-text">
+                <h4>International Flight</h4>
+                <p>Call +1 555 666 888 contact with us</p>
+            </div>
+        </div>
+        <div class="banefit-container" data-aos="fade-up" data-aos-anchor-placement="bottom-bottom" data-aos-duration="1000">
+            <div class="banefit-img">
+                <img src="~/assets/img/flynow/benefit-3.png" alt="">
+            </div>
+            <div class="banefit-text">
+                <h4>Check Refund</h4>
+                <p>Call +1 555 666 888 contact with us</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="flight-deals" data-aos="fade-up" data-aos-anchor-placement="center-bottom">
+        <div id="slider-btn">
+            <h3>Latest Flight Deals</h3>
+            <div class="slider-nav">
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="flight-deal-card">
+                        <img src="~/assets/img/flynow/flight-1.png" alt="">
+                        <h3>Dubai To Dhaka</h3>
+                        <h4>14 Aug, 2025 - 20 Aug, 2025</h4>
+                        <div class="flight-text-btn">
+                            <div>
+                                <h3>Economy Class</h3>
+                                <h5>Rs. 12000 -/</h5>
+                            </div>
+                            <a asp-controller="Flight" asp-action="Listing" asp-route-fromCity="Dubai" asp-route-toCity="Dhaka"><button type="button">Book</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="flight-deal-card">
+                        <img src="~/assets/img/flynow/flight-2.png" alt="">
+                        <h3>Dubai To Thailand</h3>
+                        <h4>14 Aug, 2025 - 21 Aug, 2025</h4>
+                        <div class="flight-text-btn">
+                            <div>
+                                <h3>Premium Class</h3>
+                                <h5>Rs. 15000 -/</h5>
+                            </div>
+                            <a asp-controller="Flight" asp-action="Listing" asp-route-fromCity="Dubai" asp-route-toCity="Thailand"><button type="button">Book</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="flight-deal-card">
+                        <img src="~/assets/img/flynow/flight-3.png" alt="">
+                        <h3>Dubai To Dhaka</h3>
+                        <h4>14 Aug, 2025 - 20 Aug, 2025</h4>
+                        <div class="flight-text-btn">
+                            <div>
+                                <h3>Economy Class</h3>
+                                <h5>Rs. 12000 -/</h5>
+                            </div>
+                            <a asp-controller="Flight" asp-action="Listing" asp-route-fromCity="Dubai" asp-route-toCity="Dhaka"><button type="button">Book</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="flight-deal-card">
+                        <img src="~/assets/img/flynow/flight-4.png" alt="">
+                        <h3>Dubai To Dhaka</h3>
+                        <h4>14 Aug, 2025 - 20 Aug, 2025</h4>
+                        <div class="flight-text-btn">
+                            <div>
+                                <h3>Premium Class</h3>
+                                <h5>Rs. 15000 -/</h5>
+                            </div>
+                            <a asp-controller="Flight" asp-action="Listing" asp-route-fromCity="Dubai" asp-route-toCity="Dhaka"><button type="button">Book</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- flynow paris, dubai -->
+<section class="flynow-hero">
+    <div class="flynow-container">
+        <div class="flynow-left" data-aos="fade-right" data-aos-duration="600">
+            <img src="~/assets/img/flynow/logo.png" alt="FlyNow Logo" class="flynow-logo">
+            <h1>
+                <span>TRAVEL</span>
+                <span>ALL</span>
+                <span>OVER</span>
+                <span class="blue-text">The</span>
+                <span class="blue-text">WORLD</span>
+            </h1>
+            <a asp-controller="Flight" asp-action="Booking" class="flynow-btn">Booking Now</a>
+        </div>
+
+        <div class="flynow-right">
+            <div class="destination-card" data-aos="fade-up" data-aos-duration="700">
+                <div class="card-image">
+                    <img src="~/assets/img/flynow/paris.png" alt="Paris">
+                </div>
+            </div>
+            <div class="destination-card" data-aos="fade-up" data-aos-duration="900">
+                <div class="card-image">
+                    <img src="~/assets/img/flynow/dubai.png" alt="Dubai">
+                </div>
+            </div>
+            <div class="destination-card" data-aos="fade-up" data-aos-duration="1100">
+                <div class="card-image">
+                    <img src="~/assets/img/flynow/italy.png" alt="Italy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievement-card" data-aos="fade-up" data-aos-duration="500">
+        <div class="achievement-left">
+            <p class="tagline">Achievement</p>
+            <h2>Your Destination Awaits, Book Now</h2>
+            <p class="desc">
+                Discover the world's most beautiful places with comfort and ease. Book your dream journey today and make memories for lifetime. From exotic beaches to bustling cities, your adventure starts here.
+            </p>
+            <div class="stats">
+                <div class="stat-box">
+                    <img src="~/assets/img/flynow/user.png" alt="Happy Customers">
+                    <div>
+                        <h3>12870 +</h3>
+                        <p>Happy Customers</p>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <img src="~/assets/img/flynow/user-2.png" alt="Client Satisfied">
+                    <div>
+                        <h3>100 %</h3>
+                        <p>Client Satisfied</p>
+                    </div>
+                </div>
+            </div>
+            <div class="contact-row">
+                <span>Let's Connect Reach Out for More Information</span>
+                <a asp-controller="Pages" asp-action="Contact" class="contact-btn">Contact us</a>
+            </div>
+        </div>
+        <div class="achievement-right">
+            <img src="~/assets/img/flynow/achievement-image.png" alt="Achievement Image">
+        </div>
+    </div>
+</section>

@@ -1,0 +1,48 @@
+﻿@model TravelBooking.Web.DTOs.Airports.AirportDto
+@{
+    ViewData["Title"] = "Havalimanı Düzenle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Havalimanı Düzenle</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">@Model.IATA_Code - @Model.Name</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label>IATA Kodu</label>
+                    <input type="text" class="form-control" value="@Model.IATA_Code" readonly disabled>
+                    <small class="form-text text-muted">IATA kodu değiştirilemez.</small>
+                </div>
+                <div class="form-group">
+                    <label for="Name">Havalimanı Adı <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="Name" name="Name" required value="@Model.Name" placeholder="Örn: İstanbul Havalimanı">
+                </div>
+                <div class="form-group">
+                    <label for="City">Şehir <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="City" name="City" required value="@Model.City" placeholder="Örn: İstanbul">
+                </div>
+                <div class="form-group">
+                    <label for="Country">Ülke <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="Country" name="Country" required value="@Model.Country" placeholder="Örn: Türkiye">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Kaydet
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
+            </form>
+        </div>
+    </div>
+</div>

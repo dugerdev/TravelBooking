@@ -1,0 +1,60 @@
+@model List<TravelBooking.Web.DTOs.News.NewsDto>
+<!-- Blog Area Start -->
+<section class="news-blog p-40" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between mb-40">
+            <h3 class="h3 bold lightest-black p-0">Our Latest News</h3>
+            <a asp-controller="News" asp-action="Listing" class="cus-btn">Show More</a>
+        </div>
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-center dark-gray">Henuz haber bulunmamaktadir.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row row-gap-4">
+                @foreach (var news in Model)
+                {
+                    <div class="col-xxl-6 col-xl-4 col-lg-12 col-md-6 col-sm-6">
+                        <div class="blog-box bg-white light-shadow p-24 br-20">
+                            <div class="row align-items-center row-gap-3">
+                                <div class="col-xxl-6 col-xl-12 col-lg-6">
+                                    <div class="image-box">
+                                        <a asp-controller="News" asp-action="Detail" asp-route-id="@news.Id">
+                                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, news.ImageUrl, "~/assets/img/blog-1.svg")" alt="@news.Title" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-xxl-6 col-xl-12 col-lg-6">
+                                    <div class="content-box">
+                                        <div class="d-flex gap-16 mb-24">
+                                            <div class="d-flex align-items-center gap-8">
+                                                <img src="~/assets/img/user-bk.svg" alt="">
+                                                <p class="h6 dark-gray">@news.Author</p>
+                                            </div>
+                                            <div class="vr-line"></div>
+                                            <div class="d-flex align-items-center gap-8">
+                                                <img src="~/assets/img/calender.png" alt="">
+                                                <p class="h6 dark-gray">@news.PublishDate.ToString("dd MMM, yyyy")</p>
+                                            </div>
+                                        </div>
+                                        <h5 class="lightest-black mb-8">
+                                            <a asp-controller="News" asp-action="Detail" asp-route-id="@news.Id">@news.Title</a>
+                                        </h5>
+                                        <p class="dark-gray mb-24">@news.Summary</p>
+                                        <a asp-controller="News" asp-action="Detail" asp-route-id="@news.Id" class="cus-btn small-pad">Read More</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
+<!-- Blog Area End -->

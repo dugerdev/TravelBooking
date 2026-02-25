@@ -1,0 +1,204 @@
+/* FlyNow Enhanced Navbar */
+.flynow-navbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px !important;
+  padding: 0 40px !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 20px rgba(0, 0, 0, 0.06);
+  z-index: 1000;
+  transition: box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.flynow-navbar.scrolled {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.flynow-navbar .navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.flynow-navbar .logo {
+  width: 140px !important;
+  height: auto;
+  transition: transform 0.2s ease;
+}
+
+.flynow-navbar .navbar-brand:hover .logo {
+  transform: scale(1.02);
+}
+
+.flynow-navbar .navbar-nav-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 24px;
+}
+
+.flynow-navbar #nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.flynow-navbar #nav-links li a {
+  display: block;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #2d3748;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.flynow-navbar #nav-links li a:hover {
+  color: #0B8CD3;
+  background: rgba(11, 140, 211, 0.06);
+}
+
+.flynow-navbar #nav-links li a::after {
+  display: none;
+}
+
+.flynow-navbar .navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.flynow-navbar .nav-btn {
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+}
+
+.flynow-navbar .nav-btn-outline {
+  color: #0B8CD3;
+  background: transparent;
+  border: 1.5px solid #0B8CD3;
+}
+
+.flynow-navbar .nav-btn-outline:hover {
+  background: rgba(11, 140, 211, 0.08);
+}
+
+.flynow-navbar .nav-btn-primary {
+  color: #fff;
+  background: linear-gradient(135deg, #0B8CD3 0%, #0969a8 100%);
+  box-shadow: 0 2px 8px rgba(11, 140, 211, 0.35);
+}
+
+.flynow-navbar .nav-btn-primary:hover {
+  background: linear-gradient(135deg, #0969a8 0%, #0B8CD3 100%);
+  box-shadow: 0 4px 12px rgba(11, 140, 211, 0.4);
+  transform: translateY(-1px);
+}
+
+.flynow-navbar .nav-btn-logout {
+  color: #64748b;
+  background: transparent;
+}
+
+.flynow-navbar .nav-btn-logout:hover {
+  color: #ef4444;
+}
+
+/* Hamburger - hidden by default */
+.flynow-navbar .navbar-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.flynow-navbar .navbar-toggle span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #2d3748;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.flynow-navbar .navbar-toggle:hover span {
+  background: #0B8CD3;
+}
+
+/* Hide old three-dots, show new toggle on mobile */
+.flynow-navbar .three-dots {
+  display: none !important;
+}
+
+/* Responsive: tablet and mobile */
+@media (max-width: 992px) {
+  .flynow-navbar {
+    padding: 0 24px !important;
+  }
+  .flynow-navbar .navbar-nav-wrap {
+    display: none;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    margin: 0;
+    padding: 16px;
+    z-index: 999;
+  }
+  .flynow-navbar .navbar-nav-wrap.mobile-open {
+    display: block !important;
+  }
+  .flynow-navbar .navbar-toggle {
+    display: flex;
+  }
+  .flynow-navbar .navbar-nav-wrap.mobile-open #nav-links {
+    flex-direction: column;
+    gap: 0;
+  }
+  .flynow-navbar .navbar-nav-wrap.mobile-open #nav-links li a {
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: block;
+  }
+  .flynow-navbar .navbar-actions .login {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .flynow-navbar .navbar-actions .login {
+    display: none;
+  }
+  .flynow-navbar .navbar-actions .login.mobile-visible {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+  }
+}

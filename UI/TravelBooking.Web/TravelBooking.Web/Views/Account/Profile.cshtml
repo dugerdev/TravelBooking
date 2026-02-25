@@ -1,0 +1,21 @@
+﻿@model TravelBooking.Web.DTOs.Account.UserProfileDto
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-content m-0">
+    <section class="signup bg-white">
+        <div class="container">
+            <h2 class="mb-4">My Profile</h2>
+            <dl class="row">
+                <dt class="col-sm-3">Username</dt>
+                <dd class="col-sm-9">@Model.UserName</dd>
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+                <dt class="col-sm-3">Phone</dt>
+                <dd class="col-sm-9">@(Model.PhoneNumber ?? "-")</dd>
+            </dl>
+            <a asp-action="MyReservations" class="cus-btn btn-sec">My Reservations</a>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,36 @@
+<!-- login and sign up -->
+<section class="auth" id="auth">
+    <div class="login-page">
+        <span class="close" onclick="closeAuth()">&times;</span>
+        <h1>Log in</h1>
+        <form asp-controller="Account" asp-action="Login" method="post">
+            @Html.AntiForgeryToken()
+            <input type="text" placeholder="Enter Your Email or Username" id="login-email" name="UserNameOrEmail">
+            <p id="error-login" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <input type="password" placeholder="Enter Your Password" id="login-password" name="password">
+            <p id="error-login1" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <button type="submit" class="login-btn">Login</button>
+        </form>
+        <p>Don't have an account? <span onclick="showSignup()">Signup</span></p>
+    </div>
+
+    <div class="signup-page">
+        <span class="close" onclick="closeAuth()">&times;</span>
+        <h1>Sign Up</h1>
+        <form asp-controller="Account" asp-action="SignUp" method="post">
+            @Html.AntiForgeryToken()
+            <input type="text" placeholder="Full Name / Username" id="name" name="UserName">
+            <p id="error-name" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <input type="email" placeholder="Enter Your Email" id="email" name="email">
+            <p id="error-email" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <input type="number" placeholder="Enter Number" id="number" name="phone">
+            <p id="error-num" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <input type="password" placeholder="Enter Password" id="password" name="password">
+            <p id="error-pass" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <input type="password" placeholder="Enter Confirm Password" id="confirm-password" name="confirmPassword">
+            <p id="error-cpass" style="color:red; font-size: 11px; margin-top: -2px;"></p>
+            <button type="submit" class="signup-btn">Signup</button>
+        </form>
+        <p>Already have an account? <span onclick="showLogin()">Login</span></p>
+    </div>
+</section>

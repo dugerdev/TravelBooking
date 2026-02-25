@@ -1,0 +1,394 @@
+@model TravelBooking.Web.ViewModels.Hotels.HotelDetailViewModel
+@using TravelBooking.Web.Helpers
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Hotel?.Name ?? "Hotel Detail";
+    var currency = ViewBag.SelectedCurrency as string ?? "TRY";
+    var symbol = CurrencyHelper.GetCurrencySymbol(currency);
+    var defaultCheckIn = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+    var defaultCheckOut = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd");
+    var firstRoom = Model.Rooms?.FirstOrDefault();
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/hotel-detail-custom.css" />
+}
+
+<!-- Hero Section -->
+<div class="hotel-detail-modern">
+    <div class="container-fluid">
+        <div class="text-center text-white position-relative" style="z-index: 1;">
+            <h1 class="display-4 fw-bold mb-3" style="text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                @(Model.Hotel?.Name ?? "Hotel")
+            </h1>
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4">
+                @if (Model.Hotel != null && Model.Hotel.StarRating > 0)
+                {
+                    <span class="rating-badge">
+                        @for (var i = 0; i < Math.Min(5, Model.Hotel.StarRating); i++)
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                    </span>
+                }
+                @if (Model.Hotel != null && Model.Hotel.ReviewCount > 0)
+                {
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="fas fa-heart text-danger me-1"></i>
+                        @Model.Hotel.Rating.ToString("0.0") · @Model.Hotel.ReviewCount reviews
+                    </span>
+                }
+                @if (Model.Hotel != null)
+                {
+                    <span class="badge bg-light text-dark px-3 py-2">
+                        <i class="fas fa-map-marker-alt text-primary me-1"></i>
+                        @Model.Hotel.City, @Model.Hotel.Country
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid" style="margin-top: -60px; position: relative; z-index: 10;">
+    <div class="row g-4">
+        <!-- Sol: Ana icerik -->
+        <div class="col-lg-8">
+            <!-- Ana gorsel -->
+            <div class="hotel-card-modern mb-4">
+                <div class="hotel-image-wrapper">
+                    @if (Model.Hotel != null && Model.Hotel.StarRating > 0)
+                    {
+                        <div class="hotel-badge">
+                            <i class="fas fa-award"></i>
+                            @Model.Hotel.StarRating Stars
+                        </div>
+                    }
+                    <img src="@ImageUrlHelper.GetImageSrc(Url, Model.Hotel?.ImageUrl, "~/assets/img/hotel.svg", ApiOptions?.Value?.BaseUrl ?? "")"
+                         alt="@Model.Hotel?.Name" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';" />
+                </div>
+            </div>
+
+            <!-- Bilgi karti -->
+            <div class="hotel-card-modern p-4 mb-4">
+                <!-- Adres -->
+                @if (Model.Hotel != null && !string.IsNullOrWhiteSpace(Model.Hotel.Address))
+                {
+                    <div class="location-text mb-4 pb-3 border-bottom">
+                        <i class="fas fa-map-marker-alt text-primary"></i>
+                        <span>@Model.Hotel.Address, @Model.Hotel.City, @Model.Hotel.Country</span>
+                    </div>
+                }
+
+                <!-- Olanaklar -->
+                @if (Model.Hotel != null && (Model.Hotel.HasFreeWifi || Model.Hotel.HasParking || Model.Hotel.HasPool || Model.Hotel.HasRestaurant))
+                {
+                    <h3 class="section-title-modern">Featured Amenities</h3>
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        @if (Model.Hotel.HasFreeWifi)
+                        {
+                            <span class="amenity-tag-modern">
+                                <i class="fas fa-wifi"></i> Free WiFi
+                            </span>
+                        }
+                        @if (Model.Hotel.HasParking)
+                        {
+                            <span class="amenity-tag-modern">
+                                <i class="fas fa-parking"></i> Parking
+                            </span>
+                        }
+                        @if (Model.Hotel.HasPool)
+                        {
+                            <span class="amenity-tag-modern">
+                                <i class="fas fa-swimming-pool"></i> Pool
+                            </span>
+                        }
+                        @if (Model.Hotel.HasRestaurant)
+                        {
+                            <span class="amenity-tag-modern">
+                                <i class="fas fa-utensils"></i> Restaurant
+                            </span>
+                        }
+                    </div>
+                }
+
+                <!-- Aciklama -->
+                <h3 class="section-title-modern">About the Property</h3>
+                <p class="text-muted" style="line-height: 1.8; font-size: 15px;">
+                    @(string.IsNullOrWhiteSpace(Model.Hotel?.Description) 
+                        ? "Ideal for a modern and comfortable accommodation experience. We are here to offer quality service and unforgettable moments to our guests." 
+                        : Model.Hotel.Description)
+                </p>
+            </div>
+        </div>
+
+        <!-- Sag: Sidebar - Oda secimi + Rezervasyon formu -->
+        <div class="col-lg-4">
+            <div class="p-24 bg-white light-shadow br-12 border mb-24">
+                <h4 class="black p-0 mb-24">Room Options</h4>
+                
+                @if (Model.Rooms != null && Model.Rooms.Any())
+                {
+                    foreach (var room in Model.Rooms)
+                    {
+                        <div class="p-24 bg-white light-shadow br-12 border mb-16">
+                            <div class="d-flex justify-content-between align-items-start mb-8">
+                                <div>
+                                    <h5 class="color-black fw-600 mb-8">@room.Type</h5>
+                                    <small class="color-grey">
+                                        <i class="fal fa-users me-1"></i>
+                                        Maximum @room.MaxGuests guests
+                                    </small>
+                                </div>
+                                <span class="color-black fw-600 fs-5">
+                                    @CurrencyHelper.FormatPriceInSelectedCurrency(room.Price, room.Currency ?? Model.Hotel?.Currency ?? "TRY", currency)
+                                </span>
+                            </div>
+                            <small class="color-grey">Price per night</small>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning mb-0" role="alert">
+                        <i class="fal fa-info-circle me-2"></i>
+                        No room information is currently available.
+                    </div>
+                }
+
+                @if (Model.Rooms != null && Model.Rooms.Any() && Model.Hotel != null)
+                {
+                    <hr class="my-24" />
+                    <h4 class="black p-0 mb-24">Booking Information</h4>
+
+                    <form asp-controller="Hotel" asp-action="InitiatePaymentFromDetail" id="hotel-detail-booking-form" method="post" role="form">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="RawHotelId" value="@Model.Hotel.RawId" />
+                        <input type="hidden" name="HotelName" value="@Model.Hotel.Name" />
+                        <input type="hidden" name="HotelId" value="@(Model.Hotel.RawId.GetHashCode() & 0x7FFFFFFF)" />
+                        <input type="hidden" name="RoomType" id="fRoomType" value="@(firstRoom?.Type ?? "")" />
+                        <input type="hidden" name="RoomId" id="fRoomId" value="@(firstRoom?.Id ?? 0)" />
+                        <input type="hidden" name="CheckIn" id="fCheckIn" value="@defaultCheckIn" />
+                        <input type="hidden" name="CheckOut" id="fCheckOut" value="@defaultCheckOut" />
+                        <input type="hidden" name="Guests" id="fGuests" value="1" />
+                        <input type="hidden" name="Currency" value="@currency" />
+
+                        <div class="row">
+                            <div class="col-sm-12 mb-24">
+                                <div class="form-group">
+                                    <label for="roomSelect" class="form-label fw-500">Room Type</label>
+                                    <div class="select">
+                                        <select id="roomSelect" class="form-control" name="roomSelect" aria-label="Room type selection" aria-required="true">
+                                            @foreach (var room in Model.Rooms!)
+                                            {
+                                                if (room == firstRoom)
+                                                {
+                                                    <option value="@room.Id" data-type="@room.Type" data-price="@room.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" selected="selected">@room.Type — @CurrencyHelper.FormatPriceInSelectedCurrency(room.Price, room.Currency ?? Model.Hotel?.Currency ?? "TRY", currency)/night</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@room.Id" data-type="@room.Type" data-price="@room.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">@room.Type — @CurrencyHelper.FormatPriceInSelectedCurrency(room.Price, room.Currency ?? Model.Hotel?.Currency ?? "TRY", currency)/night</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-24">
+                                <div class="form-group">
+                                    <label for="checkInDate" class="form-label fw-500">Check-in Date</label>
+                                    <input type="date" id="checkInDate" class="form-control" value="@defaultCheckIn" min="@DateTime.Now.ToString("yyyy-MM-dd")" aria-label="Check-in date" aria-required="true" />
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mb-24">
+                                <div class="form-group">
+                                    <label for="checkOutDate" class="form-label fw-500">Check-out Date</label>
+                                    <input type="date" id="checkOutDate" class="form-control" value="@defaultCheckOut" min="@defaultCheckIn" aria-label="Check-out date" aria-required="true" />
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-24">
+                                <div class="p-24 bg-light br-12">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="color-grey fw-500">
+                                            <i class="fal fa-moon me-1"></i>Stay Duration
+                                        </span>
+                                        <span class="color-black fw-600" id="nightsDisplay">1 night</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 mb-24">
+                                <div class="form-group">
+                                    <label for="guestCount" class="form-label fw-500">Number of Guests</label>
+                                    <div class="form-field-with-icon">
+                                        <i class="fa fa-users" aria-hidden="true"></i>
+                                        <input type="number" id="guestCount" class="form-control" value="1" min="1" max="10" aria-label="Number of guests" aria-required="true" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-24 bg-white light-shadow br-12 border mb-24">
+                            <h5 class="color-black fw-600 mb-24"><i class="fal fa-user me-2"></i>Guest Information</h5>
+                            <div class="row">
+                                <div class="col-sm-12 mb-24">
+                                    <div class="form-group">
+                                        <label for="ContactName" class="form-label fw-500">Full Name *</label>
+                                        <div class="form-field-with-icon">
+                                            <i class="fa fa-user" aria-hidden="true"></i>
+                                            <input type="text" class="form-control" name="ContactName" id="ContactName" placeholder="Your full name" required aria-label="Full name" aria-required="true" />
+                                        </div>
+                                        <span class="text-danger small" data-valmsg-for="ContactName" data-valmsg-replace="true" role="alert"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 mb-24">
+                                    <div class="form-group">
+                                        <label for="ContactEmail" class="form-label fw-500">Email *</label>
+                                        <div class="form-field-with-icon">
+                                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                                            <input type="email" class="form-control" name="ContactEmail" id="ContactEmail" placeholder="example@email.com" required aria-label="Email address" aria-required="true" />
+                                        </div>
+                                        <span class="text-danger small" data-valmsg-for="ContactEmail" data-valmsg-replace="true" role="alert"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 mb-24">
+                                    <div class="form-group">
+                                        <label for="ContactPhone" class="form-label fw-500">Phone</label>
+                                        <div class="form-field-with-icon">
+                                            <i class="fa fa-phone" aria-hidden="true"></i>
+                                            <input type="tel" class="form-control" name="ContactPhone" id="ContactPhone" placeholder="555 123 4567" aria-label="Phone number" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 mb-0">
+                                    <div class="form-group">
+                                        <label for="IdOrPassport" class="form-label fw-500">ID / Passport (optional)</label>
+                                        <div class="form-field-with-icon">
+                                            <i class="fa fa-id-card" aria-hidden="true"></i>
+                                            <input type="text" class="form-control" name="IdOrPassport" id="IdOrPassport" placeholder="Required for check-in" aria-label="ID or passport number" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-12 mb-24">
+                                <div class="form-group">
+                                    <label class="d-flex align-items-start gap-3" style="cursor: pointer;">
+                                        <input type="checkbox" id="acceptTerms" class="form-check-input" required style="width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin-top: 0.125rem; cursor: pointer;" />
+                                        <span class="color-grey fw-400">I have read and accept the <a asp-controller="Pages" asp-action="TermsConditions" class="color-primary" target="_blank">Terms of Use</a> and <a asp-controller="Pages" asp-action="PrivacyPolicy" class="color-primary" target="_blank">Privacy Policy</a>.</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-24 bg-light br-12 mb-24">
+                            <div class="d-flex justify-content-between align-items-center mb-8">
+                                <span class="color-grey fw-500">Total Amount</span>
+                                <span class="color-black fw-700 fs-4" id="displayTotal">@(firstRoom != null ? CurrencyHelper.FormatPriceInSelectedCurrency(firstRoom.Price, firstRoom.Currency ?? Model.Hotel?.Currency ?? "TRY", currency) : "—")</span>
+                            </div>
+                            <small class="color-grey" id="nightsLabel">1 night stay</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-12 fw-600" id="btnReserve" aria-label="Make a reservation and proceed to payment">
+                            <i class="fal fa-credit-card me-2" aria-hidden="true"></i>
+                            Proceed to Payment
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <a asp-controller="Hotel" asp-action="Listing" class="btn btn-outline-primary w-100 py-12 fw-600 mt-24">
+                        <i class="fal fa-arrow-left me-2"></i>Back to Hotel Listing
+                    </a>
+                }
+
+                @if (Model.Hotel != null && Model.Hotel.PricePerNight > 0 && (Model.Rooms == null || !Model.Rooms.Any()))
+                {
+                    <p class="text-center text-muted small mt-3 mb-0">
+                        <i class="fas fa-tag me-1"></i>
+                        @CurrencyHelper.FormatPriceInSelectedCurrency(Model.Hotel.PricePerNight, Model.Hotel.Currency ?? "TRY", currency) baslayan fiyatlarla
+                    </p>
+                }
+
+                <div class="mt-4 p-3 rounded" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                    <small class="d-block mb-2">
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        Instant confirmation
+                    </small>
+                    <small class="d-block mb-2">
+                        <i class="fas fa-shield-alt text-success me-1"></i>
+                        Secure payment
+                    </small>
+                    <small class="d-block">
+                        <i class="fas fa-headset text-success me-1"></i>
+                        24/7 customer support
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-5 pb-5"></div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('hotel-detail-booking-form');
+            if (!form) return;
+            var roomSelect = document.getElementById('roomSelect');
+            var checkIn = document.getElementById('checkInDate');
+            var checkOut = document.getElementById('checkOutDate');
+            var guestCount = document.getElementById('guestCount');
+            var fRoomId = document.getElementById('fRoomId');
+            var fRoomType = document.getElementById('fRoomType');
+            var fCheckIn = document.getElementById('fCheckIn');
+            var fCheckOut = document.getElementById('fCheckOut');
+            var fGuests = document.getElementById('fGuests');
+            var displayTotal = document.getElementById('displayTotal');
+            var nightsLabel = document.getElementById('nightsLabel');
+            var nightsDisplay = document.getElementById('nightsDisplay');
+            var currencySymbol = '@symbol';
+            var currencyCode = '@currency';
+
+            function nights() {
+                if (!checkIn || !checkOut || !checkIn.value || !checkOut.value) return 1;
+                var a = new Date(checkIn.value);
+                var b = new Date(checkOut.value);
+                var n = Math.ceil((b - a) / (1000 * 60 * 60 * 24));
+                return n < 1 ? 1 : n;
+            }
+
+            function updateHiddenAndTotal() {
+                if (roomSelect && roomSelect.selectedIndex >= 0) {
+                    var opt = roomSelect.options[roomSelect.selectedIndex];
+                    if (fRoomId) fRoomId.value = opt.value;
+                    if (fRoomType) fRoomType.value = opt.getAttribute('data-type') || '';
+                    var price = parseFloat(opt.getAttribute('data-price')) || 0;
+                    var n = nights();
+                    if (fCheckIn && checkIn) fCheckIn.value = checkIn.value;
+                    if (fCheckOut && checkOut) fCheckOut.value = checkOut.value;
+                    if (fGuests && guestCount) fGuests.value = guestCount.value || '1';
+                    if (nightsDisplay) nightsDisplay.textContent = n + ' night' + (n > 1 ? 's' : '');
+                    if (nightsLabel) nightsLabel.textContent = n + ' night' + (n > 1 ? 's' : '') + ' stay';
+                    if (displayTotal) displayTotal.textContent = currencySymbol + ' ' + (price * n).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                }
+            }
+
+            if (roomSelect) roomSelect.addEventListener('change', updateHiddenAndTotal);
+            if (checkIn) checkIn.addEventListener('change', function () {
+                if (checkOut) {
+                    checkOut.min = checkIn.value;
+                    if (checkOut.value && checkIn.value > checkOut.value) checkOut.value = checkIn.value;
+                }
+                updateHiddenAndTotal();
+            });
+            if (checkOut) checkOut.addEventListener('change', updateHiddenAndTotal);
+            if (guestCount) guestCount.addEventListener('change', updateHiddenAndTotal);
+            updateHiddenAndTotal();
+        })();
+    </script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

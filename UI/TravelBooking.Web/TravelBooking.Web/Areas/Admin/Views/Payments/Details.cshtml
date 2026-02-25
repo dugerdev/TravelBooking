@@ -1,0 +1,110 @@
+﻿@model TravelBooking.Web.Areas.Admin.Controllers.PaymentDisplayDto
+@{
+    ViewData["Title"] = "Ödeme Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Ödeme Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Ödeme Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">PNR:</th>
+                            <td><strong class="text-primary">@Model.PNR</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Rezervasyon ID:</th>
+                            <td>@Model.ReservationId</td>
+                        </tr>
+                        <tr>
+                            <th>İşlem ID:</th>
+                            <td>@Model.TransactionId</td>
+                        </tr>
+                        <tr>
+                            <th>Tutar:</th>
+                            <td><strong>@Model.TransactionAmount.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Ödeme Yöntemi:</th>
+                            <td>@Model.PaymentMethod</td>
+                        </tr>
+                        <tr>
+                            <th>İşlem Tipi:</th>
+                            <td>@Model.TransactionType</td>
+                        </tr>
+                        <tr>
+                            <th>Durum:</th>
+                            <td>
+                                @switch (Model.PaymentStatus?.ToUpperInvariant())
+                                {
+                                    case "CONFIRMED":
+                                    case "COMPLETED":
+                                        <span class="badge badge-success">@Model.PaymentStatus</span>
+                                        break;
+                                    case "PENDING":
+                                        <span class="badge badge-warning">@Model.PaymentStatus</span>
+                                        break;
+                                    case "CANCELLED":
+                                    case "FAILED":
+                                    case "REFUNDED":
+                                        <span class="badge badge-danger">@Model.PaymentStatus</span>
+                                        break;
+                                    default:
+                                        <span class="badge badge-secondary">@Model.PaymentStatus</span>
+                                        break;
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Tarih:</th>
+                            <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Refund" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('İade işlemi yapılsın mı? Bu işlem geri alınamaz.');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-warning btn-block mb-2 w-100">
+                            <i class="fas fa-undo"></i> İade Talebi
+                        </button>
+                    </form>
+                    <a asp-area="Admin" asp-controller="Reservations" asp-action="Details" asp-route-id="@Model.ReservationId" class="btn btn-info btn-block mb-2">
+                        <i class="fas fa-ticket-alt"></i> Rezervasyon Detayı
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="fas fa-list"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

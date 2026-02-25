@@ -1,0 +1,92 @@
+﻿@model TravelBooking.Web.DTOs.Cars.CreateCarDto
+@{
+    ViewData["Title"] = "Add Car";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Add New Car</h1>
+        <a asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    <div class="card shadow mb-4">
+        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Car Details</h6></div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <label asp-for="Brand">Brand *</label>
+                        <input asp-for="Brand" class="form-control" required />
+                        <span asp-validation-for="Brand" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-3 form-group">
+                        <label asp-for="Model">Model *</label>
+                        <input asp-for="Model" class="form-control" required />
+                        <span asp-validation-for="Model" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Category">Category</label>
+                        <input asp-for="Category" class="form-control" placeholder="Sedan, SUV, etc." />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Year">Year</label>
+                        <input asp-for="Year" type="number" min="2000" max="@(DateTime.Now.Year + 1)" class="form-control" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="PricePerDay">Price/Day</label>
+                        <input asp-for="PricePerDay" type="number" step="0.01" min="0" class="form-control" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Currency">Currency</label>
+                        <input asp-for="Currency" class="form-control" placeholder="USD" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="FuelType">Fuel Type</label>
+                        <input asp-for="FuelType" class="form-control" placeholder="Petrol, Diesel" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Transmission">Transmission</label>
+                        <input asp-for="Transmission" class="form-control" placeholder="Automatic, Manual" />
+                    </div>
+                    <div class="col-md-1 form-group">
+                        <label asp-for="Seats">Seats</label>
+                        <input asp-for="Seats" type="number" min="1" max="9" class="form-control" />
+                    </div>
+                    <div class="col-md-1 form-group">
+                        <label asp-for="Doors">Doors</label>
+                        <input asp-for="Doors" type="number" min="2" max="5" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Location">Location</label>
+                        <input asp-for="Location" class="form-control" />
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="ImageUrl">Görsel yolu</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="Örn: /assets/img/arabalar/foto.jpg veya assets/img/arabalar/foto.jpg" />
+                    </div>
+                    <div class="col-12 form-group">
+                        <div class="form-check form-check-inline">
+                            <input asp-for="HasAirConditioning" class="form-check-input" />
+                            <label asp-for="HasAirConditioning" class="form-check-label">Air Conditioning</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input asp-for="HasGPS" class="form-check-input" />
+                            <label asp-for="HasGPS" class="form-check-label">GPS</label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Create Car</button>
+                        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

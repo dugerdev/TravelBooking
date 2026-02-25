@@ -1,0 +1,74 @@
+@model TravelBooking.Web.ViewModels.PaginationViewModel
+@{
+    if (Model == null || Model.TotalPages <= 1) { return; }
+    var routeValues = Model.RouteValues ?? new Dictionary<string, string>();
+    var cleanRouteValues = new Dictionary<string, string>();
+    foreach (var kv in routeValues)
+    {
+        if (!string.IsNullOrEmpty(kv.Value))
+            cleanRouteValues[kv.Key] = kv.Value;
+    }
+}
+<nav aria-label="Sayfa navigasyonu" class="mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <p class="text-muted mb-0">Sayfa @Model.PageNumber / @Model.TotalPages (toplam @Model.TotalCount kayıt)</p>
+        <ul class="pagination mb-0">
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                @if (Model.HasPreviousPage)
+                {
+                    var prevRoute = new Dictionary<string, string>(cleanRouteValues) { ["pageNumber"] = (Model.PageNumber - 1).ToString(), ["pageSize"] = Model.PageSize.ToString() };
+                    <a class="page-link" asp-all-route-data="prevRoute">Önceki</a>
+                }
+                else
+                {
+                    <span class="page-link">Önceki</span>
+                }
+            </li>
+            @{
+                var maxPagesToShow = 10;
+                var startPage = Math.Max(1, Model.PageNumber - maxPagesToShow / 2);
+                var endPage = Math.Min(Model.TotalPages, startPage + maxPagesToShow - 1);
+                if (endPage - startPage < maxPagesToShow - 1)
+                    startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+            }
+            @if (startPage > 1)
+            {
+                var firstRoute = new Dictionary<string, string>(cleanRouteValues) { ["pageNumber"] = "1", ["pageSize"] = Model.PageSize.ToString() };
+                <li class="page-item"><a class="page-link" asp-all-route-data="firstRoute">1</a></li>
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+            }
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                var isActive = i == Model.PageNumber;
+                <li class="page-item @(isActive ? "active" : "")">
+                    @if (isActive)
+                    {
+                        <span class="page-link">@i</span>
+                    }
+                    else
+                    {
+                        var pageRoute = new Dictionary<string, string>(cleanRouteValues) { ["pageNumber"] = i.ToString(), ["pageSize"] = Model.PageSize.ToString() };
+                        <a class="page-link" asp-all-route-data="pageRoute">@i</a>
+                    }
+                </li>
+            }
+            @if (endPage < Model.TotalPages)
+            {
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                var lastRoute = new Dictionary<string, string>(cleanRouteValues) { ["pageNumber"] = Model.TotalPages.ToString(), ["pageSize"] = Model.PageSize.ToString() };
+                <li class="page-item"><a class="page-link" asp-all-route-data="lastRoute">@Model.TotalPages</a></li>
+            }
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                @if (Model.HasNextPage)
+                {
+                    var nextRoute = new Dictionary<string, string>(cleanRouteValues) { ["pageNumber"] = (Model.PageNumber + 1).ToString(), ["pageSize"] = Model.PageSize.ToString() };
+                    <a class="page-link" asp-all-route-data="nextRoute">Sonraki</a>
+                }
+                else
+                {
+                    <span class="page-link">Sonraki</span>
+                }
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,78 @@
+@model List<TravelBooking.Web.DTOs.Hotels.HotelDto>
+@{
+    var destinationPlaceholders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Paris"] = "https://placehold.co/400x300/1e3a5f/white?text=Paris",
+        ["Tokyo"] = "https://placehold.co/400x300/1e3a5f/white?text=Tokyo",
+        ["Dubai"] = "https://placehold.co/400x300/1e3a5f/white?text=Dubai",
+        ["London"] = "https://placehold.co/400x300/1e3a5f/white?text=London",
+        ["Rome"] = "https://placehold.co/400x300/1e3a5f/white?text=Rome",
+        ["Barcelona"] = "https://placehold.co/400x300/1e3a5f/white?text=Barcelona",
+        ["New York"] = "https://placehold.co/400x300/1e3a5f/white?text=New+York",
+        ["Maldives"] = "https://placehold.co/400x300/1e3a5f/white?text=Maldives",
+        ["Istanbul"] = "https://placehold.co/400x300/1e3a5f/white?text=Istanbul"
+    };
+}
+<!-- Global Travel Start -->
+<section class="global-travel-hotel p-40">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between mb-40 flex-md-nowrap flex-wrap">
+            <h3 class="fw-700 lightest-black mb-md-0 mb-3">Popular Global Travel Destinations</h3>
+            <a asp-controller="Hotel" asp-action="Listing" class="cus-btn">Show More</a>
+        </div>
+        <div class="row justify-content-center row-gap-4">
+            <div class="col-xxl-6 col-lg-5 col-md-7 col-10" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                <img src="~/assets/img/map.png" alt="">
+            </div>
+            <div class="col-xxl-6 col-lg-7">
+                @if (Model == null || Model.Count == 0)
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="text-center dark-gray">Henuz otel bulunmamaktadir.</p>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        @foreach (var hotel in Model)
+                        {
+                            var cityName = hotel.City ?? "";
+                            var imageUrl = !string.IsNullOrEmpty(hotel.ImageUrl) ? ImageUrlHelper.ImageSrc((IUrlHelper)Url, hotel.ImageUrl, "~/assets/img/image-1.svg")
+                                : (destinationPlaceholders.TryGetValue(cityName, out var placeImg) ? placeImg : null)
+                                ?? (string.IsNullOrEmpty(cityName) ? Url.Content("~/assets/img/image-1.svg") : $"https://placehold.co/400x300/1a365d/white?text={Uri.EscapeDataString(cityName)}");
+                            <div class="col-lg-6 col-md-6 col-sm-6" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                                <div class="hotel-block bg-white p-24 light-shadow mb-24">
+                                    <div class="image-box mb-24">
+                                        <a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.Id">
+                                            <img src="@imageUrl" alt="@(hotel.Name ?? hotel.City)">
+                                        </a>
+                                        <div class="price">
+                                            <h6>from <span class="color-sec">@CurrencyHelper.FormatPriceInSelectedCurrency(hotel.PricePerNight, hotel.Currency ?? "TRY", ViewBag.SelectedCurrency as string ?? "TRY")</span></h6>
+                                        </div>
+                                    </div>
+                                    <div class="content-box">
+                                        <h5 class="black mb-8"><a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.Id">@hotel.City</a></h5>
+                                        <div class="d-flex gap-8 mb-24">
+                                            <div class="icon d-flex align-items-center gap-8">
+                                                <i class="icon-map-marker" aria-hidden="true"></i>
+                                                <h6 class="color-medium-gray">@hotel.Country - </h6>
+                                            </div>
+                                            <div class="icon d-flex align-items-center gap-8">
+                                                <i class="icon-building" aria-hidden="true"></i>
+                                                <h6 class="color-medium-gray">Hotels </h6>
+                                            </div>
+                                        </div>
+                                        <a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.Id" class="cus-btn full-width">Discover</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Global Travel End -->

@@ -1,0 +1,197 @@
+﻿@* Payment Form Partial - Can be used across all payment pages *@
+@model TravelBooking.Web.ViewModels.Payments.IPaymentFormViewModel
+
+<div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+    <h4 class="black p-0 mb-24">
+        <i class="fa fa-credit-card me-2"></i>
+        Payment Information
+    </h4>
+    <div class="row">
+        <div class="col-sm-12 mb-24">
+            <div class="form-group">
+                <label asp-for="PaymentMethod" class="form-label">Payment Method</label>
+                <div class="payment-methods d-flex gap-3 mb-3">
+                    <div class="payment-method-option">
+                        <input type="radio" asp-for="PaymentMethod" value="Card" id="paymentCard" checked>
+                        <label for="paymentCard" class="payment-method-label">
+                            <i class="fa fa-credit-card"></i>
+                            <span>Credit/Debit Card</span>
+                        </label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" asp-for="PaymentMethod" value="PayPal" id="paymentPayPal">
+                        <label for="paymentPayPal" class="payment-method-label">
+                            <i class="fab fa-paypal"></i>
+                            <span>PayPal</span>
+                        </label>
+                    </div>
+                    <div class="payment-method-option">
+                        <input type="radio" asp-for="PaymentMethod" value="BankTransfer" id="paymentBank">
+                        <label for="paymentBank" class="payment-method-label">
+                            <i class="fa fa-university"></i>
+                            <span>Bank Transfer</span>
+                        </label>
+                    </div>
+                </div>
+                <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="card-payment-fields">
+            <div class="col-sm-12 mb-24">
+                <div class="form-group">
+                    <label asp-for="CardNumber" class="form-label">Card Number</label>
+                    <div class="form-field-with-icon">
+                        <i class="fa fa-credit-card"></i>
+                        <input type="text" asp-for="CardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                        <div class="card-logos">
+                            <img src="~/Admin-Assets/vendor/fontawesome-free/svgs/brands/cc-visa.svg" alt="Visa" height="24">
+                            <img src="~/Admin-Assets/vendor/fontawesome-free/svgs/brands/cc-mastercard.svg" alt="Mastercard" height="24">
+                            <img src="~/Admin-Assets/vendor/fontawesome-free/svgs/brands/cc-amex.svg" alt="American Express" height="24">
+                        </div>
+                    </div>
+                    <span asp-validation-for="CardNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm-12 mb-24">
+                <div class="form-group">
+                    <label asp-for="CardHolderName" class="form-label">Card Holder Name</label>
+                    <div class="form-field-with-icon">
+                        <i class="fa fa-user"></i>
+                        <input type="text" asp-for="CardHolderName" class="form-control" placeholder="John Doe">
+                    </div>
+                    <span asp-validation-for="CardHolderName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm-6 mb-24">
+                <div class="form-group">
+                    <label asp-for="ExpiryDate" class="form-label">Expiry Date</label>
+                    <div class="form-field-with-icon">
+                        <i class="fa fa-calendar"></i>
+                        <input type="text" asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm-6 mb-24">
+                <div class="form-group">
+                    <label asp-for="CVV" class="form-label">CVV</label>
+                    <div class="form-field-with-icon">
+                        <i class="fa fa-lock"></i>
+                        <input type="text" asp-for="CVV" class="form-control" placeholder="123" maxlength="4">
+                    </div>
+                    <span asp-validation-for="CVV" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+    <h4 class="black p-0 mb-24">
+        <i class="fa fa-map-marker-alt me-2"></i>
+        Billing Address
+    </h4>
+    <div class="row">
+        <div class="col-sm-12 mb-24">
+            <div class="form-group">
+                <label asp-for="BillingAddress" class="form-label">Address</label>
+                <input type="text" asp-for="BillingAddress" class="form-control" placeholder="Street address">
+                <span asp-validation-for="BillingAddress" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-sm-6 mb-24">
+            <div class="form-group">
+                <label asp-for="City" class="form-label">City</label>
+                <input type="text" asp-for="City" class="form-control" placeholder="City">
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-sm-6 mb-24">
+            <div class="form-group">
+                <label asp-for="PostalCode" class="form-label">Postal Code</label>
+                <input type="text" asp-for="PostalCode" class="form-control" placeholder="12345">
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-sm-12 mb-24">
+            <div class="form-group">
+                <label asp-for="Country" class="form-label">Country</label>
+                <select asp-for="Country" class="form-control">
+                    <option value="">Select Country</option>
+                    <option value="TR">Turkey</option>
+                    <option value="US">United States</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="DE">Germany</option>
+                    <option value="FR">France</option>
+                    <option value="IT">Italy</option>
+                    <option value="ES">Spain</option>
+                    <option value="NL">Netherlands</option>
+                    <option value="BE">Belgium</option>
+                    <option value="CH">Switzerland</option>
+                    <option value="AT">Austria</option>
+                    <option value="SE">Sweden</option>
+                    <option value="NO">Norway</option>
+                    <option value="DK">Denmark</option>
+                    <option value="FI">Finland</option>
+                </select>
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+    <div class="form-group">
+        <div class="form-check">
+            <label class="form-check-label d-flex align-items-center gap-3 w-100" style="cursor: pointer;">
+                <input type="checkbox" asp-for="AcceptTerms" class="form-check-input flex-shrink-0" 
+                       style="width: 1.35rem; height: 1.35rem; min-width: 1.35rem; min-height: 1.35rem; cursor: pointer; accent-color: #0d6efd;">
+                <span>I have read and accept the <a href="#" class="text-primary">Terms and Conditions</a> and <a href="#" class="text-primary">Privacy Policy</a>. <strong class="text-muted">(Check the box above)</strong></span>
+            </label>
+        </div>
+        <span asp-validation-for="AcceptTerms" class="text-danger d-block"></span>
+    </div>
+    
+    <div class="security-badge mt-3">
+        <i class="fa fa-shield-alt text-success me-2"></i>
+        <span class="text-muted small">Your payment is secure and encrypted with SSL.</span>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // Card number formatting
+    document.querySelector('input[name="CardNumber"]')?.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+
+    // Expiry date formatting
+    document.querySelector('input[name="ExpiryDate"]')?.addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+
+    // CVV numbers only
+    document.querySelector('input[name="CVV"]')?.addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Toggle payment fields based on method
+    document.querySelectorAll('input[name="PaymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const cardFields = document.querySelector('.card-payment-fields');
+            if (this.value === 'Card') {
+                cardFields.style.display = 'block';
+            } else {
+                cardFields.style.display = 'none';
+            }
+        });
+    });
+</script>
+}

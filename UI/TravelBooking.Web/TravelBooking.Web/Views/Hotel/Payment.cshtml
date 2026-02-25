@@ -1,0 +1,200 @@
+@model TravelBooking.Web.ViewModels.Payments.HotelPaymentViewModel
+@{
+    ViewData["Title"] = "Hotel Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userCurrency = CookieHelper.GetCurrency();
+    // Model.Currency is already set to selected currency from cookie
+    var convertedPricePerNight = CurrencyHelper.ConvertPrice(Model.PricePerNight, Model.Currency ?? "TRY", userCurrency);
+    var convertedSubtotal = CurrencyHelper.ConvertPrice(Model.Subtotal, Model.Currency ?? "TRY", userCurrency);
+    var convertedTax = CurrencyHelper.ConvertPrice(Model.Tax, Model.Currency ?? "TRY", userCurrency);
+    var convertedTotal = CurrencyHelper.ConvertPrice(Model.Total, Model.Currency ?? "TRY", userCurrency);
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner mb-20">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/hotel.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">Secure <br class="title-break"> Payment</h1>
+                </div>
+                <img src="~/assets/img/bed.svg" alt="" class="right-image">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+
+<!-- Main Content Start -->
+<div class="page-content m-0">
+    <section class="flight-booking" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="booking-form">
+                        <form asp-controller="Hotel" asp-action="CompletePayment" method="post">
+                            @Html.AntiForgeryToken()
+                            
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="HotelId" />
+                            <input type="hidden" asp-for="HotelName" />
+                            <input type="hidden" asp-for="Location" />
+                            <input type="hidden" asp-for="CheckInDate" />
+                            <input type="hidden" asp-for="CheckOutDate" />
+                            <input type="hidden" asp-for="Nights" />
+                            <input type="hidden" asp-for="Rooms" />
+                            <input type="hidden" asp-for="Adults" />
+                            <input type="hidden" asp-for="Children" />
+                            <input type="hidden" asp-for="RoomType" />
+                            <input type="hidden" asp-for="PricePerNight" />
+                            <input type="hidden" asp-for="Currency" />
+                            <input type="hidden" asp-for="GuestName" />
+                            <input type="hidden" asp-for="GuestEmail" />
+                            <input type="hidden" asp-for="GuestPhone" />
+
+                            @await Html.PartialAsync("_ValidationSummary")
+
+                            <!-- Contact Information -->
+                            <div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+                                <h4 class="black p-0 mb-24">
+                                    <i class="fa fa-user me-2"></i>
+                                    Contact Information
+                                </h4>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Full Name:</strong></p>
+                                        <p class="text-muted">@Model.GuestName</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Email:</strong></p>
+                                        <p class="text-muted">@Model.GuestEmail</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Telefon:</strong></p>
+                                        <p class="text-muted">@Model.GuestPhone</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Form Partial -->
+                            @await Html.PartialAsync("~/Views/Shared/Partials/_PaymentForm.cshtml", Model)
+
+                            <div class="form-wizard-footer">
+                                <a asp-controller="Hotel" asp-action="Booking" asp-route-hotelId="@Model.HotelId" 
+                                   class="btn btn-secondary btn-lg me-3">
+                                    <i class="fa fa-arrow-left me-2"></i>
+                                    Back to Reservation
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-lock me-2"></i>
+                                    Odemeyi Tamamla
+                                </button>
+                            </div>
+
+                            <hr class="my-4" />
+                            <div class="mb-3">
+                                <p class="text-muted small mb-2">Or pay securely with Stripe:</p>
+                                <form asp-controller="Stripe" asp-action="CreateCheckoutSession" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="AmountKurus" value="@((long)Math.Round(Model.Total * 100))" />
+                                    <input type="hidden" name="Currency" value="@(Model.Currency?.ToLowerInvariant() ?? "try")" />
+                                    <input type="hidden" name="ProductName" value="Hotel: @Model.HotelName" />
+                                    <button type="submit" class="btn btn-outline-primary btn-lg">
+                                        <i class="fab fa-stripe me-2"></i>Pay with Stripe
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="flight-booking-detail light-shadow">
+                        <div class="flight-title">
+                            <h4 class="color-black">Booking Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <h5 class="color-black mb-16">@Model.HotelName</h5>
+                            <p class="dark-gray mb-24">
+                                <i class="fa fa-map-marker-alt me-2"></i>
+                                @Model.Location
+                            </p>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-calendar-check me-2"></i>
+                                    Check-in:
+                                </span>
+                                <span class="light-black">@Model.CheckInDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-calendar-times me-2"></i>
+                                    Check-out:
+                                </span>
+                                <span class="light-black">@Model.CheckOutDate.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-moon me-2"></i>
+                                    Nights:
+                                </span>
+                                <span class="light-black">@Model.Nights</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-door-open me-2"></i>
+                                    Rooms:
+                                </span>
+                                <span class="light-black">@Model.Rooms x @Model.RoomType</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-users me-2"></i>
+                                    Guests:
+                                </span>
+                                <span class="light-black">@Model.Adults Adult(s), @Model.Children Child(ren)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Price per night:</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedPricePerNight, userCurrency)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Subtotal (@Model.Nights night(s)):</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedSubtotal, userCurrency)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-24">
+                                <span class="light-black">Tax & Service (10%):</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedTax, userCurrency)</span>
+                            </div>
+                            
+                            <div class="border-top pt-16">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="color-black">Total:</h5>
+                                    <h5 class="color-primary">@CurrencyHelper.FormatPrice(convertedTotal, userCurrency)</h5>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3" role="alert">
+                                <i class="fa fa-info-circle me-2"></i>
+                                <small>Confirmation email will be sent after payment is processed.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

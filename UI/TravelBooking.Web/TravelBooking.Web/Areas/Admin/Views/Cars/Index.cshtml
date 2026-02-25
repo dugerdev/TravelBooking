@@ -1,0 +1,120 @@
+@model TravelBooking.Web.DTOs.Common.PagedResultDto<TravelBooking.Web.DTOs.Cars.CarDto>
+@{
+    ViewData["Title"] = "Cars Management";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Cars Management</h1>
+        <a asp-area="Admin" asp-controller="Cars" asp-action="Create" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Add New Car
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <!-- Search Form -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Search Cars</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="form-inline">
+                <input type="text" name="searchLocation" class="form-control mr-2" placeholder="Location" value="@ViewBag.SearchLocation">
+                <input type="text" name="category" class="form-control mr-2" placeholder="Category" value="@ViewBag.Category">
+                <input type="number" step="0.01" name="maxPrice" class="form-control mr-2" placeholder="Max price/day" value="@ViewBag.MaxPrice">
+                <input type="hidden" name="pageNumber" value="1" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">All Cars</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Brand & Model</th>
+                            <th>Location</th>
+                            <th>Category</th>
+                            <th>Price/Day</th>
+                            <th>Seats</th>
+                            <th>Available</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model?.Items != null && Model.Items.Any())
+                        {
+                            foreach (var car in Model.Items)
+                            {
+                                <tr>
+                                    <td>@car.Brand @car.Model</td>
+                                    <td>@car.Location</td>
+                                    <td>@car.Category</td>
+                                    <td>@car.PricePerDay.ToString("N2") @car.Currency</td>
+                                    <td>@car.Seats</td>
+                                    <td>
+                                        @if (car.IsAvailable)
+                                        {
+                                            <span class="badge badge-success">Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">No</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-info btn-sm">Details</a>
+                                        <a asp-action="Edit" asp-route-id="@car.Id" class="btn btn-warning btn-sm">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@car.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No cars found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @if (Model != null && Model.TotalPages > 1)
+            {
+                @await Html.PartialAsync("Partials/_Pagination", new TravelBooking.Web.ViewModels.PaginationViewModel
+                {
+                    PageNumber = Model.PageNumber,
+                    PageSize = Model.PageSize,
+                    TotalPages = Model.TotalPages,
+                    TotalCount = Model.TotalCount,
+                    HasPreviousPage = Model.HasPreviousPage,
+                    HasNextPage = Model.HasNextPage,
+                    RouteValues = new Dictionary<string, string>
+                    {
+                        ["searchLocation"] = ViewBag.SearchLocation?.ToString() ?? "",
+                        ["category"] = ViewBag.Category?.ToString() ?? "",
+                        ["maxPrice"] = ViewBag.MaxPrice?.ToString() ?? ""
+                    }
+                })
+            }
+        </div>
+    </div>
+</div>

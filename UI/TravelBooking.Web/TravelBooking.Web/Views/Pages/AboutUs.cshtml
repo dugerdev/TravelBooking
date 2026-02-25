@@ -1,0 +1,37 @@
+@model TravelBooking.Web.ViewModels.Pages.AboutUsViewModel
+@{
+    ViewData["Title"] = "About Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/about.css">
+}
+
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>About Us</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+
+<section class="about-section" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="700">
+    <div class="about-container">
+        <div class="about-text">
+            <h2>Who We Are</h2>
+            <p>
+                FlyNow is your trusted travel partner, offering fast, secure, and affordable flight booking services. From domestic trips to international adventures, we help you find the best deals and make your journey smooth and memorable.
+            </p>
+            <p>
+                Our mission is to simplify travel by providing top-notch booking services, real-time updates, and customer support that you can count on 24/7.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="mission" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="800">
+    <h2>Our Mission</h2>
+    <p>
+        At FlyNow, we aim to make flight booking effortless, ensuring that every journey you take is filled with comfort and peace of mind. We are here to connect the world—one flight at a time.
+    </p>
+</section>

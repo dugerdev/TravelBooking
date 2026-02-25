@@ -1,0 +1,27 @@
+@*
+    Onay modal'ı (silme, iptal vb.)
+    Kullanım: @await Html.PartialAsync("Partials/_Modal", new { Id = "deleteModal", Title = "Silmek istediğinize emin misiniz?", Body = "Bu işlem geri alınamaz.", ConfirmText = "Sil", ConfirmClass = "btn-danger", FormAction = Url.Action("Delete", "X", new { id = item.Id }) })
+*@
+@{
+    var id = ViewData["ModalId"] as string ?? "confirmModal";
+    var title = ViewData["ModalTitle"] as string ?? "Onay";
+    var body = ViewData["ModalBody"] as string ?? "";
+    var confirmText = ViewData["ModalConfirmText"] as string ?? "Onayla";
+    var confirmClass = ViewData["ModalConfirmClass"] as string ?? "btn-primary";
+    var cancelText = ViewData["ModalCancelText"] as string ?? "İptal";
+}
+<div class="modal fade" id="@id" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">@body</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@cancelText</button>
+                <button type="button" class="btn @confirmClass" data-bs-dismiss="modal" id="@(id)Confirm">@confirmText</button>
+            </div>
+        </div>
+    </div>
+</div>

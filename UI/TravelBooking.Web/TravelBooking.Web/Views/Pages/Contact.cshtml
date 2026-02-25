@@ -1,0 +1,52 @@
+@model TravelBooking.Web.ViewModels.Pages.ContactViewModel
+@{
+    ViewData["Title"] = "Contact Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/contact.css">
+}
+
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Contact Us</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+
+<section class="contact-section" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2>Get in Touch</h2>
+            <p>Have questions? Reach out to us anytime. We are available 24/7 to help you.</p>
+            <ul>
+                <li><strong>Email:</strong> support@flynow.com</li>
+                <li><strong>Phone:</strong> +91 9876543210</li>
+                <li><strong>Address:</strong> Bhopal, Madhya Pradesh, India</li>
+            </ul>
+        </div>
+
+        <div class="contact-form">
+            <h2>Send a Message</h2>
+            @if (TempData["ContactSuccess"] != null)
+            {
+                <div class="alert alert-success">@TempData["ContactSuccess"]</div>
+            }
+            <form asp-controller="Pages" asp-action="Contact" method="post">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input asp-for="Name" placeholder="Your Name" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+                <input asp-for="Email" placeholder="Your Email" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+                <input asp-for="Phone" placeholder="Phone (optional)" />
+                <input asp-for="Subject" placeholder="Subject" required />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+                <textarea asp-for="Message" rows="5" placeholder="Your Message" required></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>

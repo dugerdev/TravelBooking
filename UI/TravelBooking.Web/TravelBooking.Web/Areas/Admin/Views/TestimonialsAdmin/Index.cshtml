@@ -1,0 +1,286 @@
+﻿@model List<TravelBooking.Web.DTOs.Testimonials.TestimonialDto>
+@{
+    ViewData["Title"] = "Testimonials Management";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Testimonials Management</h1>
+        <div>
+            <a href="@Url.Action("Pending", "TestimonialsAdmin")" class="btn btn-warning btn-sm">
+                <i class="fas fa-clock"></i> Pending (@Model.Count(t => !t.IsApproved))
+            </a>
+            <button type="button" class="btn btn-success btn-sm" id="bulkApproveBtn" style="display:none;">
+                <i class="fas fa-check"></i> Approve Selected
+            </button>
+        </div>
+    </div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @ViewBag.ErrorMessage
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div id="alertContainer"></div>
+
+    <!-- Testimonials Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                All Testimonials (@Model.Count)
+            </h6>
+            <div class="form-inline">
+                <label class="mr-2">Filter:</label>
+                <select id="statusFilter" class="form-control form-control-sm">
+                    <option value="all">All</option>
+                    <option value="approved">Approved</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="testimonialsTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th width="3%">
+                                    <input type="checkbox" id="selectAll" />
+                                </th>
+                                <th width="5%">Status</th>
+                                <th width="15%">Customer</th>
+                                <th width="10%">Location</th>
+                                <th width="8%">Rating</th>
+                                <th width="35%">Comment</th>
+                                <th width="12%">Date</th>
+                                <th width="12%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var testimonial in Model.OrderByDescending(t => t.CreatedDate))
+                            {
+                                <tr class="testimonial-row @(testimonial.IsApproved ? "approved" : "pending")" data-status="@(testimonial.IsApproved ? "approved" : "pending")">
+                                    <td class="text-center">
+                                        <input type="checkbox" class="testimonial-checkbox" data-id="@testimonial.Id" />
+                                    </td>
+                                    <td class="text-center">
+                                        @if (testimonial.IsApproved)
+                                        {
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check"></i> Approved
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">
+                                                <i class="fas fa-clock"></i> Pending
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@testimonial.CustomerName</strong>
+                                    </td>
+                                    <td>@testimonial.Location</td>
+                                    <td class="text-center">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= testimonial.Rating)
+                                            {
+                                                <i class="fas fa-star text-warning"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star text-muted"></i>
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@(testimonial.Comment.Length > 100 ? testimonial.Comment.Substring(0, 100) + "..." : testimonial.Comment)</small>
+                                    </td>
+                                    <td>
+                                        <small>@testimonial.CreatedDate.ToString("dd MMM yyyy")</small>
+                                    </td>
+                                    <td>
+                                        @if (!testimonial.IsApproved)
+                                        {
+                                            <button type="button" class="btn btn-success btn-sm btn-approve" data-id="@testimonial.Id">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm btn-reject" data-id="@testimonial.Id">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-danger btn-sm btn-delete" data-id="@testimonial.Id">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No testimonials found.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize DataTable
+            $('#testimonialsTable').DataTable({
+                "order": [[6, "desc"]]
+            });
+
+            // Status filter
+            $('#statusFilter').on('change', function () {
+                var status = $(this).val();
+                if (status === 'all') {
+                    $('.testimonial-row').show();
+                } else {
+                    $('.testimonial-row').hide();
+                    $('.testimonial-row[data-status="' + status + '"]').show();
+                }
+            });
+
+            // Select all checkbox
+            $('#selectAll').on('change', function () {
+                var checked = $(this).prop('checked');
+                $('.testimonial-checkbox:visible').prop('checked', checked);
+                toggleBulkActions();
+            });
+
+            $('.testimonial-checkbox').on('change', function () {
+                toggleBulkActions();
+            });
+
+            function toggleBulkActions() {
+                var checkedCount = $('.testimonial-checkbox:checked').length;
+                if (checkedCount > 0) {
+                    $('#bulkApproveBtn').show();
+                } else {
+                    $('#bulkApproveBtn').hide();
+                }
+            }
+
+            // Bulk approve
+            $('#bulkApproveBtn').on('click', function () {
+                var ids = [];
+                $('.testimonial-checkbox:checked').each(function () {
+                    ids.push($(this).data('id'));
+                });
+
+                if (ids.length === 0) {
+                    showAlert('warning', 'Please select testimonials to approve.');
+                    return;
+                }
+
+                if (confirm('Are you sure you want to approve ' + ids.length + ' testimonial(s)?')) {
+                    bulkApprove(ids);
+                }
+            });
+
+            // Approve single
+            $('.btn-approve').on('click', function () {
+                var id = $(this).data('id');
+                if (confirm('Are you sure you want to approve this testimonial?')) {
+                    approveTestimonial(id);
+                }
+            });
+
+            // Reject single
+            $('.btn-reject').on('click', function () {
+                var id = $(this).data('id');
+                var reason = prompt('Rejection reason (optional):');
+                if (confirm('Are you sure you want to reject this testimonial?')) {
+                    rejectTestimonial(id, reason);
+                }
+            });
+
+            // Delete
+            $('.btn-delete').on('click', function () {
+                var id = $(this).data('id');
+                if (confirm('Are you sure you want to delete this testimonial? This action cannot be undone.')) {
+                    deleteTestimonial(id);
+                }
+            });
+
+            function approveTestimonial(id) {
+                $.post('@Url.Action("Approve", "TestimonialsAdmin")', { id: id }, function (response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', response.message);
+                    }
+                });
+            }
+
+            function rejectTestimonial(id, reason) {
+                $.post('@Url.Action("Reject", "TestimonialsAdmin")', { id: id, reason: reason }, function (response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', response.message);
+                    }
+                });
+            }
+
+            function deleteTestimonial(id) {
+                $.post('@Url.Action("Delete", "TestimonialsAdmin")', { id: id }, function (response) {
+                    if (response.success) {
+                        showAlert('success', response.message);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert('danger', response.message);
+                    }
+                });
+            }
+
+            function bulkApprove(ids) {
+                $.ajax({
+                    url: '@Url.Action("BulkApprove", "TestimonialsAdmin")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ids),
+                    success: function (response) {
+                        if (response.success) {
+                            showAlert('success', response.message);
+                            setTimeout(() => location.reload(), 1500);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    }
+                });
+            }
+
+            function showAlert(type, message) {
+                var alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    message +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>';
+                $('#alertContainer').html(alertHtml);
+            }
+        });
+    </script>
+}

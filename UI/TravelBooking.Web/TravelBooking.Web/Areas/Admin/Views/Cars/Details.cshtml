@@ -1,0 +1,146 @@
+@model TravelBooking.Web.DTOs.Cars.CarDto
+@{
+    ViewData["Title"] = "Araç Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Araç Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Araç Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.ImageUrl, "~/assets/img/car-1.svg")" alt="@Model.Brand @Model.Model" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;" />
+                        </div>
+                    }
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Marka:</th>
+                            <td><strong class="text-primary">@Model.Brand</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Model:</th>
+                            <td>@Model.Model</td>
+                        </tr>
+                        <tr>
+                            <th>Kategori:</th>
+                            <td>@Model.Category</td>
+                        </tr>
+                        <tr>
+                            <th>Model Yılı:</th>
+                            <td>@Model.Year</td>
+                        </tr>
+                        <tr>
+                            <th>Yakıt Tipi:</th>
+                            <td>@Model.FuelType</td>
+                        </tr>
+                        <tr>
+                            <th>Vites:</th>
+                            <td>@Model.Transmission</td>
+                        </tr>
+                        <tr>
+                            <th>Koltuk:</th>
+                            <td>@Model.Seats</td>
+                        </tr>
+                        <tr>
+                            <th>Kapı:</th>
+                            <td>@Model.Doors</td>
+                        </tr>
+                        <tr>
+                            <th>Günlük Fiyat:</th>
+                            <td><strong>@Model.PricePerDay.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Lokasyon:</th>
+                            <td>@Model.Location</td>
+                        </tr>
+                        <tr>
+                            <th>Klima:</th>
+                            <td>
+                                @if (Model.HasAirConditioning)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>GPS:</th>
+                            <td>
+                                @if (Model.HasGPS)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Puan:</th>
+                            <td>@Model.Rating.ToString("N1") (@Model.ReviewCount yorum)</td>
+                        </tr>
+                        <tr>
+                            <th>Müsaitlik:</th>
+                            <td>
+                                @if (Model.IsAvailable)
+                                {
+                                    <span class="badge badge-success">Müsait</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">Müsait Değil</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturulma:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="fas fa-list"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

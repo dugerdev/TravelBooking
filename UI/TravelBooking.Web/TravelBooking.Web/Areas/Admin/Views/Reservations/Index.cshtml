@@ -1,0 +1,111 @@
+﻿@model List<TravelBooking.Web.DTOs.Reservations.ReservationDto>
+@{
+    ViewData["Title"] = "Rezervasyon Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var currentStatus = ViewBag.CurrentStatus as string;
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Rezervasyon Yönetimi</h1>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <!-- Filter -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="form-inline">
+                <input type="hidden" name="userId" value="@(ViewBag.FilterUserId as string)" />
+                <label class="mr-2">Durum Filtresi:</label>
+                <select name="status" class="form-control mr-2" onchange="this.form.submit()">
+                    <option value="">Tümü</option>
+                    <option value="Pending" selected="@(currentStatus == "Pending")">Beklemede</option>
+                    <option value="Confirmed" selected="@(currentStatus == "Confirmed")">Onaylandı</option>
+                    <option value="Cancelled" selected="@(currentStatus == "Cancelled")">İptal Edildi</option>
+                    <option value="Completed" selected="@(currentStatus == "Completed")">Tamamlandı</option>
+                </select>
+                @if (!string.IsNullOrEmpty(ViewBag.FilterUserId as string))
+                {
+                    <a asp-action="Index" asp-route-status="@currentStatus" class="btn btn-sm btn-secondary ml-2">Kullanıcı filtresini kaldır</a>
+                }
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tüm Rezervasyonlar</h6>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>PNR</th>
+                                <th>Kullanıcı</th>
+                                <th>Toplam Fiyat</th>
+                                <th>Durum</th>
+                                <th>Ödeme Durumu</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var reservation in Model)
+                            {
+                                <tr>
+                                    <td><strong>@reservation.PNR</strong></td>
+                                    <td>@(reservation.AppUserId ?? "-")</td>
+                                    <td>@reservation.TotalPrice.ToString("N2") @reservation.Currency</td>
+                                    <td>
+                                        @switch (reservation.Status.ToString())
+                                        {
+                                            case "Pending":
+                                                <span class="badge badge-warning">Beklemede</span>
+                                                break;
+                                            case "Confirmed":
+                                                <span class="badge badge-success">Onaylandı</span>
+                                                break;
+                                            case "Cancelled":
+                                                <span class="badge badge-danger">İptal</span>
+                                                break;
+                                            case "Completed":
+                                                <span class="badge badge-info">Tamamlandı</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (reservation.PaymentStatus.ToString() == "Paid")
+                                        {
+                                            <span class="badge badge-success">Ödendi</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">Ödenmedi</span>
+                                        }
+                                    </td>
+                                    <td>@reservation.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@reservation.Id" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Detay
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    @(string.IsNullOrEmpty(currentStatus) ? "Henüz rezervasyon bulunmamaktadır." : $"{currentStatus} durumunda rezervasyon bulunmamaktadır.")
+                </div>
+            }
+        </div>
+    </div>
+</div>

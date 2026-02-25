@@ -1,0 +1,35 @@
+@model TravelBooking.Web.ViewModels.ButtonViewModel
+@{
+    var btnClass = Model.Variant switch
+    {
+        "primary" => "btn-primary",
+        "secondary" => "btn-secondary",
+        "success" => "btn-success",
+        "danger" => "btn-danger",
+        "warning" => "btn-warning",
+        "info" => "btn-info",
+        "outline" => "btn-outline-primary",
+        _ => "btn-primary"
+    };
+    var tag = Model.Submit ? "button" : "a";
+}
+@if (Model.Submit)
+{
+    <button type="submit" class="btn @btnClass @(Model.Size == "sm" ? "btn-sm" : Model.Size == "lg" ? "btn-lg" : "") @Model.CssClass" @(Model.Disabled ? "disabled" : "")>
+        @if (!string.IsNullOrEmpty(Model.Icon))
+        {
+            <i class="@Model.Icon @(string.IsNullOrEmpty(Model.Text) ? "" : "me-2")"></i>
+        }
+        @Model.Text
+    </button>
+}
+else
+{
+    <a href="@(Model.Url ?? "#")" class="btn @btnClass @(Model.Size == "sm" ? "btn-sm" : Model.Size == "lg" ? "btn-lg" : "") @Model.CssClass" @(Model.Disabled ? "aria-disabled=true" : "")>
+        @if (!string.IsNullOrEmpty(Model.Icon))
+        {
+            <i class="@Model.Icon @(string.IsNullOrEmpty(Model.Text) ? "" : "me-2")"></i>
+        }
+        @Model.Text
+    </a>
+}

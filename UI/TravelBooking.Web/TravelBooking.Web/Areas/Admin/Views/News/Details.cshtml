@@ -1,0 +1,117 @@
+@model TravelBooking.Web.DTOs.News.NewsDto
+@{
+    ViewData["Title"] = "Haber Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Haber Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Haber Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.ImageUrl, "~/assets/img/blog-1.svg")" alt="@Model.Title" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';" />
+                        </div>
+                    }
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Başlık:</th>
+                            <td><strong class="text-primary">@Model.Title</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Kategori:</th>
+                            <td>@Model.Category</td>
+                        </tr>
+                        <tr>
+                            <th>Yazar:</th>
+                            <td>@Model.Author</td>
+                        </tr>
+                        <tr>
+                            <th>Yayın Tarihi:</th>
+                            <td>@Model.PublishDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Görüntülenme:</th>
+                            <td>@Model.ViewCount</td>
+                        </tr>
+                        <tr>
+                            <th>Yayında:</th>
+                            <td>
+                                @if (Model.IsPublished)
+                                {
+                                    <span class="badge badge-success">Evet</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Hayır</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturulma:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Summary))
+                        {
+                            <tr>
+                                <th>Özet:</th>
+                                <td>@Model.Summary</td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Content))
+                        {
+                            <tr>
+                                <th>İçerik:</th>
+                                <td><div class="text-justify">@Html.Raw(Model.Content)</div></td>
+                            </tr>
+                        }
+                        @if (Model.Tags != null && Model.Tags.Any())
+                        {
+                            <tr>
+                                <th>Etiketler:</th>
+                                <td>@string.Join(", ", Model.Tags)</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="fas fa-list"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+.my_booking_ticket {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #f2f2f2;
+    margin: 20px;
+    font-family: Arial, sans-serif;
+    margin-bottom: 12px;
+}
+
+.ticket-card {
+    width: 80%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 2px dashed black;
+}
+
+.ticket-header {
+    background: #0B8CD3;
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ticket-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.ticket-body {
+    padding: 20px;
+}
+
+.ticket-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.ticket-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.ticket-value {
+    color: #555;
+}
+
+.ticket-actions {
+    border-top: 1px solid #eee;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #fafafa;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-edit {
+    background: #0B8CD3;
+    color: white;
+}
+
+.btn-edit:hover {
+    background: #0056b3;
+}
+
+.btn-delete {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #a71d2a;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+    .ticket-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

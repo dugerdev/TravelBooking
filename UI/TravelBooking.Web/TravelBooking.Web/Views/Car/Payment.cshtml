@@ -1,0 +1,245 @@
+@model TravelBooking.Web.ViewModels.Payments.CarPaymentViewModel
+@{
+    ViewData["Title"] = "Secure Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userCurrency = Model.Currency ?? "TRY";
+    // Model already has prices in user's selected currency, no need to convert again
+    var convertedPricePerDay = Model.PricePerDay;
+    var convertedSubtotal = Model.Subtotal;
+    var convertedTax = Model.Tax;
+    var convertedTotal = Model.Total;
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner mb-20">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">Secure <br class="title-break"> Payment</h1>
+                </div>
+                <span class="right-image right-image-icon" aria-hidden="true"><i class="icon-map-marker"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+
+<!-- Main Content Start -->
+<div class="page-content m-0">
+    <section class="flight-booking" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="booking-form">
+                        <form asp-controller="Car" asp-action="CompletePayment" method="post">
+                            @Html.AntiForgeryToken()
+                            
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="CarId" />
+                            <input type="hidden" asp-for="CarModel" />
+                            <input type="hidden" asp-for="Category" />
+                            <input type="hidden" asp-for="PickUpLocation" />
+                            <input type="hidden" asp-for="DropOffLocation" />
+                            <input type="hidden" asp-for="PickUpDate" />
+                            <input type="hidden" asp-for="DropOffDate" />
+                            <input type="hidden" asp-for="Days" />
+                            <input type="hidden" asp-for="PricePerDay" />
+                            <input type="hidden" asp-for="Currency" />
+                            <input type="hidden" asp-for="Transmission" />
+                            <input type="hidden" asp-for="Seats" />
+                            <input type="hidden" asp-for="RenterName" />
+                            <input type="hidden" asp-for="RenterEmail" />
+                            <input type="hidden" asp-for="RenterPhone" />
+                            <!-- Extras (Total hesaplamasi icin POST'ta gerekli) -->
+                            <input type="hidden" asp-for="HasKasko" />
+                            <input type="hidden" asp-for="KaskoPrice" />
+                            <input type="hidden" asp-for="HasAdditionalDriver" />
+                            <input type="hidden" asp-for="DriverPrice" />
+                            <input type="hidden" asp-for="ChildSeatCount" />
+                            <input type="hidden" asp-for="ChildSeatPrice" />
+                            <input type="hidden" asp-for="BoosterSeatCount" />
+                            <input type="hidden" asp-for="BoosterSeatPrice" />
+
+                            @await Html.PartialAsync("_ValidationSummary")
+
+                            <!-- Iletisim Bilgileri -->
+                            <div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+                                <h4 class="black p-0 mb-24">
+                                    <i class="fa fa-user me-2"></i>
+                                    Iletisim Bilgileri
+                                </h4>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Ad Soyad:</strong></p>
+                                        <p class="text-muted">@Model.RenterName</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Email:</strong></p>
+                                        <p class="text-muted">@Model.RenterEmail</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Telefon:</strong></p>
+                                        <p class="text-muted">@Model.RenterPhone</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Form Partial -->
+                            @await Html.PartialAsync("~/Views/Shared/Partials/_PaymentForm.cshtml", Model)
+
+                            <div class="form-wizard-footer">
+                                <a asp-controller="Car" asp-action="Booking" 
+                                   asp-route-carId="@Model.CarId"
+                                   asp-route-pickupDate="@Model.PickUpDate.ToString("yyyy-MM-dd")"
+                                   asp-route-returnDate="@Model.DropOffDate.ToString("yyyy-MM-dd")"
+                                   asp-route-pickupLocation="@Model.PickUpLocation"
+                                   class="btn btn-secondary btn-lg me-3">
+                                    <i class="fa fa-arrow-left me-2"></i>
+                                    Back to Reservation
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-lock me-2"></i>
+                                    Odemeyi Tamamla
+                                </button>
+                            </div>
+                            <hr class="my-4" />
+                            <div class="mb-3">
+                                <p class="text-muted small mb-2">Or pay securely with Stripe:</p>
+                                <form asp-controller="Stripe" asp-action="CreateCheckoutSession" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="AmountKurus" value="@((long)Math.Round(Model.Total * 100))" />
+                                    <input type="hidden" name="Currency" value="@(Model.Currency?.ToLowerInvariant() ?? "try")" />
+                                    <input type="hidden" name="ProductName" value="Car: @Model.CarModel" />
+                                    <button type="submit" class="btn btn-outline-primary btn-lg">
+                                        <i class="fab fa-stripe me-2"></i>Pay with Stripe
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="flight-booking-detail light-shadow">
+                        <div class="flight-title">
+                            <h4 class="color-black">Order Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <h5 class="color-black mb-16">@Model.CarModel</h5>
+                            <p class="dark-gray mb-24">
+                                <span class="badge bg-secondary">@Model.Category</span>
+                                <span class="badge bg-info ms-2">@Model.Transmission</span>
+                                <span class="badge bg-success ms-2">@Model.Seats Seats</span>
+                            </p>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-map-marker-alt me-2"></i>
+                                    Pick-up:
+                                </span>
+                                <span class="light-black">@Model.PickUpLocation</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-calendar-alt me-2"></i>
+                                    Date:
+                                </span>
+                                <span class="light-black">@Model.PickUpDate.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-map-marker-alt me-2"></i>
+                                    Drop-off:
+                                </span>
+                                <span class="light-black">@Model.DropOffLocation</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-calendar-alt me-2"></i>
+                                    Date:
+                                </span>
+                                <span class="light-black">@Model.DropOffDate.ToString("MMM dd, yyyy HH:mm")</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-clock me-2"></i>
+                                    Rental Duration:
+                                </span>
+                                <span class="light-black">@Model.Days day(s)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Price per day:</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedPricePerDay, userCurrency)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Car Hire (@Model.Days day(s)):</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedSubtotal, userCurrency)</span>
+                            </div>
+                            
+                            @if (Model.HasKasko)
+                            {
+                                <div class="d-flex justify-content-between mb-16">
+                                    <span class="light-black">Kasko Sigortasi:</span>
+                                    <span class="light-black">@CurrencyHelper.FormatPrice(Model.KaskoPrice, userCurrency)</span>
+                                </div>
+                            }
+                            
+                            @if (Model.HasAdditionalDriver)
+                            {
+                                <div class="d-flex justify-content-between mb-16">
+                                    <span class="light-black">Additional Driver:</span>
+                                    <span class="light-black">@CurrencyHelper.FormatPrice(Model.DriverPrice, userCurrency)</span>
+                                </div>
+                            }
+                            
+                            @if (Model.ChildSeatCount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-16">
+                                    <span class="light-black">Cocuk Koltugu (@Model.ChildSeatCount):</span>
+                                    <span class="light-black">@CurrencyHelper.FormatPrice(Model.ChildSeatPrice * Model.ChildSeatCount * Model.Days, userCurrency)</span>
+                                </div>
+                            }
+                            
+                            @if (Model.BoosterSeatCount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-16">
+                                    <span class="light-black">Booster Seat (@Model.BoosterSeatCount):</span>
+                                    <span class="light-black">@CurrencyHelper.FormatPrice(Model.BoosterSeatPrice * Model.BoosterSeatCount * Model.Days, userCurrency)</span>
+                                </div>
+                            }
+                            
+                            <div class="d-flex justify-content-between mb-24">
+                                <span class="light-black">Tax (10%):</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedTax, userCurrency)</span>
+                            </div>
+                            
+                            <div class="border-top pt-16">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="color-black">Toplam:</h5>
+                                    <h5 class="color-primary">@CurrencyHelper.FormatPrice(convertedTotal, userCurrency)</h5>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3" role="alert">
+                                <i class="fa fa-info-circle me-2"></i>
+                                <small>Confirmation email will be sent after payment is processed.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

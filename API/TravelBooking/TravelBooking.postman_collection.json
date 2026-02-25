@@ -1,0 +1,1587 @@
+{
+  "info": {
+    "_postman_id": "a1b0dbf1-2d3e-4e9d-9c44-1e18b4c3d5a2",
+    "name": "Gocebe API - Complete Collection",
+    "description": "Complete API collection for Gocebe Flight Reservation System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{userAccessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "00 - Health Checks",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Uygulamanin genel saglik durumunu kontrol eder"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response time is less than 500ms', () => pm.expect(pm.response.responseTime).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Health Check - Ready",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            },
+            "description": "Uygulamanin istekleri kabul etmeye hazir olup olmadigini kontrol eder"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response time is less than 500ms', () => pm.expect(pm.response.responseTime).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Health Check - Live",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/live",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "live"]
+            },
+            "description": "Uygulamanin canli olup olmadigini kontrol eder (liveness check)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response time is less than 500ms', () => pm.expect(pm.response.responseTime).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Authentication",
+      "item": [
+        {
+          "name": "Signup",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.AccessToken) {",
+                  "  pm.environment.set('userAccessToken', json.AccessToken);",
+                  "  pm.environment.set('userRefreshToken', json.RefreshToken);",
+                  "  pm.environment.set('userId', json.UserId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+      "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"userName\": \"{{userName}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+            "pm.environment.set('userAccessToken', json.AccessToken);",
+            "pm.environment.set('userRefreshToken', json.RefreshToken);",
+            "pm.environment.set('userId', json.UserId);"
+          ]
+        }
+            }
+          ],
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userNameOrEmail\": \"{{userName}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "pm.environment.set('adminAccessToken', json.AccessToken);",
+                  "pm.environment.set('adminRefreshToken', json.RefreshToken);"
+                ]
+              }
+            }
+          ],
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userNameOrEmail\": \"{{adminUser}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+            "pm.environment.set('userAccessToken', json.AccessToken);",
+            "pm.environment.set('userRefreshToken', json.RefreshToken);"
+          ]
+        }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{userRefreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{userRefreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+        "body": {
+          "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "forgot-password"]
+        }
+      }
+    },
+    {
+          "name": "Reset Password",
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+        "body": {
+          "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"token\": \"{{resetToken}}\",\n  \"newPassword\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "reset-password"]
+        }
+      }
+    },
+    {
+          "name": "Send Verification Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/send-verification-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "send-verification-email"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"token\": \"{{verificationToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify-email"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Account Management",
+      "item": [
+        {
+          "name": "Get Profile",
+      "request": {
+        "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/account/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "account", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"{{userName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"phoneNumber\": \"+905551234567\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/account/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "account", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"{{userPassword}}\",\n  \"newPassword\": \"NewPassword123!\",\n  \"confirmPassword\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/account/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "account", "change-password"]
+            }
+          }
+        },
+        {
+          "name": "Get My Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/account/reservations?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "account", "reservations"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reservation Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/account/reservations/{{reservationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "account", "reservations", "{{reservationId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Airports",
+      "item": [
+        {
+          "name": "Get All Airports",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/airports?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airports"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Optional"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Optional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Airport by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/airports/{{airportId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airports", "{{airportId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Airport by IATA Code",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.Data && json.Data.Id) {",
+                  "  pm.environment.set('depAirportId', json.Data.Id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/airports/iata/{{depIata}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airports", "iata", "{{depIata}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Airport",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"iata_Code\": \"IST\",\n  \"city\": \"Istanbul\",\n  \"country\": \"TR\",\n  \"name\": \"Istanbul Airport\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/airports",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "airports"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Flights",
+      "item": [
+        {
+          "name": "Get All Flights",
+      "request": {
+        "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flights?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flights"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Optional"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Optional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Flight by ID",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.Data && json.Data.Id) {",
+                  "  pm.environment.set('flightId', json.Data.Id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flights/{{flightId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flights", "{{flightId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Flights by Departure Airport",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flights/departure/{{depAirportId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flights", "departure", "{{depAirportId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Flights by Arrival Airport",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/flights/arrival/{{arrAirportId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flights", "arrival", "{{arrAirportId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Flight",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.Data) {",
+                  "  pm.environment.set('flightId', json.Data);",
+                  "}"
+                ]
+              }
+            }
+          ],
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+        "body": {
+          "mode": "raw",
+              "raw": "{\n  \"flightNumber\": \"TK100\",\n  \"airlineName\": \"Turkish Airlines\",\n  \"departureAirportId\": \"{{depAirportId}}\",\n  \"arrivalAirportId\": \"{{arrAirportId}}\",\n  \"scheduledDeparture\": \"2025-12-20T10:00:00Z\",\n  \"scheduledArrival\": \"2025-12-20T12:00:00Z\",\n  \"basePriceAmount\": 1500,\n  \"currency\": \"TRY\",\n  \"totalSeats\": 180,\n  \"flightType\": \"Direct\",\n  \"flightRegion\": \"Domestic\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/flights",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "flights"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Passengers",
+      "item": [
+        {
+          "name": "Get All Passengers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/passengers?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "passengers"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Optional"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Optional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Passenger by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/passengers/{{passengerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "passengers", "{{passengerId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Passenger",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.Data) {",
+                  "  pm.environment.set('passengerId', json.Data);",
+                  "}"
+                ]
+              }
+            }
+          ],
+      "request": {
+        "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+        "body": {
+          "mode": "raw",
+              "raw": "{\n  \"passengerFirstName\": \"Ali\",\n  \"passengerLastName\": \"Veli\",\n  \"nationalNumber\": \"12345678901\",\n  \"passportNumber\": \"P1234567\",\n  \"dateOfBirth\": \"1990-01-01T00:00:00Z\",\n  \"passengerType\": \"Adult\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/passengers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "passengers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Reservations",
+      "item": [
+        {
+          "name": "Get All Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "Get Reservation by ID",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.Data && json.Data.Id) {",
+                  "  pm.environment.set('reservationId', json.Data.Id);",
+                  "  pm.environment.set('pnr', json.Data.PNR);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations/{{reservationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations", "{{reservationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Reservation by PNR",
+      "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations/pnr/{{pnr}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations", "pnr", "{{pnr}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Reservations by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations/user/{{userId}}?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations", "user", "{{userId}}"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1",
+                  "description": "Optional"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Optional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Reservation",
+          "event": [
+            {
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+            "const json = pm.response.json();",
+                  "if (json.Data) {",
+                  "  pm.environment.set('reservationId', json.Data);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appUserId\": \"{{userId}}\",\n  \"totalPrice\": 1500,\n  \"currency\": \"TRY\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reservations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Admin - Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?pageNumber=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {
+                  "key": "pageNumber",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"newuser\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"Password123!\",\n  \"phoneNumber\": \"+905551234567\",\n  \"emailConfirmed\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"updateduser\",\n  \"email\": \"updated@example.com\",\n  \"phoneNumber\": \"+905559876543\",\n  \"emailConfirmed\": true,\n  \"lockoutEnabled\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Lock User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lockoutEnd\": \"2025-12-31T23:59:59Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/lock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "lock"]
+            }
+          }
+        },
+        {
+          "name": "Unlock User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/unlock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "unlock"]
+            }
+          }
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "activate"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Make Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/make-admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "make-admin"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Admin - Roles",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Get Role by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "{{roleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Manager\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"UpdatedRoleName\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "{{roleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/{{roleId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "{{roleId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "users", "{{userId}}", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Assign Role to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleName\": \"Admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/users/{{userId}}/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "users", "{{userId}}", "roles"]
+            }
+          }
+        },
+        {
+          "name": "Remove Role from User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/roles/users/{{userId}}/roles/Admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "roles", "users", "{{userId}}", "roles", "Admin"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 - Admin - Reservations",
+      "item": [
+        {
+          "name": "Get All Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reservations?status=Pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reservations"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "Pending",
+                  "description": "Optional: Pending, Confirmed, Cancelled, Completed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Reservation by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reservations/{{reservationId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reservations", "{{reservationId}}"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/reservations/{{reservationId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "reservations", "{{reservationId}}", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 - Admin - Flights",
+      "item": [
+        {
+          "name": "Get All Flights",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights"]
+            }
+          }
+        },
+        {
+          "name": "Get Flight by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights/{{flightId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights", "{{flightId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Flight",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"flightNumber\": \"TK100\",\n  \"airlineName\": \"Turkish Airlines\",\n  \"departureAirportId\": \"{{depAirportId}}\",\n  \"arrivalAirportId\": \"{{arrAirportId}}\",\n  \"scheduledDeparture\": \"2025-12-20T11:00:00Z\",\n  \"scheduledArrival\": \"2025-12-20T13:00:00Z\",\n  \"basePriceAmount\": 1600,\n  \"currency\": \"TRY\",\n  \"totalSeats\": 180,\n  \"flightType\": \"Direct\",\n  \"flightRegion\": \"Domestic\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights/{{flightId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights", "{{flightId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Flight",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights/{{flightId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights", "{{flightId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 - Admin - Statistics",
+      "item": [
+        {
+          "name": "Get Dashboard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/statistics/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "statistics", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Reservation Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/statistics/reservations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "statistics", "reservations"]
+            }
+          }
+        },
+        {
+          "name": "Get Revenue Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/statistics/revenue?startDate=2025-01-01T00:00:00Z&endDate=2025-12-31T23:59:59Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "statistics", "revenue"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2025-01-01T00:00:00Z",
+                  "description": "Optional"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-31T23:59:59Z",
+                  "description": "Optional"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/statistics/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "statistics", "users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 - Admin - Flight Sync",
+      "item": [
+        {
+          "name": "Sync Flights",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights", "sync"]
+            }
+          }
+        },
+        {
+          "name": "Sync Flights by Date Range",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2025-01-01T00:00:00Z\",\n  \"endDate\": \"2025-12-31T23:59:59Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/flights/sync/date-range",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "flights", "sync", "date-range"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

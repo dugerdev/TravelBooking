@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Login" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="Signup" xml:space="preserve">
+    <value>Kayıt Ol</value>
+  </data>
+  <data name="MyReservations" xml:space="preserve">
+    <value>Rezervasyonlarım</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Ana Sayfa</value>
+  </data>
+  <data name="Flight" xml:space="preserve">
+    <value>Uçuş</value>
+  </data>
+  <data name="Car" xml:space="preserve">
+    <value>Araç</value>
+  </data>
+  <data name="Hotel" xml:space="preserve">
+    <value>Otel</value>
+  </data>
+  <data name="Tour" xml:space="preserve">
+    <value>Tur</value>
+  </data>
+  <data name="News" xml:space="preserve">
+    <value>Haberler</value>
+  </data>
+  <data name="Pages" xml:space="preserve">
+    <value>Sayfalar</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Ara</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Hakkımızda</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>İletişim</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Gizlilik Politikası</value>
+  </data>
+  <data name="FlightListing" xml:space="preserve">
+    <value>Uçuş Listesi</value>
+  </data>
+  <data name="FlightBooking" xml:space="preserve">
+    <value>Uçuş Rezervasyonu</value>
+  </data>
+  <data name="CarListing" xml:space="preserve">
+    <value>Araç Listesi</value>
+  </data>
+  <data name="CarBooking" xml:space="preserve">
+    <value>Araç Rezervasyonu</value>
+  </data>
+  <data name="CarDetail" xml:space="preserve">
+    <value>Araç Detayı</value>
+  </data>
+  <data name="HotelListing" xml:space="preserve">
+    <value>Otel Listesi</value>
+  </data>
+  <data name="HotelBooking" xml:space="preserve">
+    <value>Otel Rezervasyonu</value>
+  </data>
+  <data name="HotelDetail" xml:space="preserve">
+    <value>Otel Detayı</value>
+  </data>
+  <data name="TourPackages" xml:space="preserve">
+    <value>Tur Paketleri</value>
+  </data>
+  <data name="TourDetail" xml:space="preserve">
+    <value>Tur Detayı</value>
+  </data>
+  <data name="NewsListing" xml:space="preserve">
+    <value>Haber Listesi</value>
+  </data>
+  <data name="NewsDetail" xml:space="preserve">
+    <value>Haber Detayı</value>
+  </data>
+  <data name="Currency" xml:space="preserve">
+    <value>Para Birimi</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="Welcome" xml:space="preserve">
+    <value>Hoş Geldiniz</value>
+  </data>
+  <data name="BookNow" xml:space="preserve">
+    <value>Şimdi Rezervasyon Yap</value>
+  </data>
+  <data name="ViewDetails" xml:space="preserve">
+    <value>Detayları Görüntüle</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>Nereden</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>Nereye</value>
+  </data>
+  <data name="DepartureDate" xml:space="preserve">
+    <value>Gidiş Tarihi</value>
+  </data>
+  <data name="ReturnDate" xml:space="preserve">
+    <value>Dönüş Tarihi</value>
+  </data>
+  <data name="Passengers" xml:space="preserve">
+    <value>Yolcular</value>
+  </data>
+  <data name="Adults" xml:space="preserve">
+    <value>Yetişkinler</value>
+  </data>
+  <data name="Children" xml:space="preserve">
+    <value>Çocuklar</value>
+  </data>
+  <data name="Infants" xml:space="preserve">
+    <value>Bebekler</value>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>Sınıf</value>
+  </data>
+  <data name="Economy" xml:space="preserve">
+    <value>Ekonomi</value>
+  </data>
+  <data name="Business" xml:space="preserve">
+    <value>Business</value>
+  </data>
+  <data name="FirstClass" xml:space="preserve">
+    <value>First Class</value>
+  </data>
+  <data name="OneWay" xml:space="preserve">
+    <value>Tek Yön</value>
+  </data>
+  <data name="RoundTrip" xml:space="preserve">
+    <value>Gidiş-Dönüş</value>
+  </data>
+  <data name="SearchFlights" xml:space="preserve">
+    <value>Uçuş Ara</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Toplam</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Fiyat</value>
+  </data>
+  <data name="PerNight" xml:space="preserve">
+    <value>Gecelik</value>
+  </data>
+  <data name="PerDay" xml:space="preserve">
+    <value>Günlük</value>
+  </data>
+  <data name="PerPerson" xml:space="preserve">
+    <value>Kişi Başı</value>
+  </data>
+  <data name="Select" xml:space="preserve">
+    <value>Seç</value>
+  </data>
+  <data name="Reserve" xml:space="preserve">
+    <value>Rezervasyon Yap</value>
+  </data>
+  <data name="EmailQuotes" xml:space="preserve">
+    <value>E-posta ile Teklif Al</value>
+  </data>
+</root>

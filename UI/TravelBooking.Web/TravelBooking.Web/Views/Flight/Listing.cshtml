@@ -1,0 +1,90 @@
+@model TravelBooking.Web.ViewModels.Flights.FlightListingViewModel
+@{
+    ViewData["Title"] = "Flight Listing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var totalPassengers = ViewBag.TotalPassengers as int? ?? 1;
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+
+<!-- flight-booking-hero -->
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1 data-aos-easing="linear" data-aos-duration="600">Flight Listing</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+
+@if (TempData["BookingError"] != null || TempData["ErrorMessage"] != null)
+{
+    <div style="max-width:800px; margin:20px auto; padding:0 20px;">
+        <div class="alert @(TempData["BookingError"] != null ? "alert-danger" : "alert-info")">
+            @(TempData["BookingError"] ?? TempData["ErrorMessage"])
+        </div>
+    </div>
+}
+
+<!-- flight listing section -->
+<section class="flight-listing">
+    @if (Model?.Flights != null && Model.Flights.Any())
+    {
+        var idx = 0;
+        foreach (var item in Model.Flights)
+        {
+            var duration = item.ScheduledArrival > item.ScheduledDeparture
+                ? $"{(int)(item.ScheduledArrival - item.ScheduledDeparture).TotalHours}h {(int)(item.ScheduledArrival - item.ScheduledDeparture).TotalMinutes % 60}min"
+                : "-";
+            <div class="flight-listing-1" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="700">
+                <div class="flight-detail-1">
+                    <img src="~/assets/img/flynow/icon-1.png" alt="flight">
+                    <div>
+                        <h4>@item.AirlineName</h4>
+                        <p>@item.FlightNumber</p>
+                    </div>
+                </div>
+                <div class="flight-detail-1">
+                    <div>
+                        <h3 style="font-weight: 600;">@item.ScheduledDeparture.ToString("HH:mm")</h3>
+                        <h4 style="color: gray; font-size: 15px; font-weight: 500;">@(item.DepartureCity ?? item.DepartureAirportIATA)</h4>
+                    </div>
+                    <span>To</span>
+                    <div>
+                        <h3 style="color: gray; font-size: 15px; font-weight: 600;">@duration</h3>
+                        <img src="~/assets/img/flynow/route-plan.png" alt="">
+                        <h3 style="font-size: 15px; font-weight: 500;">@(item.FlightType == "Direct" ? "Non-stop" : "1 stop")</h3>
+                    </div>
+                    <span>From</span>
+                    <div>
+                        <h3 style="font-weight: 600;">@item.ScheduledArrival.ToString("HH:mm")</h3>
+                        <h4 style="color: gray; font-size: 15px; font-weight: 500;">@(item.ArrivalCity ?? item.ArrivalAirportIATA)</h4>
+                    </div>
+                </div>
+                <div class="flight-detail-2">
+                    <h3 style="font-size: 17px; font-weight: 500;">@CurrencyHelper.FormatPriceInSelectedCurrency(item.BasePriceAmount > 0 ? item.BasePriceAmount : 1250, item.Currency ?? "TRY", ViewBag.SelectedCurrency as string ?? "TRY")</h3>
+                    <a asp-controller="Flight" asp-action="Booking" asp-route-index="@idx" asp-route-passengerCount="@totalPassengers"><button type="button">Book</button></a>
+                </div>
+            </div>
+            idx++;
+        }
+    }
+    else
+    {
+        <div style="text-align:center; padding:60px 20px;">
+            <i class="fa fa-plane fa-4x" style="color:#4D73FC; margin-bottom:20px;"></i>
+            @if (!string.IsNullOrEmpty(Model?.InfoMessage))
+            {
+                <h4 style="color:#333; margin-bottom:10px;">@Model.InfoMessage</h4>
+            }
+            else if (!string.IsNullOrEmpty(Model?.ErrorMessage))
+            {
+                <h4 style="color:#dc3545; margin-bottom:10px;">@Model.ErrorMessage</h4>
+            }
+            else
+            {
+                <h4 style="color:#333; margin-bottom:10px;">Search for Flights</h4>
+                <p style="color:#666; max-width:500px; margin:0 auto 20px;">Enter your departure city, destination and travel date on the <a asp-controller="Home" asp-action="Index" style="color:#4D73FC;">Home page</a> to find available flights.</p>
+            }
+        </div>
+    }
+</section>

@@ -1,0 +1,69 @@
+<!-- Topbar -->
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <!-- Sidebar Toggle (Topbar) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <!-- Topbar Navbar -->
+    <ul class="navbar-nav ml-auto">
+
+        <!-- Nav Item - Alerts (Dashboard özeti) -->
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+            </a>
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                 aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">Kontrol Merkezi</h6>
+                <a class="dropdown-item text-center small text-gray-500" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                    <i class="fas fa-tachometer-alt mr-1"></i> Dashboard'a git
+                </a>
+                <a class="dropdown-item text-center small text-gray-500" asp-area="Admin" asp-controller="ReservationsAdmin" asp-action="Index">Rezervasyonlar</a>
+                <a class="dropdown-item text-center small text-gray-500" asp-area="Admin" asp-controller="Payments" asp-action="Index">Ödemeler</a>
+            </div>
+        </li>
+
+        <!-- Nav Item - Messages (canlı: okunmamış sayısı ve son mesajlar) -->
+        @await Component.InvokeAsync("UnreadMessages")
+
+        <li class="nav-item">
+        <div class="topbar-divider d-none d-sm-block"></div>
+        </li>
+        <!-- Nav Item - User Information -->
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">@(User.Identity?.Name ?? "Admin")</span>
+                <img class="img-profile rounded-circle"
+                     src="~/Admin-Assets/img/undraw_profile.svg" alt="Profil" onerror="this.style.display='none'">
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                 aria-labelledby="userDropdown">
+                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profil
+                </a>
+                <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ChangePassword">
+                    <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Şifre Değiştir
+                </a>
+                <a class="dropdown-item" asp-area="Admin" asp-controller="Settings" asp-action="Index">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Ayarlar
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Çıkış
+                </a>
+            </div>
+        </li>
+
+    </ul>
+
+</nav>
+<!-- End of Topbar -->

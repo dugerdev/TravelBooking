@@ -1,0 +1,130 @@
+﻿@model TravelBooking.Web.DTOs.Flights.CreateFlightDto
+@{
+    ViewData["Title"] = "Yeni Uçuş Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var airports = ViewBag.Airports as List<TravelBooking.Web.DTOs.Airports.AirportDto> ?? new List<TravelBooking.Web.DTOs.Airports.AirportDto>();
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Yeni Uçuş Ekle</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Listeye Dön
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="FlightNumber" class="form-label">Uçuş Numarası *</label>
+                            <input asp-for="FlightNumber" class="form-control" placeholder="Örn: TK123">
+                            <span asp-validation-for="FlightNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AirlineName" class="form-label">Havayolu *</label>
+                            <input asp-for="AirlineName" class="form-control" placeholder="Örn: Turkish Airlines">
+                            <span asp-validation-for="AirlineName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DepartureAirportId" class="form-label">Kalkış Havalimanı *</label>
+                            <select asp-for="DepartureAirportId" class="form-control">
+                                <option value="">Havalimanı seçin</option>
+                                @foreach (var airport in airports)
+                                {
+                                    <option value="@airport.Id">@airport.City - @airport.Name (@airport.IATA_Code)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="DepartureAirportId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ArrivalAirportId" class="form-label">Varış Havalimanı *</label>
+                            <select asp-for="ArrivalAirportId" class="form-control">
+                                <option value="">Havalimanı seçin</option>
+                                @foreach (var airport in airports)
+                                {
+                                    <option value="@airport.Id">@airport.City - @airport.Name (@airport.IATA_Code)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ArrivalAirportId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="ScheduledDeparture" class="form-label">Kalkış Zamanı *</label>
+                            <input asp-for="ScheduledDeparture" type="datetime-local" class="form-control">
+                            <span asp-validation-for="ScheduledDeparture" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ScheduledArrival" class="form-label">Varış Zamanı *</label>
+                            <input asp-for="ScheduledArrival" type="datetime-local" class="form-control">
+                            <span asp-validation-for="ScheduledArrival" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="BasePriceAmount" class="form-label">Fiyat *</label>
+                            <input asp-for="BasePriceAmount" type="number" step="0.01" class="form-control" placeholder="0.00">
+                            <span asp-validation-for="BasePriceAmount" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Currency" class="form-label">Para Birimi *</label>
+                            <select asp-for="Currency" class="form-control">
+                                <option value="TRY">TRY</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                            <span asp-validation-for="Currency" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TotalSeats" class="form-label">Toplam Koltuk *</label>
+                            <input asp-for="TotalSeats" type="number" class="form-control" placeholder="180">
+                            <span asp-validation-for="TotalSeats" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FlightType" class="form-label">Uçuş Tipi *</label>
+                            <select asp-for="FlightType" class="form-control">
+                                <option value="Direct">Direct</option>
+                                <option value="OneStop">One Stop</option>
+                                <option value="MultiStop">Multi Stop</option>
+                            </select>
+                            <span asp-validation-for="FlightType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="FlightRegion" class="form-label">Bölge *</label>
+                            <select asp-for="FlightRegion" class="form-control">
+                                <option value="Domestic">İç Hat</option>
+                                <option value="International">Dış Hat</option>
+                            </select>
+                            <span asp-validation-for="FlightRegion" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save me-2"></i>Kaydet
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

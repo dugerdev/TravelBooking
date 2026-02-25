@@ -1,0 +1,56 @@
+﻿@model TravelBooking.Web.ViewModels.Auth.LoginViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Login";
+    var returnUrl = ViewData["ReturnUrl"] as string ?? "/";
+}
+<div class="page-content m-0">
+    <section class="signup bg-white">
+        <div class="row align-items-center justify-content-center">
+            <div class="col-lg-5 col-md-9 col-sm-10 p-0">
+                <div class="container-fluid">
+                    <div class="form-block">
+                        <a asp-controller="Home" asp-action="Index" class="color-primary h6 mb-30"><i class="fal fa-chevron-left"></i>&nbsp;&nbsp;Back to Home</a>
+                        <h2 class="mb-30 light-black">Login</h2>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" class="form-group contact-form">
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="mb-24">
+                                        <input asp-for="UserNameOrEmail" class="form-control" placeholder="Email or username" autocomplete="username" />
+                                        <span asp-validation-for="UserNameOrEmail" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="mb-24">
+                                        <input asp-for="Password" class="form-control" placeholder="Password" autocomplete="current-password" />
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="mb-24 d-flex justify-content-between align-items-center">
+                                        <label><input asp-for="RememberMe" /> Remember Me</label>
+                                        <a asp-controller="Account" asp-action="ForgotPassword" class="color-primary">Forgot Password?</a>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="cus-btn small-pad mb-24">Login</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7 p-0">
+                <div class="img-block">
+                    <img src="~/assets/img/inner-banner-1.png" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,115 @@
+﻿@model TravelBooking.Web.Services.Admin.UserDto
+@{
+    ViewData["Title"] = "Kullanıcı Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Kullanıcı Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Kullanıcı Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Kullanıcı Adı:</th>
+                            <td>@Model.UserName</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>
+                                @Model.Email
+                                @if (Model.EmailConfirmed)
+                                {
+                                    <span class="badge badge-success ml-2">Onaylı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning ml-2">Onaysız</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Telefon:</th>
+                            <td>@(Model.PhoneNumber ?? "-")</td>
+                        </tr>
+                        <tr>
+                            <th>Durum:</th>
+                            <td>
+                                @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTime.UtcNow)
+                                {
+                                    <span class="badge badge-danger">Kilitli (@Model.LockoutEnd.Value.ToString("dd/MM/yyyy HH:mm"))</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-success">Aktif</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Başarısız Giriş:</th>
+                            <td>@Model.AccessFailedCount</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Rezervasyonlar</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-controller="ReservationsAdmin" asp-action="Index" asp-route-userId="@Model.Id" class="btn btn-info btn-block mb-2">
+                        <i class="fas fa-ticket-alt"></i> Bu kullanıcının rezervasyonları
+                    </a>
+                </div>
+            </div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    
+                    @if (Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTime.UtcNow)
+                    {
+                        <form asp-action="Unlock" asp-route-id="@Model.Id" method="post" class="d-inline w-100">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-success btn-block mb-2">
+                                <i class="fas fa-unlock"></i> Kilidi Aç
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Lock" asp-route-id="@Model.Id" method="post" class="d-inline w-100">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-warning btn-block mb-2">
+                                <i class="fas fa-lock"></i> Kilitle
+                            </button>
+                        </form>
+                    }
+
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-block">
+                        <i class="fas fa-trash"></i> Sil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

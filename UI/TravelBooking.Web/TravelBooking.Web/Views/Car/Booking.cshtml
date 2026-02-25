@@ -1,0 +1,471 @@
+@using System
+@model TravelBooking.Web.ViewModels.Cars.CarBookingViewModel
+@{
+    ViewData["Title"] = "Car Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var selectedCurrency = ViewBag.SelectedCurrency as string ?? "TRY";
+    var currencySymbol = CurrencyHelper.GetCurrencySymbol(selectedCurrency);
+    
+    // Convert extra prices to selected currency
+    var kaskoPriceConverted = CurrencyHelper.ConvertPrice(5000m, "TRY", selectedCurrency);
+    var driverPriceConverted = CurrencyHelper.ConvertPrice(500m, "TRY", selectedCurrency);
+    var childSeatPriceConverted = CurrencyHelper.ConvertPrice(200m, "TRY", selectedCurrency);
+    var boosterSeatPriceConverted = CurrencyHelper.ConvertPrice(150m, "TRY", selectedCurrency);
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<!-- Hero Section -->
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Car Booking</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Flight-Booking Start -->
+    <section class="flight-booking">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-8" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <div class="booking-form">
+                        <div class="mb-24 p-24 bg-white light-shadow br-12 border">
+                            <div class="d-flex align-items-center gap-16 mb-0">
+                                <span class="number bg-primary color-white rounded-circle d-inline-flex align-items-center justify-content-center fw-600" style="width:32px;height:32px;">1</span>
+                                <span class="color-black fw-600">Your Selection</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-16 mt-16 mb-0">
+                                <span class="number bg-primary color-white rounded-circle d-inline-flex align-items-center justify-content-center fw-600" style="width:32px;height:32px;">2</span>
+                                <span class="color-black fw-600">Your Details</span>
+                            </div>
+                        </div>
+                        <form asp-controller="Car" asp-action="InitiatePayment" id="car-form" method="post" role="form" class="contact-form form-wizard">
+                            @Html.AntiForgeryToken()
+                            
+                            @* Only essential hidden fields *@
+                            <input type="hidden" asp-for="RawCarId" value="@Model.RawCarId" />
+                            <input type="hidden" asp-for="PickupDate" />
+                            <input type="hidden" asp-for="ReturnDate" />
+                            <input type="hidden" asp-for="PickupLocation" />
+                            <input type="hidden" asp-for="ReturnLocation" />
+                            
+                            <div class="form-wizard-header">
+                                <ul class="nav list-unstyled form-wizard-steps clearfix">
+                                    <li class="nav-item activated">
+                                        <span class="nav-link"><span class="number">1</span><i class="fal fa-check"></i></span>
+                                        <h5 class="color-black">Your Selection</h5>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <span class="nav-link"><span class="number">2</span><i class="fal fa-check"></i></span>
+                                        <h5 class="color-black">Your Details</h5>
+                                    </li>
+                                    <li class="nav-item">
+                                        <span class="nav-link"><span class="number">3</span><i class="fal fa-check"></i></span>
+                                        <h5 class="color-black">Payment</h5>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="wizard-content overflow-visible mb-24">
+                                <fieldset id="step-2" class="tab-pane show wizard-fieldset p-0">
+                                    <div id="wizardValidator">
+                                        <div class="detail-form p-24 bg-white shadow-sm br-12 border position-relative mb-32">
+                                            <h4 class="black p-0 mb-40">Renter Information</h4>
+                                            @if (TempData["BookingError"] != null)
+                                            {
+                                                <div class="alert alert-danger mb-24">@TempData["BookingError"]</div>
+                                            }
+                                            @if (!ViewData.ModelState.IsValid)
+                                            {
+                                                <div class="alert alert-warning mb-24">
+                                                    <strong>Please correct the following errors:</strong>
+                                                    @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                                                </div>
+                                            }
+                                            <div class="row">
+                                                <div class="col-sm-3 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Gender" class="form-label">Gender</label>
+                                                        <div class="select">
+                                                            <select asp-for="Gender" class="form-control wizard-required">
+                                                                <option value="" selected disabled>Select gender</option>
+                                                                <option value="male">Male</option>
+                                                                <option value="female">Female</option>
+                                                            </select>
+                                                        </div>
+                                                        <span asp-validation-for="Gender" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-5 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="FirstName" class="form-label fw-500">First Name *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-user"></i>
+                                                            <input type="text" asp-for="FirstName" class="form-control wizard-required" placeholder="Your first name">
+                                                        </div>
+                                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="LastName" class="form-label fw-500">Last Name *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-user"></i>
+                                                            <input type="text" asp-for="LastName" class="form-control wizard-required" placeholder="Your last name">
+                                                        </div>
+                                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="ContactEmail" class="form-label fw-500">Email *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-envelope"></i>
+                                                            <input type="email" asp-for="ContactEmail" class="form-control wizard-required" placeholder="example@email.com">
+                                                        </div>
+                                                        <span asp-validation-for="ContactEmail" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Country" class="form-label fw-500">Country *</label>
+                                                        <div class="select">
+                                                            <select asp-for="Country" class="form-control wizard-required">
+                                                                <option value="" selected disabled>Select country</option>
+                                                                <option value="TR">Turkey</option>
+                                                                <option value="US">United States</option>
+                                                                <option value="GB">United Kingdom</option>
+                                                                <option value="DE">Germany</option>
+                                                            </select>
+                                                        </div>
+                                                        <span asp-validation-for="Country" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="ContactPhone" class="form-label fw-500">Phone *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-phone"></i>
+                                                            <input type="tel" asp-for="ContactPhone" class="form-control wizard-required phone-input" placeholder="555 123 4567" maxlength="10" inputmode="tel">
+                                                        </div>
+                                                        <span asp-validation-for="ContactPhone" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="DateOfBirth" class="form-label fw-500">Date of Birth</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <input type="date" asp-for="DateOfBirth" class="form-control">
+                                                        </div>
+                                                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="IdOrPassport" class="form-label">ID / Passport No (optional)</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-id-badge"></i>
+                                                            <input type="text" asp-for="IdOrPassport" class="form-control" placeholder="For rental agreement">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="DriverLicenseSerial" class="form-label">Driver License Serial No *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-id-card"></i>
+                                                            <input type="text" asp-for="DriverLicenseSerial" class="form-control wizard-required" placeholder="e.g. A12 345 678" maxlength="20" style="text-transform: uppercase;">
+                                                        </div>
+                                                        <span asp-validation-for="DriverLicenseSerial" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Extras Section -->
+                                        <div class="detail-form p-24 bg-white shadow-sm br-12 border mb-24">
+                                            <h4 class="black p-0 mb-32">Extra Services (Optional)</h4>
+                                            
+                                            <!-- Kasko -->
+                                            <div class="d-flex justify-content-between align-items-center mb-32 p-3 border rounded">
+                                                <div class="d-flex align-items-center gap-32">
+                                                    <i class="fal fa-shield-check fa-3x color-primary"></i>
+                                                    <div>
+                                                        <h5 class="light-black mb-8">Comprehensive Insurance - <span class="h6 color-primary">@currencySymbol @kaskoPriceConverted.ToString("N0")</span> <span class="h6 dark-gray">(one-time)</span></h5>
+                                                        <p class="dark-gray fw-400">Vehicle damage insurance for the rental period. Covers damages to the rental vehicle.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input asp-for="HasKasko" class="form-check-input extra-checkbox" type="checkbox" id="kaskoCheck" style="width: 3em; height: 1.5em;">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Additional Driver -->
+                                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                                <div class="d-flex align-items-center gap-32">
+                                                    <i class="fal fa-user-plus fa-2x color-primary"></i>
+                                                    <div>
+                                                        <h5 class="light-black mb-8">Additional Driver - <span class="h6 color-primary">@currencySymbol @driverPriceConverted.ToString("N0") / day</span></h5>
+                                                        <p class="dark-gray fw-400">Add a second driver.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-check form-switch">
+                                                    <input asp-for="HasAdditionalDriver" class="form-check-input extra-checkbox" type="checkbox" id="driverCheck" style="width: 3em; height: 1.5em;">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Child Seat -->
+                                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                                <div class="d-flex align-items-center gap-32">
+                                                    <i class="fal fa-baby-carriage fa-2x color-primary"></i>
+                                                    <div>
+                                                        <h5 class="light-black mb-8">Child Seat - <span class="h6 color-primary">@currencySymbol @childSeatPriceConverted.ToString("N0") / day</span></h5>
+                                                        <p class="dark-gray fw-400">Safety seat for small children.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="quantity quantity-wrap">
+                                                    <input type="button" value="-" class="car-extra-minus bg-secondary text-white border-0" style="cursor:pointer; width:36px; height:36px; border-radius:4px;" onclick="changeQuantity('ChildSeatCount', -1)">
+                                                    <input asp-for="ChildSeatCount" type="text" name="childSeatQuantity" value="0" maxlength="2" size="1" id="childSeatInput" class="number text-center" readonly style="width:50px;">
+                                                    <input type="button" value="+" class="car-extra-plus bg-primary text-white border-0" style="cursor:pointer; width:36px; height:36px; border-radius:4px;" onclick="changeQuantity('ChildSeatCount', 1)">
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Booster Seat -->
+                                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                                <div class="d-flex align-items-center gap-32">
+                                                    <i class="fal fa-child fa-2x color-primary"></i>
+                                                    <div>
+                                                        <h5 class="light-black mb-8">Booster Seat - <span class="h6 color-primary">@currencySymbol @boosterSeatPriceConverted.ToString("N0") / day</span></h5>
+                                                        <p class="dark-gray fw-400">Booster seat for older children.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="quantity quantity-wrap">
+                                                    <input type="button" value="-" class="car-extra-minus bg-secondary text-white border-0" style="cursor:pointer; width:36px; height:36px; border-radius:4px;" onclick="changeQuantity('BoosterSeatCount', -1)">
+                                                    <input asp-for="BoosterSeatCount" type="text" name="boosterSeatQuantity" value="0" maxlength="2" size="1" id="boosterSeatInput" class="number text-center" readonly style="width:50px;">
+                                                    <input type="button" value="+" class="car-extra-plus bg-primary text-white border-0" style="cursor:pointer; width:36px; height:36px; border-radius:4px;" onclick="changeQuantity('BoosterSeatCount', 1)">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Kullanim sartlari kabulu (odeme adimina gecmek icin zorunlu) -->
+                                        <div class="filter-checkbox mb-24">
+                                            <div class="d-flex align-items-start gap-2 dark-gray fw-400">
+                                                <input type="checkbox" asp-for="AcceptTerms" class="form-check-input mt-1" style="width: 1.2rem; height: 1.2rem; min-width: 1.2rem; cursor: pointer;">
+                                                <label asp-for="AcceptTerms" class="form-label mb-0" style="cursor: pointer;">
+                                                    I have read and accept the <a asp-controller="Pages" asp-action="TermsConditions" class="color-primary" target="_blank">Terms of Use</a> and <a asp-controller="Pages" asp-action="PrivacyPolicy" class="color-primary" target="_blank">Privacy Policy</a>.
+                                                </label>
+                                            </div>
+                                            <span asp-validation-for="AcceptTerms" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-24">
+                                        <a asp-controller="Car" asp-action="Listing" class="cus-btn btn-sec w-100"><i class="fal fa-arrow-left"></i> Back to List</a>
+                                        <button type="submit" class="cus-btn w-100">Continue - Payment Screen <i class="fal fa-arrow-right"></i></button>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-xl-4 mb-xl-0 mb-32 position-sticky top-0" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <div class="car-booking-detail light-shadow mb-32 bg-white br-12 border shadow-sm">
+                        <div class="car-title">
+                            <h4 class="color-black">Car Detail</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <div class="hotel-block bg-white">
+                                <div class="bg-white br-20 mb-32">
+                                    <h5 class="light-black mb-4">@Model.Brand @Model.Model</h5>
+                                    <div class="image-block mb-12 d-flex align-items-end">
+                                        <a asp-controller="Car" asp-action="Detail" asp-route-id="@Model.RawCarId">
+                                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.ImageUrl, "~/assets/img/car-1.svg")" alt="@Model.Brand @Model.Model">
+                                        </a>
+                                    </div>
+                                    <div class="hotel-detail">
+                                        <h6 class="light-black mb-16">
+                                            <i class="fal fa-calendar-alt"></i>&nbsp;@Model.PickupDate.ToString("dd MMM") - @Model.ReturnDate.ToString("dd MMM")
+                                        </h6>
+                                        <div class="d-flex gap-8 mb-8">
+                                            <i class="fal fa-map-marker-alt pt-1"></i>
+                                            <div>
+                                                <h6 class="light-black">Pick-Up:</h6>
+                                                <h6 class="dark-gray">@Model.PickupLocation</h6>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-8">
+                                            <i class="fal fa-map-marker-alt pt-1"></i>
+                                            <div>
+                                                <h6 class="light-black">Drop-Off:</h6>
+                                                <h6 class="dark-gray">@Model.ReturnLocation</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="car-booking-detail light-shadow">
+                        <div class="car-title">
+                            <h4 class="color-black">Price Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24">
+                            <div class="d-flex align-items-center justify-content-between mb-16">
+                                <div>
+                                    <h5 class="color-black">Car Hire</h5>
+                                    <p class="dark-gray mb-0">@Model.Brand @Model.Model</p>
+                                </div>
+                                <h5 class="color-black" id="summary-car-hire">@currencySymbol @Model.TotalPrice.ToString("N2")</h5>
+                            </div>
+                            
+                            <!-- Extras Summary (Dynamic) -->
+                            <div id="summary-kasko" class="d-flex align-items-center justify-content-between mb-16" style="display: none !important;">
+                                <div>
+                                    <h6 class="color-black mb-0">Comprehensive Insurance</h6>
+                                </div>
+                                <h6 class="color-black" id="summary-kasko-price">@currencySymbol 0</h6>
+                            </div>
+                            <div id="summary-driver" class="d-flex align-items-center justify-content-between mb-16" style="display: none !important;">
+                                <div>
+                                    <h6 class="color-black mb-0">Additional Driver</h6>
+                                </div>
+                                <h6 class="color-black" id="summary-driver-price">@currencySymbol 0</h6>
+                            </div>
+                            <div id="summary-child" class="d-flex align-items-center justify-content-between mb-16" style="display: none !important;">
+                                <div>
+                                    <h6 class="color-black mb-0">Child Seat (<span id="summary-child-qty">0</span>)</h6>
+                                </div>
+                                <h6 class="color-black" id="summary-child-price">@currencySymbol 0</h6>
+                            </div>
+                            <div id="summary-booster" class="d-flex align-items-center justify-content-between mb-16" style="display: none !important;">
+                                <div>
+                                    <h6 class="color-black mb-0">Booster Seat (<span id="summary-booster-qty">0</span>)</h6>
+                                </div>
+                                <h6 class="color-black" id="summary-booster-price">@currencySymbol 0</h6>
+                            </div>
+                            
+                            <hr class="bg-medium-gray mb-24">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="color-black">Total (excl. tax)</h4>
+                                </div>
+                                <h4 class="color-black" id="summary-total">@currencySymbol @Model.TotalPrice.ToString("N2")</h4>
+                            </div>
+                            <p class="dark-gray mt-8 small">10% tax may apply at confirmation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Flight-Booking End -->
+
+</div>
+<!-- Main Content End -->
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        // Price calculation variables
+        const baseCarPrice = @Model.TotalPrice;
+        const currency = '@selectedCurrency';
+        const currencySymbol = '@currencySymbol';
+        const rentalDays = @((int)(Model.ReturnDate - Model.PickupDate).TotalDays);
+        
+        // Extra prices (already converted to selected currency)
+        const prices = {
+            kasko: @kaskoPriceConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture), // one-time
+            driver: @driverPriceConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture), // per day
+            childSeat: @childSeatPriceConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture), // per day per seat
+            boosterSeat: @boosterSeatPriceConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture) // per day per seat
+        };
+
+        // Change quantity for seats
+        function changeQuantity(fieldName, delta) {
+            const inputId = fieldName === 'ChildSeatCount' ? 'childSeatInput' : 'boosterSeatInput';
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            
+            let currentValue = parseInt(input.value) || 0;
+            let newValue = currentValue + delta;
+            
+            if (newValue < 0) newValue = 0;
+            if (newValue > 5) newValue = 5;
+            
+            input.value = newValue;
+            updatePriceSummary();
+        }
+
+        // Update price summary
+        function updatePriceSummary() {
+            const kaskoChecked = document.getElementById('kaskoCheck')?.checked || false;
+            const driverChecked = document.getElementById('driverCheck')?.checked || false;
+            const childSeats = parseInt(document.getElementById('childSeatInput')?.value) || 0;
+            const boosterSeats = parseInt(document.getElementById('boosterSeatInput')?.value) || 0;
+            
+            // Calculate extras
+            const kaskoPrice = kaskoChecked ? prices.kasko : 0;
+            const driverPrice = driverChecked ? (prices.driver * rentalDays) : 0;
+            const childPrice = childSeats * prices.childSeat * rentalDays;
+            const boosterPrice = boosterSeats * prices.boosterSeat * rentalDays;
+            
+            const extrasTotal = kaskoPrice + driverPrice + childPrice + boosterPrice;
+            const grandTotal = baseCarPrice + extrasTotal;
+            
+            // Update summary display
+            document.getElementById('summary-car-hire').textContent = currencySymbol + ' ' + baseCarPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            // Show/hide and update kasko
+            const kaskoRow = document.getElementById('summary-kasko');
+            if (kaskoChecked) {
+                kaskoRow.style.display = 'flex';
+                document.getElementById('summary-kasko-price').textContent = currencySymbol + ' ' + kaskoPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+                kaskoRow.style.display = 'none';
+            }
+            
+            // Show/hide and update driver
+            const driverRow = document.getElementById('summary-driver');
+            if (driverChecked) {
+                driverRow.style.display = 'flex';
+                document.getElementById('summary-driver-price').textContent = currencySymbol + ' ' + driverPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+                driverRow.style.display = 'none';
+            }
+            
+            // Show/hide and update child seats
+            const childRow = document.getElementById('summary-child');
+            if (childSeats > 0) {
+                childRow.style.display = 'flex';
+                document.getElementById('summary-child-qty').textContent = childSeats;
+                document.getElementById('summary-child-price').textContent = currencySymbol + ' ' + childPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+                childRow.style.display = 'none';
+            }
+            
+            // Show/hide and update booster seats
+            const boosterRow = document.getElementById('summary-booster');
+            if (boosterSeats > 0) {
+                boosterRow.style.display = 'flex';
+                document.getElementById('summary-booster-qty').textContent = boosterSeats;
+                document.getElementById('summary-booster-price').textContent = currencySymbol + ' ' + boosterPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+                boosterRow.style.display = 'none';
+            }
+            
+            // Update total
+            document.getElementById('summary-total').textContent = currencySymbol + ' ' + grandTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        }
+
+        // Initialize event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('kaskoCheck')?.addEventListener('change', updatePriceSummary);
+            document.getElementById('driverCheck')?.addEventListener('change', updatePriceSummary);
+            
+            // Initial calculation
+            updatePriceSummary();
+        });
+    </script>
+}

@@ -1,0 +1,109 @@
+@using System
+@model TravelBooking.Web.ViewModels.News.NewsListingViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>News Listing</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Blog Area Start -->
+    <section class="news-blog p-40 mb-24">
+        <div class="container-fluid">
+
+            <ul class="nav nav-tabs mb-32" id="myTab" role="tablist" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button"
+                            role="tab" aria-controls="all" aria-selected="true">
+                        All Time
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content mt-32 mb-24" id="myTabContent">
+                <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                    @if (Model?.News == null || Model.News.Count == 0)
+                    {
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="text-center dark-gray">Henuz haber bulunmamaktadir.</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row row-gap-4" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                            @foreach (var news in Model.News)
+                            {
+                                <div class="col-xxl-6 col-xl-4 col-lg-12 col-md-6 col-sm-6">
+                                    <div class="blog-box bg-white light-shadow p-24 br-20">
+                                        <div class="row align-items-center row-gap-3">
+                                            <div class="col-xxl-6 col-xl-12 col-lg-6">
+                                                <div class="image-box">
+                                                    <a asp-controller="News" asp-action="Detail" asp-route-id="@news.RawId">
+                                                        <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, news.ImageUrl, "~/assets/img/blog-1.svg")" alt="@news.Title" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';">
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-xxl-6 col-xl-12 col-lg-6">
+                                                <div class="content-box">
+                                                    <div class="d-flex gap-16 mb-24">
+                                                        <div class="d-flex align-items-center gap-8">
+                                                            <img src="~/assets/img/user-bk.svg" alt="">
+                                                            <p class="h6 dark-gray">@news.Author</p>
+                                                        </div>
+                                                        <div class="vr-line"></div>
+                                                        <div class="d-flex align-items-center gap-8">
+                                                            <img src="~/assets/img/calender.svg" alt="">
+                                                            <p class="h6 dark-gray">@news.PublishDate.ToString("dd MMM, yyyy")</p>
+                                                        </div>
+                                                    </div>
+                                                    <h5 class="lightest-black mb-8">
+                                                        <a asp-controller="News" asp-action="Detail" asp-route-id="@news.RawId">@news.Title</a>
+                                                    </h5>
+                                                    <p class="dark-gray mb-24">@news.Summary</p>
+                                                    <a asp-controller="News" asp-action="Detail" asp-route-id="@news.RawId" class="cus-btn small-pad">Read More</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @if (Model?.News != null && Model.News.Count > 0 && Model.TotalPages > 1)
+            {
+                <div class="paginations">
+                    <ul class="unstyled">
+                        @for (var i = 1; i <= Model.TotalPages; i++)
+                        {
+                            var pageNumber = i;
+                            <li class="@(Model.CurrentPage == pageNumber ? "active" : "")">
+                                <a asp-controller="News" asp-action="Listing" asp-route-page="@pageNumber" asp-route-query="@Model.SearchQuery" asp-route-category="@Model.Category" class="h6 fw-600 mb-0">@pageNumber</a>
+                            </li>
+                        }
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="arrow">
+                                <a asp-controller="News" asp-action="Listing" asp-route-page="@(Model.CurrentPage + 1)" asp-route-query="@Model.SearchQuery" asp-route-category="@Model.Category" class="h4 fw-600 mb-0"><i class="far fa-chevron-right"></i></a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </section>
+    <!-- Blog Area End -->
+
+</div>
+<!-- Main Content End -->

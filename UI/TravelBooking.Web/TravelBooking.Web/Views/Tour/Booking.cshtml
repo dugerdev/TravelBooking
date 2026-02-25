@@ -1,0 +1,354 @@
+@model TravelBooking.Web.ViewModels.Tours.TourBookingViewModel
+@using System
+@{
+    ViewData["Title"] = "Tour Reservation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner mb-20">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">Tour <br class="title-break"> Booking</h1>
+                </div>
+                <span class="right-image right-image-icon" aria-hidden="true"><i class="icon-map-marker"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+
+<!-- Main Content Start -->
+<div class="page-content m-0">
+    <section class="flight-booking" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="booking-form">
+                        <form asp-controller="Tour" asp-action="InitiatePayment" method="post" class="form-wizard" id="tour-booking-form" novalidate>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="TourRawId" />
+                            <input type="hidden" asp-for="TourName" />
+                            <input type="hidden" asp-for="Destination" />
+                            <input type="hidden" asp-for="Duration" />
+                            <input type="hidden" asp-for="Price" />
+                            <input type="hidden" asp-for="Currency" />
+
+                            @await Html.PartialAsync("_ValidationSummary")
+
+                            <div class="wizard-content overflow-visible mb-24">
+                                <fieldset id="step-1" class="tab-pane show wizard-fieldset p-0">
+                                    <div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+                                        <h4 class="black p-0 mb-24">Tour Information</h4>
+                                        <div class="row">
+                                            <div class="col-sm-6 mb-24">
+                                                <div class="form-group">
+                                                    <label class="form-label">Tour Name</label>
+                                                    <input type="text" class="form-control" value="@Model.TourName" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 mb-24">
+                                                <div class="form-group">
+                                                    <label class="form-label">Destination</label>
+                                                    <input type="text" class="form-control" value="@Model.Destination" readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 mb-24">
+                                                <div class="form-group">
+                                                    <label asp-for="TourDate" class="form-label">Tour Date</label>
+                                                    <input type="date" asp-for="TourDate" class="form-control wizard-required" min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                    <span asp-validation-for="TourDate" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 mb-24">
+                                                <div class="form-group">
+                                                    <label asp-for="ParticipantCount" class="form-label">Number of Participants</label>
+                                                    <input type="number" asp-for="ParticipantCount" class="form-control wizard-required" min="1" max="20" value="@Model.ParticipantCount">
+                                                    <span asp-validation-for="ParticipantCount" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Yolcu Bilgileri (ParticipantCount kadar blok) -->
+                                    @if (TempData["BookingError"] != null)
+                                    {
+                                        <div class="alert alert-danger mb-24">@TempData["BookingError"]</div>
+                                    }
+                                    @if (!ViewData.ModelState.IsValid)
+                                    {
+                                        <div class="alert alert-warning mb-24">
+                                            <strong>Lutfen asagidaki hatalari duzeltin:</strong>
+                                            @Html.ValidationSummary(false, "", new { @class = "text-danger mb-0" })
+                                        </div>
+                                    }
+                                    @for (var i = 0; i < (Model.Passengers?.Count ?? 20); i++)
+                                    {
+                                        <div class="passenger-block detail-form p-24 bg-white shadow-sm br-12 border position-relative mb-32" data-passenger-index="@i" style="display: @(i < Model.ParticipantCount ? "block" : "none");">
+                                            <h4 class="black p-0 mb-40">Passenger @(i + 1) Information</h4>
+                                            <div class="row">
+                                                <div class="col-sm-3 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].Gender" class="form-label">Gender</label>
+                                                        <div class="select">
+                                                            <select asp-for="Passengers[i].Gender" class="form-control wizard-required">
+                                                                <option value="" selected disabled>Select gender</option>
+                                                                <option value="male">Male</option>
+                                                                <option value="female">Female</option>
+                                                            </select>
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].Gender" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-5 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].FirstName" class="form-label fw-500">First Name *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-user"></i>
+                                                            <input type="text" asp-for="Passengers[i].FirstName" class="form-control wizard-required" placeholder="Your first name">
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].FirstName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].LastName" class="form-label fw-500">Soyad *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-user"></i>
+                                                            <input type="text" asp-for="Passengers[i].LastName" class="form-control wizard-required" placeholder="Soyadiniz">
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].LastName" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].Email" class="form-label fw-500">Email *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-envelope"></i>
+                                                            <input type="email" asp-for="Passengers[i].Email" class="form-control wizard-required" placeholder="example@email.com">
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].Email" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].Country" class="form-label fw-500">Country *</label>
+                                                        <div class="select">
+                                                            <select asp-for="Passengers[i].Country" class="form-control wizard-required">
+                                                                <option value="" selected disabled>Select country</option>
+                                                                <option value="TR">Turkey</option>
+                                                                <option value="US">United States</option>
+                                                                <option value="GB">United Kingdom</option>
+                                                                <option value="DE">Germany</option>
+                                                            </select>
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].Country" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].Phone" class="form-label fw-500">Telefon *</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-phone"></i>
+                                                            <input type="tel" asp-for="Passengers[i].Phone" class="form-control wizard-required phone-input" placeholder="555 123 4567" maxlength="10" inputmode="tel">
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].Phone" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6 mb-24">
+                                                    <div class="form-group">
+                                                        <label asp-for="Passengers[i].DateOfBirth" class="form-label fw-500">Date of Birth</label>
+                                                        <div class="form-field-with-icon">
+                                                            <i class="fa fa-calendar"></i>
+                                                            <input type="date" asp-for="Passengers[i].DateOfBirth" class="form-control">
+                                                        </div>
+                                                        <span asp-validation-for="Passengers[i].DateOfBirth" class="text-danger"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </fieldset>
+                            </div>
+
+                            <div class="form-wizard-footer d-flex gap-3">
+                                <a asp-controller="Tour" asp-action="Packages" class="btn btn-secondary btn-lg flex-fill">
+                                    <i class="fa fa-arrow-left me-2"></i>Turlara Don
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                    Continue - Payment Screen <i class="fa fa-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="flight-booking-detail light-shadow">
+                        <div class="flight-title">
+                            <h4 class="color-black">Booking Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow" id="tour-booking-summary" data-price="@Model.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-currency="@(ViewBag.SelectedCurrency as string ?? "TRY")">
+                            <h5 class="color-black mb-16">@Model.TourName</h5>
+                            <p class="dark-gray mb-24">@Model.Destination</p>
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Duration:</span>
+                                <span class="light-black">@Model.Duration days</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Participants:</span>
+                                <span class="light-black" id="summary-participants">@Model.ParticipantCount</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Price per person:</span>
+                                <span class="light-black" id="summary-price-per-person">@CurrencyHelper.FormatPriceWithDecimals(Model.Price, ViewBag.SelectedCurrency ?? "TRY")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Subtotal:</span>
+                                <span class="light-black" id="summary-subtotal">@CurrencyHelper.FormatPriceWithDecimalsInCurrency(Model.Price * Model.ParticipantCount, ViewBag.SelectedCurrency as string ?? "TRY")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-24">
+                                <span class="light-black">Tax (10%):</span>
+                                <span class="light-black" id="summary-tax">@CurrencyHelper.FormatPriceWithDecimals(Model.Price * Model.ParticipantCount * 0.1m, ViewBag.SelectedCurrency ?? "TRY")</span>
+                            </div>
+                            <div class="border-top pt-16">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="color-black">Total:</h5>
+                                    <h5 class="color-black" id="summary-total">@CurrencyHelper.FormatPriceWithDecimalsInCurrency(Model.Price * Model.ParticipantCount * 1.1m, ViewBag.SelectedCurrency as string ?? "TRY")</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        // Ensure jQuery validation ignores disabled fields
+        if (typeof $.validator !== 'undefined') {
+            $.validator.setDefaults({
+                ignore: ":hidden:not(.wizard-required), :disabled"
+            });
+        }
+
+        (function () {
+            var summary = document.getElementById('tour-booking-summary');
+            if (!summary) return;
+            var price = parseFloat(summary.getAttribute('data-price')) || 0;
+            var currency = summary.getAttribute('data-currency') || 'TRY';
+            var participantsInput = document.querySelector('input[name="ParticipantCount"]');
+            if (!participantsInput) return;
+
+            function formatNum(n) {
+                return n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function updateSummary() {
+                var count = parseInt(participantsInput.value, 10) || 1;
+                if (count < 1) count = 1;
+                if (count > 20) count = 20;
+                participantsInput.value = count;
+
+                var subtotal = price * count;
+                var tax = subtotal * 0.1;
+                var total = subtotal + tax;
+
+                var sym = document.getElementById('summary-participants');
+                if (sym) sym.textContent = count;
+                var sp = document.getElementById('summary-price-per-person');
+                if (sp) sp.textContent = formatNum(price) + ' ' + currency;
+                var ss = document.getElementById('summary-subtotal');
+                if (ss) ss.textContent = formatNum(subtotal) + ' ' + currency;
+                var st = document.getElementById('summary-tax');
+                if (st) st.textContent = formatNum(tax) + ' ' + currency;
+                var stot = document.getElementById('summary-total');
+                if (stot) stot.textContent = formatNum(total) + ' ' + currency;
+
+                updatePassengerBlocks(count);
+            }
+
+            function updatePassengerBlocks(count) {
+                var blocks = document.querySelectorAll('.passenger-block');
+                blocks.forEach(function (block) {
+                    var idx = parseInt(block.getAttribute('data-passenger-index'), 10);
+                    var show = idx < count;
+                    block.style.display = show ? 'block' : 'none';
+                    var inputs = block.querySelectorAll('input, select, textarea');
+                    inputs.forEach(function (el) { el.disabled = !show; });
+                });
+            }
+
+            participantsInput.addEventListener('change', updateSummary);
+            participantsInput.addEventListener('input', updateSummary);
+            updatePassengerBlocks(parseInt(participantsInput.value, 10) || 1);
+        })();
+
+        // Enhanced form validation feedback
+        var form = document.getElementById('tour-booking-form');
+        if (form) {
+            // Debug: Log TourRawId value
+            var tourRawIdInput = document.querySelector('input[name="TourRawId"]');
+            if (tourRawIdInput) {
+                console.log('TourRawId value:', tourRawIdInput.value);
+            } else {
+                console.error('TourRawId input not found!');
+            }
+            
+            form.addEventListener('submit', function(e) {
+                console.log('Form submitting...');
+                console.log('TourRawId at submit:', tourRawIdInput ? tourRawIdInput.value : 'NOT FOUND');
+                
+                // Check if jQuery validation exists
+                if (typeof $(form).valid === 'function') {
+                    var isValid = $(form).valid();
+                    console.log('Form valid:', isValid);
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        console.log('Validation errors - form will not submit');
+                        
+                        // Collect all validation errors
+                        var errors = [];
+                        $(form).find('.field-validation-error span').each(function() {
+                            var errorText = $(this).text();
+                            if (errorText) errors.push(errorText);
+                        });
+                        
+                        // Show validation summary at top
+                        var errorHtml = '<div class="alert alert-danger alert-dismissible fade show mb-24" role="alert">' +
+                            '<h5 class="alert-heading"><i class="fa fa-exclamation-triangle me-2"></i>Lutfen asagidaki hatalari duzeltin:</h5>' +
+                            '<hr><ul class="mb-0">';
+                        
+                        if (errors.length > 0) {
+                            errors.forEach(function(err) {
+                                errorHtml += '<li>' + err + '</li>';
+                            });
+                        } else {
+                            errorHtml += '<li>Lutfen tum zorunlu alanlari doldurun.</li>';
+                        }
+                        
+                        errorHtml += '</ul><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
+                        
+                        // Remove old error summary and add new one
+                        $('#tour-booking-form .alert-danger').remove();
+                        $('#tour-booking-form').prepend(errorHtml);
+                        
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        
+                        return false;
+                    }
+                } else {
+                    console.log('No jQuery validation found, form will submit normally');
+                }
+            });
+        }
+    </script>
+}

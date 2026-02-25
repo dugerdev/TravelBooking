@@ -1,0 +1,980 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  padding-top: 72px; /* Fixed navbar height */
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  background: #f3f3f7;
+}
+
+/* NAVBAR */
+header.navbar {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 35px 100px;
+  background: transparent;
+  position: relative;
+  z-index: 10;
+}
+
+header.navbar .logo {
+  width: 150px;
+}
+
+.login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login a {
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: bold;
+  color: #000;
+}
+
+.login a:hover {
+  color: #405cd1;
+  transition: 0.3s ease-in-out;
+}
+
+.login-nav{
+  display: none;
+}
+.login-nav1{
+  display: none;
+}
+
+#Logout-nav{
+  display: none;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  position: relative;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+  padding: 5px 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+/* Underline effect */
+nav ul li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: #405cd1;
+  transition: width 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #405cd1;
+}
+
+nav ul li a:hover::after {
+  width: 100%;
+}
+
+.three-dots {
+  height: 30px;
+  display: none;
+}
+
+/* Full-screen Overlay */
+.auth {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  display: none;
+  /* Default hidden */
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  animation: fadeInScale 0.5s ease forwards;
+  transform: scale(0.9);
+  opacity: 0;
+}
+
+/* Animation keyframes */
+@keyframes fadeInScale {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Close animation */
+.auth.hide {
+  animation: fadeOutScale 0.5s ease forwards;
+}
+
+@keyframes fadeOutScale {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+/* Login & SignupCommon Style */
+.login-page,
+.signup-page {
+  background: #fff;
+  width: 350px;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  text-align: center;
+  animation: pop 0.3s ease;
+}
+
+/* Close Button */
+.close {
+  position: absolute;
+  top: 10px;
+  cursor: pointer;
+  right: 15px;
+  font-size: 26px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Form Elements */
+.login-page h1,
+.signup-page h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.login-page input,
+.signup-page input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  outline: none;
+}
+
+.login-page input:focus,
+.signup-page input:focus {
+  border-color: #5271ff;
+  box-shadow: 0 0 5px rgba(82, 113, 255, 0.3);
+}
+
+/* Buttons */
+.login-btn,
+.signup-btn {
+  background: #0B8CD3;
+  color: white;
+  padding: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.login-btn:hover,
+.signup-btn:hover {
+  background: #405cd1;
+}
+
+
+/* Switch text */
+p {
+  font-size: 14px;
+  margin-top: 10px;
+  color: #333;
+}
+
+p span {
+  color: #5271ff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+p span:hover {
+  text-decoration: underline;
+}
+
+/* Default hide signup page */
+.signup-page {
+  display: none;
+}
+
+/* HERO SECTION */
+.hero-section {
+  display: flex;
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  overflow: hidden;
+}
+
+/* Left Content */
+.content {
+  position: absolute;
+  top: 25px;
+  left: 5%;
+  max-width: 65%;
+  z-index: 5;
+}
+
+.content .user-info {
+  font-size: 50px;
+  width: 700px;
+}
+
+.content div {
+  left: 5%;
+  /* max-width: 400px; */
+  max-width: 40%;
+  z-index: 5;
+}
+
+.content div h1 {
+  font-size: 50px;
+  font-weight: 700;
+}
+
+.content div h1 span {
+  color: #0B8CD3;
+}
+
+.content div p {
+  font-size: 16px;
+  margin: 15px 0;
+  color: #555;
+}
+
+.book-btn {
+  background: #0B8CD3;
+  color: #fff;
+  padding: 12px 25px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Plane image */
+.plane {
+  position: absolute;
+  right: 3%;
+  top: 22%;
+  width: 1000px;
+  max-width: 90%;
+  z-index: 2;
+}
+
+/* Booking section  */
+
+.booking-section-home {
+  background-color: #E6E6EC;
+  height: 130vh;
+}
+
+.booking-section {
+  box-shadow: 5px 0px 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  top: -50px;
+  background: #f8f9fc;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 90%;
+  height: auto;
+  margin: auto;
+  padding: 12px auto auto auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tabs button {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+}
+
+.tab {
+  padding: 10px 14px;
+  border: none;
+  background: #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.tab:hover {
+  background: #dee2e6;
+}
+
+.tab.active {
+  background: #0b8cd3;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.trip-type {
+  display: flex;
+  font-size: 19px;
+  gap: 15px;
+  margin: 15px 0;
+  color: gray;
+}
+
+.class-type {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  font-size: 19px;
+  gap: 15px;
+  margin: 15px 0;
+  color: gray;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  height: 70px;
+  border-radius: 50px;
+  color: gray;
+  background-color: #E7EBFF;
+
+}
+
+.form-row input {
+  padding: 10px;
+  border: none;
+  border-color: none;
+  background-color: #E7EBFF;
+  border-radius: 6px;
+}
+
+.promo {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.promo input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.show-flight {
+  padding: 10px 20px;
+  background: #0b8cd3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* banefit section */
+.banefit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 5%;
+}
+
+.banefit-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+  height: 90px;
+  width: 25%;
+  border: none;
+  border-radius: 11px;
+}
+
+.banefit-container img {
+  height: 50px;
+}
+
+.banefit-text h4 {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.banefit-text p {
+  color: gray;
+}
+
+/* flight card */
+#flight-deals {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+#flight-deals #slider-btn {
+  margin-bottom: 20px;
+  margin-top: 12px;
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#flight-deals #slider-btn h3 {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+/* Navigation buttons wrapper inside heading */
+.slider-nav {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+}
+
+/* Swiper specific width */
+.swiper {
+  width: 90%;
+  padding-top: 10px;
+}
+
+/* Card styling */
+.flight-deal-card {
+  width: 100%;
+  max-width: 450px;
+  height: 400px;
+  background-color: white;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.flight-deal-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.flight-deal-card h3 {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.flight-deal-card h4 {
+  font-weight: 400;
+  font-size: small;
+  color: gray;
+}
+
+.flight-text-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.flight-text-btn button {
+  width: 100px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background-color: #0b8cd3;
+  color: white;
+  cursor: pointer;
+  font-size: medium;
+  transition: 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.flight-text-btn button:hover {
+  background-color: wheat;
+  color: black;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Swiper Navigation Buttons */
+.swiper-button-next,
+.swiper-button-prev {
+  position: static;
+  /* top-right me lane ke liye static rakha */
+  width: 35px;
+  height: 35px;
+  background: #0b8cd3;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: wheat;
+  color: black;
+}
+
+/* Remove default arrow size issues */
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 14px;
+}
+
+/* flynow hero */
+/* Section background */
+.flynow-hero {
+  height: auto;
+  background: url("../img/flynow/inner-banner-1.png") no-repeat center/cover;
+  padding: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Container */
+.flynow-container {
+  max-width: 1300px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 80px;
+  padding: 20px 20px;
+}
+
+/* Left side */
+.flynow-left {
+  flex: 1;
+}
+
+.flynow-logo {
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+.flynow-left h1 {
+  font-size: 48px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.flynow-left h1 span {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.flynow-left h1 .blue-text {
+  color: #3B82F6;
+}
+
+.flynow-btn {
+  display: inline-block;
+  margin-top: 25px;
+  padding: 12px 25px;
+  background: #0b8cd3;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+/* Right side */
+.flynow-right {
+  flex: 1.2;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  position: relative;
+}
+
+
+/* Destination card */
+.destination-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 200px;
+}
+
+.card-image {
+  position: relative;
+}
+
+.card-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* achivment section */
+
+/* Card container */
+.achievement-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  max-width: 1300px;
+  padding: 40px;
+  gap: 40px;
+}
+
+/* Left content */
+.achievement-left {
+  flex: 1;
+}
+
+.tagline {
+  color: #3B82F6;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.achievement-left h2 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.desc {
+  color: #555;
+  margin-bottom: 25px;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.stat-box {
+  background: #d4cfcf;
+  padding: 15px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.stat-box img {
+  width: 40px;
+  height: 40px;
+}
+
+.stat-box h3 {
+  color: #3B82F6;
+  font-size: 20px;
+  margin: 0;
+}
+
+.stat-box p {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+/* Contact Row */
+.contact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.contact-btn {
+  background: #0b8cd3;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.contact-btn:hover {
+  background-color: rgb(227, 222, 222);
+  transition: 0.5s ease;
+  color: black;
+
+}
+
+/* Right Image */
+.achievement-right img {
+  width: 450px;
+  border-radius: 15px;
+}
+
+/* footer */
+.footer {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 40px 20px 20px;
+  font-family: Arial, sans-serif;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.about p {
+  color: wheat;
+}
+
+.footer-section {
+  flex: 1 1;
+  margin: 15px;
+}
+
+.footer-logo {
+  max-width: 150px;
+  margin-bottom: 15px;
+}
+
+.footer-section h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  border-bottom: 2px solid #38bdf8;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin: 8px 0;
+}
+
+.footer-section ul li a {
+  color: #f8fafc;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+  color: #38bdf8;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #334155;
+  font-size: 14px;
+}
+
+.footer-bottom p {
+  color: white;
+}
+
+.footer-section p {
+  margin: 6px 0;
+  color: white;
+}
+
+/* ✅ Responsive Fixes */
+
+/* Hero section plane image */
+.hero-section img.plane {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-section {
+    margin: 20px 0;
+  }
+}
+
+
+/* Responsive */
+@media (max-width: 600px) {
+
+  .trip-type {
+    flex-direction: column;
+  }
+
+  .promo {
+    flex-direction: column;
+  }
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+  .plane {
+    width: 350px;
+    top: 40%;
+  }
+
+  .content h1 {
+    font-size: 30px;
+  }
+
+  #nav-links {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    /* vertical spacing */
+  }
+
+  #nav-links.active {
+    display: flex;
+    animation: slideDown 0.5s ease forwards;
+  }
+
+  #nav-links li {
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+
+  #nav-links li:last-child {
+    border-bottom: none;
+  }
+
+  #nav-links li a {
+    text-decoration: none;
+    color: black;
+    font-size: 18px;
+    transition: color 0.3s ease;
+  }
+
+  #nav-links li a:hover {
+    color: #405cd1;
+  }
+
+
+  .three-dots {
+    display: flex;
+    cursor: pointer;
+  }
+
+  .hero-section {
+    flex-direction: column;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-row input,
+  .form-row select {
+    width: 100%;
+  }
+
+  .footer-container {
+    padding: 10px;
+  }
+
+}
+
+/* animation for nav */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Destination card images - adjust for small screens */
+.flynow-right img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  /* change to contain if you want full image instead of crop */
+}

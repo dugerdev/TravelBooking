@@ -1,0 +1,253 @@
+@model TravelBooking.Web.DTOs.Admin.DashboardStatisticsDto
+@using TravelBooking.Web.DTOs.Enums
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+        <span class="text-muted">@DateTime.Now.ToString("dd MMMM yyyy, dddd")</span>
+    </div>
+
+    @if (ViewBag.StatisticsError != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            @ViewBag.StatisticsError
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Content Row - Statistics Cards -->
+    <div class="row">
+        @await Component.InvokeAsync("StatisticsCard", new { title = "Total Revenue", value = ((Model?.TotalRevenue ?? 0).ToString("N0")) + " ₺", icon = "fas fa-lira-sign", borderColor = "primary" })
+        @await Component.InvokeAsync("StatisticsCard", new { title = "Today's Revenue", value = ((Model?.TodayRevenue ?? 0).ToString("N0")) + " ₺", icon = "fas fa-dollar-sign", borderColor = "success" })
+        @await Component.InvokeAsync("StatisticsCard", new { title = "Total Users", value = (Model?.TotalUsers ?? 0).ToString(), icon = "fas fa-users", borderColor = "info" })
+        @await Component.InvokeAsync("StatisticsCard", new { title = "Total Reservations", value = (Model?.TotalReservations ?? 0).ToString(), icon = "fas fa-clipboard-list", borderColor = "warning" })
+    </div>
+
+    <!-- Content Row - Statistics Summary -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Additional Statistics</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="border rounded p-3">
+                                <i class="fas fa-users fa-3x text-info mb-2"></i>
+                                <h6 class="text-uppercase text-muted">Active Users</h6>
+                                <h4 class="font-weight-bold">@(Model?.ActiveUsers ?? 0)</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="border rounded p-3">
+                                <i class="fas fa-clock fa-3x text-warning mb-2"></i>
+                                <h6 class="text-uppercase text-muted">Pending Reservations</h6>
+                                <h4 class="font-weight-bold">@(Model?.PendingReservations ?? 0)</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="border rounded p-3">
+                                <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                                <h6 class="text-uppercase text-muted">Confirmed Reservations</h6>
+                                <h4 class="font-weight-bold">@(Model?.ConfirmedReservations ?? 0)</h4>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-center mb-3">
+                            <div class="border rounded p-3">
+                                <i class="fas fa-plane fa-3x text-primary mb-2"></i>
+                                <h6 class="text-uppercase text-muted">Active Flights</h6>
+                                <h4 class="font-weight-bold">@(Model?.ActiveFlights ?? 0)</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row - Charts -->
+    <div class="row">
+        <div class="col-xl-8 col-lg-7">
+            @await Component.InvokeAsync("RevenueChart", new { data = ViewBag.RevenueByMonth, title = "Gelir Özeti (Son 12 Ay)", canvasId = "revenueChart" })
+        </div>
+        <div class="col-xl-4 col-lg-5">
+            @{
+                var resStats = ViewBag.ReservationStats as TravelBooking.Web.DTOs.Admin.ReservationStatisticsDto;
+                var pending = resStats?.PendingReservations ?? 0;
+                var confirmed = resStats?.ConfirmedReservations ?? 0;
+                var cancelled = resStats?.CancelledReservations ?? 0;
+                var completed = resStats?.CompletedReservations ?? 0;
+            }
+            @await Component.InvokeAsync("ReservationPieChart", new { pending, confirmed, cancelled, completed })
+        </div>
+    </div>
+
+    <!-- Content Row - Son Rezervasyonlar -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Son Rezervasyonlar</h6>
+                    <a asp-area="Admin" asp-controller="ReservationsAdmin" asp-action="Index" class="btn btn-sm btn-outline-primary">Tümü</a>
+                </div>
+                <div class="card-body">
+                    @{
+                        var recentReservations = ViewBag.RecentReservations as List<TravelBooking.Web.DTOs.Reservations.ReservationDto> ?? new List<TravelBooking.Web.DTOs.Reservations.ReservationDto>();
+                    }
+                    @if (recentReservations.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead><tr><th>PNR</th><th>Kullanıcı</th><th>Ne Rezervasyon</th><th>Tutar</th><th>Durum</th><th>Tarih</th></tr></thead>
+                                <tbody>
+                                    @foreach (var r in recentReservations)
+                                    {
+                                        var badgeClass = r.Status == ReservationStatus.Confirmed ? "success" : 
+                                                         r.Status == ReservationStatus.Pending ? "warning" : 
+                                                         r.Status == ReservationStatus.Cancelled ? "danger" : "secondary";
+                                        var statusText = r.Status == ReservationStatus.Confirmed ? "Onaylandı" : 
+                                                         r.Status == ReservationStatus.Pending ? "Beklemede" : 
+                                                         r.Status == ReservationStatus.Cancelled ? "Rezervasyon İptal Edildi" : 
+                                                         r.Status == ReservationStatus.Completed ? "Tamamlandı" : r.Status.ToString();
+                                        <tr class="@(r.Status == ReservationStatus.Cancelled ? "table-danger" : "")">
+                                            <td><strong>@r.PNR</strong></td>
+                                            <td>@(r.UserName ?? r.AppUserId ?? "-")</td>
+                                            <td>@(r.ReservationSummary ?? "-")</td>
+                                            <td>@r.TotalPrice.ToString("N0") @r.Currency</td>
+                                            <td><span class="badge badge-@badgeClass">@statusText</span></td>
+                                            <td>@r.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                <a asp-area="Admin" asp-controller="ReservationsAdmin" asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-info" title="Detayları Görüntüle">
+                                                    <i class="fas fa-eye"></i> Detay
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">Henüz rezervasyon yok.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Content Row - Quick Actions -->
+    <div class="row">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="FlightsAdmin" asp-action="Index" class="btn btn-primary btn-block btn-lg">
+                                <i class="fas fa-plane me-2"></i> Manage Flights
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="Hotels" asp-action="Index" class="btn btn-success btn-block btn-lg">
+                                <i class="fas fa-hotel me-2"></i> Manage Hotels
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="Cars" asp-action="Index" class="btn btn-info btn-block btn-lg">
+                                <i class="fas fa-car me-2"></i> Manage Cars
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="Tours" asp-action="Index" class="btn btn-warning btn-block btn-lg">
+                                <i class="fas fa-map-marked-alt me-2"></i> Manage Tours
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="ReservationsAdmin" asp-action="Index" class="btn btn-secondary btn-block btn-lg">
+                                <i class="fas fa-clipboard-list me-2"></i> View Reservations
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <a asp-area="Admin" asp-controller="Payments" asp-action="Index" class="btn btn-dark btn-block btn-lg">
+                                <i class="fas fa-credit-card me-2"></i> View Payments
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- /.container-fluid -->
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        (function() {
+            var revenueByMonth = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.RevenueByMonth ?? new Dictionary<string, decimal>()));
+            var monthLabels = Object.keys(revenueByMonth).sort();
+            var revenueData = monthLabels.map(function(k) { return revenueByMonth[k] || 0; });
+            if (monthLabels.length === 0) {
+                monthLabels = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+                revenueData = [0,0,0,0,0,0,0,0,0,0,0,0];
+            }
+            var revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: 'Gelir (₺)',
+                            data: revenueData,
+                            borderColor: 'rgb(78, 115, 223)',
+                            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+            var reservationStats = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.ReservationStats));
+            var pieLabels = ['Beklemede', 'Onaylandı', 'İptal', 'Tamamlandı'];
+            var pieData = reservationStats ? [(reservationStats.pendingReservations ?? reservationStats.PendingReservations) || 0, (reservationStats.confirmedReservations ?? reservationStats.ConfirmedReservations) || 0, (reservationStats.cancelledReservations ?? reservationStats.CancelledReservations) || 0, (reservationStats.completedReservations ?? reservationStats.CompletedReservations) || 0] : [0,0,0,0];
+            var pieCtx = document.getElementById('reservationsPieChart');
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: pieLabels,
+                        datasets: [{
+                            data: pieData,
+                            backgroundColor: ['rgb(255, 193, 7)', 'rgb(28, 200, 138)', 'rgb(220, 53, 69)', 'rgb(78, 115, 223)']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        })();
+    </script>
+}

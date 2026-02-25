@@ -1,0 +1,128 @@
+﻿@model TravelBooking.Web.DTOs.Flights.FlightDto
+@{
+    ViewData["Title"] = "Uçuş Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Uçuş Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Uçuş Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Uçuş Numarası:</th>
+                            <td><strong class="text-primary">@Model.FlightNumber</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Havayolu:</th>
+                            <td>@Model.AirlineName</td>
+                        </tr>
+                        <tr>
+                            <th>Kalkış Havalimanı:</th>
+                            <td>
+                                @Model.DepartureAirport?.Name (@Model.DepartureAirport?.IATA_Code)<br />
+                                <small class="text-muted">@Model.DepartureAirport?.City, @Model.DepartureAirport?.Country</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Varış Havalimanı:</th>
+                            <td>
+                                @Model.ArrivalAirport?.Name (@Model.ArrivalAirport?.IATA_Code)<br />
+                                <small class="text-muted">@Model.ArrivalAirport?.City, @Model.ArrivalAirport?.Country</small>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Kalkış Tarihi:</th>
+                            <td>@Model.ScheduledDeparture.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Varış Tarihi:</th>
+                            <td>@Model.ScheduledArrival.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Süre:</th>
+                            <td>@((Model.ScheduledArrival - Model.ScheduledDeparture).TotalHours.ToString("N1")) saat</td>
+                        </tr>
+                        <tr>
+                            <th>Bölge:</th>
+                            <td>
+                                @switch (Model.FlightRegion.ToString())
+                                {
+                                    case "Domestic":
+                                        <span class="badge badge-info">İç Hat</span>
+                                        break;
+                                    case "International":
+                                        <span class="badge badge-primary">Dış Hat</span>
+                                        break;
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Tip:</th>
+                            <td>
+                                @switch (Model.FlightType.ToString())
+                                {
+                                    case "Direct":
+                                        <span class="badge badge-success">Direkt</span>
+                                        break;
+                                    case "OneStop":
+                                        <span class="badge badge-warning">1 Aktarma</span>
+                                        break;
+                                    case "MultiStop":
+                                        <span class="badge badge-secondary">Çok Aktarmalı</span>
+                                        break;
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Fiyat:</th>
+                            <td><strong>@Model.BasePrice?.Amount.ToString("N2") @Model.BasePrice?.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Koltuk Durumu:</th>
+                            <td>
+                                <strong>@Model.AvailableSeats</strong> / @Model.TotalSeats
+                                <div class="progress mt-2" style="height: 20px;">
+                                    <div class="progress-bar @(Model.AvailableSeats < 10 ? "bg-danger" : "bg-success")"
+                                         role="progressbar"
+                                         style="width: @((Model.AvailableSeats * 100.0 / Model.TotalSeats))%">
+                                        @((Model.AvailableSeats * 100.0 / Model.TotalSeats).ToString("N0"))%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger btn-block">
+                        <i class="fas fa-trash"></i> Sil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

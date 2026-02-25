@@ -1,0 +1,229 @@
+@using System
+@model TravelBooking.Web.ViewModels.Hotels.HotelListingViewModel
+@using TravelBooking.Web.Helpers
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Hotel Listing";
+    var currency = ViewBag.SelectedCurrency as string ?? "TRY";
+}
+@{
+    var maxPriceValue = (Model?.MaxPricePerNight.HasValue == true && Model.MaxPricePerNight.Value > 0)
+        ? Model.MaxPricePerNight.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)
+        : "";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Hotel Listing</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    @if (TempData["BookingError"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>@TempData["BookingError"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    <!-- Benefits Start -->
+    <section class="benefit p-40" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-xl-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-1.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">Free Cancellation</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-lg-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-2.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">No Hidden Charges</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 ">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-3.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">24/7 Customer Service</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Benefits End -->
+    <!-- Hotel Listing Start -->
+    <section class="hotel-listing mb-24 p-40">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xxl-4 col-xl-4 mb-xl-0 mb-32">
+                    <div class="hotel-sidebar mb-32 shadow-sm">
+                        <div class="hotel-sidebar_title bg-primary text-white p-3 rounded-top">
+                            <h4 class="color-white mb-0"><i class="fas fa-search me-2"></i>Hotel Search</h4>
+                        </div>
+                        <form asp-controller="Hotel" asp-action="Listing" method="get" class="bg-white contact-form p-3">
+                            <div class="hotel-info mb-16">
+                                <div class="custom-sel-input-block">
+                                    <label for="city" class="h6 color-medium-gray mb-8">City or region</label>
+                                    <i class="fal fa-map-marker-alt"></i>
+                                    <input type="text" name="city" id="city" class="sel-input" placeholder="e.g. Istanbul, Antalya" value="@Model?.SearchCity">
+                                </div>
+                            </div>
+                            <div class="hotel-info mb-16">
+                                <div class="custom-sel-input-block m-0">
+                                    <label for="minStarRating" class="h6 color-medium-gray mb-1">Minimum stars</label>
+                                    <div class="d-flex align-items-center gap-8">
+                                        <i class="fal fa-star"></i>
+                                        <select name="minStarRating" id="minStarRating" class="sel-input form-select">
+                                            <option value="">All</option>
+                                            @if (Model?.MinStarRating == 5) { <option value="5" selected="selected">5 stars</option> } else { <option value="5">5 stars</option> }
+                                            @if (Model?.MinStarRating == 4) { <option value="4" selected="selected">4 stars and above</option> } else { <option value="4">4 stars and above</option> }
+                                            @if (Model?.MinStarRating == 3) { <option value="3" selected="selected">3 stars and above</option> } else { <option value="3">3 stars and above</option> }
+                                            @if (Model?.MinStarRating == 2) { <option value="2" selected="selected">2 stars and above</option> } else { <option value="2">2 stars and above</option> }
+                                            @if (Model?.MinStarRating == 1) { <option value="1" selected="selected">1 star and above</option> } else { <option value="1">1 star and above</option> }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hotel-info mb-16">
+                                <div class="custom-sel-input-block m-0">
+                                    <label for="maxPricePerNight" class="h6 color-medium-gray mb-1">Max. price per night (@currency)</label>
+                                    <div class="d-flex align-items-center gap-8">
+                                        <i class="fal fa-tag"></i>
+                                        <input type="number" name="maxPricePerNight" id="maxPricePerNight" class="sel-input" placeholder="Leave empty = unlimited" value="@maxPriceValue" min="0" step="10">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="cus-btn full-width"><i class="fas fa-search me-2"></i>Search Hotels</button>
+                        </form>
+                        @if (Model?.SearchCity != null || Model?.MinStarRating.HasValue == true || (Model?.MaxPricePerNight.HasValue == true && Model.MaxPricePerNight.Value > 0))
+                        {
+                            <div class="bg-light p-3 mt-3 rounded border mx-3 mb-3">
+                                <h6 class="color-primary mb-2"><i class="fas fa-info-circle me-2"></i>Search Criteria</h6>
+                                @if (!string.IsNullOrEmpty(Model?.SearchCity))
+                                {
+                                    <p class="mb-1 small"><strong>City:</strong> @Model.SearchCity</p>
+                                }
+                                @if (Model?.MinStarRating.HasValue == true)
+                                {
+                                    <p class="mb-1 small"><strong>Min. stars:</strong> @Model.MinStarRating</p>
+                                }
+                                @if (Model?.MaxPricePerNight.HasValue == true && Model.MaxPricePerNight.Value > 0)
+                                {
+                                    <p class="mb-0 small"><strong>Max. price:</strong> @Model.MaxPricePerNight.Value.ToString("N0") @currency</p>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-xxl-8 col-xl-8">
+                    @if (Model?.Hotels == null || !Model.Hotels.Any())
+                    {
+                        <div class="hotel-block bg-white mb-32 p-5 text-center">
+                            <div class="py-5">
+                                <i class="fas fa-hotel fa-4x text-primary mb-4"></i>
+                                <h4 class="color-black mb-3">No hotels found</h4>
+                                <p class="dark-gray mb-4">No hotels match your search criteria. Try changing the filters or click <strong>"Clear"</strong> to see all hotels.</p>
+                                <a asp-controller="Hotel" asp-action="Listing" class="cus-btn">Show All Hotels</a>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="hotel-listing-cards">
+                            @foreach (var hotel in Model.Hotels)
+                            {
+                                <div class="hotel-block bg-white mb-32" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                                    <div class="row align-items-center row-gap-4">
+                                        <div class="col-lg-5 col-md-4 col-sm-12">
+                                            <div class="bg-lightest-gray p-16 br-20">
+                                                <div class="rating-star mb-8">
+                                                    @for (var s = 0; s < Math.Min(5, hotel.StarRating); s++)
+                                                    {
+                                                        <i class="fas fa-star color-sec"></i>
+                                                    }
+                                                </div>
+                                                <h5 class="light-black mb-1"><a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.RawId">@hotel.Name</a></h5>
+                                                <h6 class="dark-gray mb-24">@hotel.City, @hotel.Country</h6>
+                                                <div class="image-block mb-12 text-center">
+                                                    <a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.RawId"><img src="@ImageUrlHelper.GetImageSrc(Url, hotel.ImageUrl, "~/assets/img/hotel.svg", ApiOptions?.Value?.BaseUrl ?? "")" alt="@hotel.Name" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';"></a>
+                                                </div>
+                                                <h6 class="dark-gray">@(string.IsNullOrEmpty(hotel.Description) ? "Comfortable accommodation." : (hotel.Description.Length > 60 ? hotel.Description.Substring(0, 60) + "…" : hotel.Description))</h6>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-5 col-sm-6">
+                                            <div class="hotel-detail p-0">
+                                                <div class="d-flex gap-8 mb-16">
+                                                    <i class="fal fa-map-marker-alt pt-1"></i>
+                                                    <div>
+                                                        <h6 class="light-black">Location:</h6>
+                                                        <h6 class="dark-gray">@(string.IsNullOrEmpty(hotel.Address) ? hotel.City + ", " + hotel.Country : hotel.Address)</h6>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex gap-8 mb-16">
+                                                    <i class="fal fa-star pt-1"></i>
+                                                    <div>
+                                                        <h6 class="light-black">Rating:</h6>
+                                                        <h6 class="dark-gray">@hotel.Rating.ToString("0.0") (@hotel.ReviewCount reviews)</h6>
+                                                    </div>
+                                                </div>
+                                                <ul class="unstyled mb-0">
+                                                    @if (hotel.HasFreeWifi) { <li class="d-flex gap-2 mb-8"><h6 class="color-black mb-0"><i class="fal fa-check"></i>&nbsp;Free WiFi</h6></li> }
+                                                    @if (hotel.HasParking) { <li class="d-flex gap-2 mb-8"><h6 class="color-black mb-0"><i class="fal fa-check"></i>&nbsp;Parking</h6></li> }
+                                                    @if (hotel.HasPool) { <li class="d-flex gap-2 mb-8"><h6 class="color-black mb-0"><i class="fal fa-check"></i>&nbsp;Pool</h6></li> }
+                                                    @if (hotel.HasRestaurant) { <li class="d-flex gap-2"><h6 class="color-black mb-0"><i class="fal fa-check"></i>&nbsp;Restaurant</h6></li> }
+                                                </ul>
+                                                <div class="brand-logo mt-24">
+                                                    <h6 class="">@(hotel.Rating >= 9 ? "Excellent" : "Good")</h6>
+                                                    <h6 class="rating color-white">@hotel.Rating.ToString("0.0")</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-6">
+                                            <div class="pricing-area">
+                                                <h6 class="pre-reg light-black mb-32">Price per night</h6>
+                                                <h3 class="color-black fw-700">@CurrencyHelper.FormatPriceInSelectedCurrency(hotel.PricePerNight, hotel.Currency, currency) <span class="h6">/night</span></h3>
+                                                <h6 class="light-black mb-32">From @CurrencyHelper.FormatPriceInSelectedCurrency(hotel.PricePerNight, hotel.Currency, currency) /night</h6>
+                                                <a asp-controller="Hotel" asp-action="Detail" asp-route-id="@hotel.RawId" class="cus-btn full-width mb-16">Select</a>
+                                                <a asp-controller="Pages" asp-action="Contact" class="cus-btn-2 btn-sec">Get a Quote</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- Main Content End -->

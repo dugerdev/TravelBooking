@@ -1,0 +1,72 @@
+﻿@model TravelBooking.Web.DTOs.Flights.FlightDto
+@{
+    ViewData["Title"] = "Uçuş Sil";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Uçuş Sil</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 border-left-danger">
+                <div class="card-header py-3 bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-exclamation-triangle"></i> Uçuşu Silme Onayı
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <strong>Dikkat!</strong> Bu işlem geri alınamaz. Bu uçuşu silmek istediğinizden emin misiniz?
+                    </div>
+
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Uçuş Numarası:</th>
+                            <td><strong>@Model.FlightNumber</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Havayolu:</th>
+                            <td>@Model.AirlineName</td>
+                        </tr>
+                        <tr>
+                            <th>Rota:</th>
+                            <td>@Model.DepartureAirport?.City → @Model.ArrivalAirport?.City</td>
+                        </tr>
+                        <tr>
+                            <th>Kalkış:</th>
+                            <td>@Model.ScheduledDeparture.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        <tr>
+                            <th>Mevcut Koltuk:</th>
+                            <td>@Model.AvailableSeats / @Model.TotalSeats</td>
+                        </tr>
+                    </table>
+
+                    @if (Model.AvailableSeats < Model.TotalSeats)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Bu uçuşta rezervasyonlar var! Silme işlemi rezervasyonları etkileyebilir.
+                        </div>
+                    }
+
+                    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post" class="mt-4">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Evet, Sil
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            İptal
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

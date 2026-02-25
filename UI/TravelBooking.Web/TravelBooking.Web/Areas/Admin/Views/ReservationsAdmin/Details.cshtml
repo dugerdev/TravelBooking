@@ -1,0 +1,438 @@
+﻿@model TravelBooking.Web.DTOs.Reservations.ReservationDto
+@using TravelBooking.Web.DTOs.Enums
+@{
+    ViewData["Title"] = "Rezervasyon Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Rezervasyon Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    @if (Model.Status == ReservationStatus.Cancelled)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Rezervasyon İptal Edildi</h5>
+            <p class="mb-0">Bu rezervasyon iptal edilmiştir. İptal edilen rezervasyonlar üzerinde işlem yapılamaz.</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle"></i> Rezervasyon Bilgileri
+                    </h6>
+                    @{
+                        var typeIcon = Model.ReservationType == ReservationType.Flight ? "fa-plane" : 
+                                       Model.ReservationType == ReservationType.Hotel ? "fa-hotel" : 
+                                       Model.ReservationType == ReservationType.Car ? "fa-car" : "fa-map-marked-alt";
+                        var typeText = Model.ReservationType == ReservationType.Flight ? "Uçuş" : 
+                                       Model.ReservationType == ReservationType.Hotel ? "Otel" : 
+                                       Model.ReservationType == ReservationType.Car ? "Araba" : "Tur";
+                        var typeColor = Model.ReservationType == ReservationType.Flight ? "primary" : 
+                                        Model.ReservationType == ReservationType.Hotel ? "info" : 
+                                        Model.ReservationType == ReservationType.Car ? "success" : "warning";
+                    }
+                    <span class="badge badge-@typeColor badge-pill">
+                        <i class="fas @typeIcon"></i> @typeText Rezervasyonu
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">PNR:</th>
+                            <td><strong class="text-primary h5">@Model.PNR</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Kullanıcı:</th>
+                            <td>
+                                @if (!string.IsNullOrEmpty(Model.UserName))
+                                {
+                                    <strong class="text-dark">@Model.UserName</strong>
+                                    <br />
+                                    <small class="text-muted">Kullanıcı ID: @(string.IsNullOrEmpty(Model.AppUserId) ? "-" : (Model.AppUserId.Length >= 8 ? Model.AppUserId.Substring(0, 8) + "..." : Model.AppUserId))</small>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">@Model.AppUserId</span>
+                                }
+                            </td>
+                        </tr>
+                        @if (Model.ReservationType != ReservationType.Flight)
+                        {
+                            <tr>
+                                <th>Rezervasyon Detayı:</th>
+                                <td><span class="text-info">@(Model.ReservationSummary ?? "-")</span></td>
+                            </tr>
+                        }
+                        @* Araç kiralama: alış/bırakış yerleri ve kiralama süresi *@
+                        @if (Model.ReservationType == ReservationType.Car && (Model.CarPickUpDate.HasValue || Model.CarDropOffDate.HasValue || !string.IsNullOrWhiteSpace(Model.CarPickUpLocation) || !string.IsNullOrWhiteSpace(Model.CarDropOffLocation)))
+                        {
+                            <tr>
+                                <th>Alış yeri / tarihi:</th>
+                                <td>
+                                    <i class="fas fa-map-marker-alt text-success"></i>
+                                    @(Model.CarPickUpLocation ?? "-")
+                                    @if (Model.CarPickUpDate.HasValue)
+                                    {
+                                        <span class="text-muted"> · @Model.CarPickUpDate.Value.ToString("dd.MM.yyyy")</span>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Bırakış yeri / tarihi:</th>
+                                <td>
+                                    <i class="fas fa-map-marker-alt text-danger"></i>
+                                    @(Model.CarDropOffLocation ?? "-")
+                                    @if (Model.CarDropOffDate.HasValue)
+                                    {
+                                        <span class="text-muted"> · @Model.CarDropOffDate.Value.ToString("dd.MM.yyyy")</span>
+                                    }
+                                </td>
+                            </tr>
+                            @if (Model.CarPickUpDate.HasValue && Model.CarDropOffDate.HasValue)
+                            {
+                                var days = (int)(Model.CarDropOffDate.Value - Model.CarPickUpDate.Value).TotalDays;
+                                if (days < 1) { days = 1; }
+                                <tr>
+                                    <th>Kiralama süresi:</th>
+                                    <td><i class="fas fa-clock text-primary"></i> <strong>@days gün</strong></td>
+                                </tr>
+                            }
+                        }
+                        <tr>
+                            <th>Toplam Fiyat:</th>
+                            <td><strong class="h5 text-success">@Model.TotalPrice.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Durum:</th>
+                            <td>
+                                @if (Model.Status == ReservationStatus.Pending)
+                                {
+                                    <span class="badge badge-warning">Beklemede</span>
+                                }
+                                else if (Model.Status == ReservationStatus.Confirmed)
+                                {
+                                    <span class="badge badge-success">Onaylandı</span>
+                                }
+                                else if (Model.Status == ReservationStatus.Cancelled)
+                                {
+                                    <span class="badge badge-danger"><i class="fas fa-times-circle"></i> İPTAL EDİLDİ</span>
+                                }
+                                else if (Model.Status == ReservationStatus.Completed)
+                                {
+                                    <span class="badge badge-info">Tamamlandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">@Model.Status</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ödeme Durumu:</th>
+                            <td>
+                                @if (Model.PaymentStatus == PaymentStatus.Paid)
+                                {
+                                    <span class="badge badge-success">Ödendi</span>
+                                }
+                                else if (Model.PaymentStatus == PaymentStatus.Refunded)
+                                {
+                                    <span class="badge badge-info">İade Edildi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">Ödenmedi</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturma Tarihi:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+
+                    @* Uçuş Güzergahı Kartı (güzergah + saatler net görünsün) *@
+                    @if (Model.ReservationType == ReservationType.Flight && Model.Flight != null)
+                    {
+                        var depCity = !string.IsNullOrEmpty(Model.Flight.DepartureAirport?.City) ? Model.Flight.DepartureAirport.City : TravelBooking.Web.Helpers.AirportDisplayHelper.GetCityName(Model.Flight.DepartureAirportIATA);
+                        var arrCity = !string.IsNullOrEmpty(Model.Flight.ArrivalAirport?.City) ? Model.Flight.ArrivalAirport.City : TravelBooking.Web.Helpers.AirportDisplayHelper.GetCityName(Model.Flight.ArrivalAirportIATA);
+                        var depIATA = Model.Flight.DepartureAirportIATA ?? "-";
+                        var arrIATA = Model.Flight.ArrivalAirportIATA ?? "-";
+                        var fromTo = $"{depCity} ({depIATA}) → {arrCity} ({arrIATA})";
+                        <div class="mt-4 p-0">
+                            <div class="p-4 rounded" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="card border-0 shadow-lg">
+                                    <div class="card-body p-4">
+                                        <h5 class="mb-2"><i class="fas fa-plane text-primary"></i> Uçuş Güzergahı</h5>
+                                        <h4 class="mb-4 text-dark font-weight-bold">@fromTo</h4>
+                                        <div class="row align-items-center">
+                                            <div class="col-4 text-center">
+                                                <h3 class="mb-0 text-primary font-weight-bold">@depIATA</h3>
+                                                <small class="text-muted">@depCity</small>
+                                                <div class="mt-2">
+                                                    <small class="d-block font-weight-semibold">@Model.Flight.ScheduledDeparture.ToString("dd MMM yyyy")</small>
+                                                    <small class="d-block text-primary font-weight-bold">@Model.Flight.ScheduledDeparture.ToString("HH:mm")</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <i class="fas fa-plane fa-2x text-primary"></i>
+                                                <div class="mt-2">
+                                                    <small class="d-block text-muted">@Model.Flight.FlightNumber</small>
+                                                    <small class="d-block text-muted">@Model.Flight.AirlineName</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <h3 class="mb-0 text-success font-weight-bold">@arrIATA</h3>
+                                                <small class="text-muted">@arrCity</small>
+                                                <div class="mt-2">
+                                                    <small class="d-block font-weight-semibold">@Model.Flight.ScheduledArrival.ToString("dd MMM yyyy")</small>
+                                                    <small class="d-block text-success font-weight-bold">@Model.Flight.ScheduledArrival.ToString("HH:mm")</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.ReservationType == ReservationType.Flight && !string.IsNullOrWhiteSpace(Model.ReservationSummary))
+                    {
+                        @* Flight null ama güzergah özeti var: şehir adlarıyla göster *@
+                        <div class="mt-4 p-0">
+                            <div class="p-4 rounded border bg-light">
+                                <h5 class="mb-2"><i class="fas fa-plane text-primary"></i> Uçuş Güzergahı</h5>
+                                <h4 class="mb-0 text-dark font-weight-bold">@TravelBooking.Web.Helpers.AirportDisplayHelper.GetRouteDisplay(Model.ReservationSummary)</h4>
+                                <small class="text-muted d-block mt-2">Detaylı uçuş saati ve bilet bilgisi aşağıdaki biletler bölümünde yer alır.</small>
+                            </div>
+                        </div>
+                    }
+
+                    @* Uçuş Detayları (güzergah + saatler) *@
+                    @if (Model.ReservationType == ReservationType.Flight && Model.Flight != null)
+                    {
+                        var depCityDetail = !string.IsNullOrEmpty(Model.Flight.DepartureAirport?.City) ? Model.Flight.DepartureAirport.City : TravelBooking.Web.Helpers.AirportDisplayHelper.GetCityName(Model.Flight.DepartureAirportIATA);
+                        var arrCityDetail = !string.IsNullOrEmpty(Model.Flight.ArrivalAirport?.City) ? Model.Flight.ArrivalAirport.City : TravelBooking.Web.Helpers.AirportDisplayHelper.GetCityName(Model.Flight.ArrivalAirportIATA);
+                        <div class="alert alert-info mt-4">
+                            <h5 class="alert-heading"><i class="fas fa-plane"></i> Uçuş Detayları</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Uçuş Numarası:</strong> @Model.Flight.FlightNumber</p>
+                                    <p class="mb-2"><strong>Havayolu:</strong> @Model.Flight.AirlineName</p>
+                                    <p class="mb-2"><strong>Kalkış:</strong> @depCityDetail (@(Model.Flight.DepartureAirportIATA ?? "-"))</p>
+                                    <p class="mb-0"><strong>Kalkış Tarihi ve Saati:</strong> @Model.Flight.ScheduledDeparture.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-2"><strong>Varış:</strong> @arrCityDetail (@(Model.Flight.ArrivalAirportIATA ?? "-"))</p>
+                                    <p class="mb-2"><strong>Varış Tarihi ve Saati:</strong> @Model.Flight.ScheduledArrival.ToString("dd.MM.yyyy HH:mm")</p>
+                                    <p class="mb-2"><strong>Müsait Koltuk:</strong> @Model.Flight.AvailableSeats / @Model.Flight.TotalSeats</p>
+                                    <p class="mb-0"><strong>Fiyat:</strong> @Model.Flight.BasePriceAmount.ToString("N2") @Model.Flight.Currency</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Tickets != null && Model.Tickets.Any())
+                    {
+                        <h5 class="mt-4 mb-3"><i class="fas fa-ticket-alt"></i> Biletler ve Yolcular (@Model.Tickets.Count)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Bilet No</th>
+                                        <th>Yolcu</th>
+                                        <th>Doğum Tarihi</th>
+                                        <th>Email</th>
+                                        <th>Telefon</th>
+                                        <th>Koltuk</th>
+                                        <th>Sınıf</th>
+                                        <th>Bagaj</th>
+                                        <th>Bilet Fiyatı</th>
+                                        <th>Bagaj Ücreti</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in Model.Tickets)
+                                    {
+                                        <tr>
+                                            <td><span class="badge badge-secondary">@ticket.TicketNumber</span></td>
+                                            <td>
+                                                <strong>@(ticket.Passenger?.PassengerFirstName ?? "-") @(ticket.Passenger?.PassengerLastName ?? "")</strong>
+                                            </td>
+                                            <td>@(ticket.Passenger?.DateOfBirthDisplay.HasValue == true ? ticket.Passenger.DateOfBirthDisplay.Value.ToString("dd.MM.yyyy") : "-")</td>
+                                            <td>@ticket.Email</td>
+                                            <td>@(string.IsNullOrWhiteSpace(ticket.ContactPhoneNumber) ? "-" : ticket.ContactPhoneNumber)</td>
+                                            <td>@(ticket.SeatNumber ?? "-")</td>
+                                            <td>@ticket.SeatClass</td>
+                                            <td>@ticket.BaggageOption</td>
+                                            <td>@ticket.TicketPrice.ToString("N2")</td>
+                                            <td>@(ticket.BaggageFee > 0 ? ticket.BaggageFee.ToString("N2") : "-")</td>
+                                            <td>
+                                                @if (ticket.Status == TicketStatus.Reserved)
+                                                {
+                                                    <span class="badge badge-warning">Rezerve</span>
+                                                }
+                                                else if (ticket.Status == TicketStatus.Confirmed)
+                                                {
+                                                    <span class="badge badge-success">Onaylı</span>
+                                                }
+                                                else if (ticket.Status == TicketStatus.CheckedIn)
+                                                {
+                                                    <span class="badge badge-info">Check-in Yapıldı</span>
+                                                }
+                                                else if (ticket.Status == TicketStatus.Cancelled)
+                                                {
+                                                    <span class="badge badge-danger">İptal</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">@ticket.Status</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    @* Yolcular (bilet olmayan rezervasyonlar için - Tur, Otel, Araç) *@
+                    else if (Model.Passengers != null && Model.Passengers.Any())
+                    {
+                        <h5 class="mt-4 mb-3"><i class="fas fa-users"></i> Yolcular (@Model.Passengers.Count)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Ad Soyad</th>
+                                        <th>Email</th>
+                                        <th>Yolcu Tipi</th>
+                                        <th>Doğum Tarihi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var passenger in Model.Passengers)
+                                    {
+                                        <tr>
+                                            <td><strong>@passenger.PassengerFirstName @passenger.PassengerLastName</strong></td>
+                                            <td>@(passenger.Email ?? "-")</td>
+                                            <td>@(passenger.PassengerType ?? "-")</td>
+                                            <td>@(passenger.DateOfBirthDisplay.HasValue ? passenger.DateOfBirthDisplay.Value.ToString("dd.MM.yyyy") : "-")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-users"></i> Yolcu bilgisi bulunamadı.
+                        </div>
+                    }
+
+                    @* Ödeme İşlemleri (ödeme ve iade listesi) *@
+                    @if (Model.Payments != null && Model.Payments.Any())
+                    {
+                        <h5 class="mt-4 mb-3"><i class="fas fa-credit-card"></i> Ödeme İşlemleri (@Model.Payments.Count)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Tutar</th>
+                                        <th>Para Birimi</th>
+                                        <th>Ödeme Yöntemi</th>
+                                        <th>İşlem Tipi</th>
+                                        <th>Durum</th>
+                                        <th>Tarih</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var payment in Model.Payments)
+                                    {
+                                        <tr>
+                                            <td><small class="text-muted">@payment.TransactionId</small></td>
+                                            <td>@payment.TransactionAmount.ToString("N2")</td>
+                                            <td>@payment.Currency</td>
+                                            <td>@payment.PaymentMethod</td>
+                                            <td>
+                                                @if (payment.TransactionType == TransactionType.Payment)
+                                                {
+                                                    <span class="badge badge-success">Ödeme</span>
+                                                }
+                                                else if (payment.TransactionType == TransactionType.Refund)
+                                                {
+                                                    <span class="badge badge-info">İade</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-secondary">@payment.TransactionType</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (payment.PaymentStatus == PaymentStatus.Paid)
+                                                {
+                                                    <span class="badge badge-success">Ödendi</span>
+                                                }
+                                                else if (payment.PaymentStatus == PaymentStatus.Refunded)
+                                                {
+                                                    <span class="badge badge-info">İade Edildi</span>
+                                                }
+                                                else if (payment.PaymentStatus == PaymentStatus.Failed)
+                                                {
+                                                    <span class="badge badge-danger">Başarısız</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">@payment.PaymentStatus</span>
+                                                }
+                                            </td>
+                                            <td>@payment.TransactionDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Status != ReservationStatus.Cancelled && Model.Status != ReservationStatus.PaymentFailed)
+        {
+            <div class="col-lg-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 bg-danger text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-exclamation-triangle"></i> Tehlikeli İşlemler
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small mb-3">
+                            <i class="fas fa-info-circle"></i> Bu işlem geri alınamaz. Rezervasyon iptal edildiğinde tüm biletler iptal olur ve koltuklar serbest bırakılır. Ödeme yapılmışsa otomatik iade kaydı oluşturulur.
+                        </p>
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('⚠️ DİKKAT!\n\nBu rezervasyonu iptal etmek istediğinizden emin misiniz?\n\n• Tüm biletler iptal edilecek\n• Koltuklar serbest bırakılacak\n• Ödeme iade edilecek (otomatik)\n• Bu işlem geri alınamaz\n\nDevam etmek istiyor musunuz?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-times-circle"></i> Rezervasyonu İptal Et
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

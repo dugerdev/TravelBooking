@@ -1,0 +1,62 @@
+@model string
+
+@* Error Display Component *@
+@if (!string.IsNullOrEmpty(Model))
+{
+    <div class="error-display-container">
+        <div class="error-display">
+            <div class="error-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="error-content">
+                <h4>An Error Occurred</h4>
+                <p>@Model</p>
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left me-2"></i>Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .error-display-container {
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .error-display {
+        text-align: center;
+        max-width: 500px;
+        padding: 3rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        color: white;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        animation: shake 0.5s ease-in-out;
+    }
+
+    .error-content h4 {
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .error-content p {
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+    @@keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+</style>

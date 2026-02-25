@@ -1,0 +1,166 @@
+# ============================================================================
+# TravelBooking - Comprehensive .gitignore
+# ============================================================================
+
+# ──────────────────────────────────────────────────────────────────────────────
+# .NET / C# Build Output
+# ──────────────────────────────────────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# NuGet
+# ──────────────────────────────────────────────────────────────────────────────
+packages/
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Visual Studio
+# ──────────────────────────────────────────────────────────────────────────────
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+*.DotSettings.user
+*.VisualState.xml
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+launchSettings.json.user
+*.GhostDoc.xml
+_TeamCity*
+*.btm.cs
+*.odx.cs
+*.xsd.cs
+*.Cache
+!*.[Cc]ache/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# JetBrains Rider / IntelliJ
+# ──────────────────────────────────────────────────────────────────────────────
+.idea/
+*.sln.iml
+
+# ──────────────────────────────────────────────────────────────────────────────
+# VS Code
+# ──────────────────────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ──────────────────────────────────────────────────────────────────────────────
+# MSBuild / Build Artifacts
+# ──────────────────────────────────────────────────────────────────────────────
+*.pidb
+*.svclog
+*.scc
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.e2e
+*.coverage
+*.coveragexml
+[Tt]est[Rr]esult*/
+[Dd]ebugPublic/
+[Rr]eleases/
+BenchmarkDotNet.Artifacts/
+StyleCopReport.xml
+*.publishproj
+PublishScripts/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Entity Framework Migrations (keep migrations, ignore snapshots cache)
+# ──────────────────────────────────────────────────────────────────────────────
+# Keep: Migrations/*.cs files are tracked
+# Ignore: generated snapshot caches if any
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Secrets & Sensitive Configuration
+# ──────────────────────────────────────────────────────────────────────────────
+.env
+*.env
+*.env.local
+*.env.development
+*.env.production
+*.secrets.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.*.Production.json
+appsettings.*.Staging.json
+secrets/
+**/usersecrets/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# SSL / Certificates
+# ──────────────────────────────────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+!*.crt.example
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Docker
+# ──────────────────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Node.js (for front-end tooling if any)
+# ──────────────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp/
+.pnp.js
+
+# ──────────────────────────────────────────────────────────────────────────────
+# OS Generated Files
+# ──────────────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Temporary / Misc
+# ──────────────────────────────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+*.orig
+*.log
+*.sql.gz
+MigrationBackup/

@@ -1,0 +1,113 @@
+﻿@model List<TravelBooking.Web.DTOs.Airports.AirportDto>
+@{
+    ViewData["Title"] = "Havalimanları";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Havalimanları</h1>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAirportModal">
+            <i class="fas fa-plus"></i> Yeni Havalimanı Ekle
+        </button>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tüm Havalimanları</h6>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>IATA</th>
+                                <th>Ad</th>
+                                <th>Şehir</th>
+                                <th>Ülke</th>
+                                <th style="width: 140px;" class="text-center">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var airport in Model)
+                            {
+                                <tr>
+                                    <td><strong>@airport.IATA_Code</strong></td>
+                                    <td>@airport.Name</td>
+                                    <td>@airport.City</td>
+                                    <td>@airport.Country</td>
+                                    <td class="text-center">
+                                        <a asp-action="Edit" asp-route-id="@airport.Id" class="btn btn-sm btn-primary" title="Düzenle">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@airport.Id" class="btn btn-sm btn-danger" title="Sil">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Henüz havalimanı bulunmamaktadır veya liste alınamadı.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add Airport Modal -->
+<div class="modal fade" id="addAirportModal" tabindex="-1" role="dialog" aria-labelledby="addAirportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAirportModalLabel">Yeni Havalimanı Ekle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="IATA_Code">IATA Kodu <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="IATA_Code" name="IATA_Code" required maxlength="3" placeholder="Örn: IST" style="text-transform: uppercase;">
+                        <small class="form-text text-muted">3 harfli IATA kodu (Örn: IST, AYT, ESB)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="Name">Havalimanı Adı <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Name" name="Name" required placeholder="Örn: İstanbul Havalimanı">
+                    </div>
+                    <div class="form-group">
+                        <label for="City">Şehir <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="City" name="City" required placeholder="Örn: İstanbul">
+                    </div>
+                    <div class="form-group">
+                        <label for="Country">Ülke <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="Country" name="Country" required placeholder="Örn: Türkiye">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // IATA kodunu otomatik uppercase yap
+    document.getElementById('IATA_Code').addEventListener('input', function(e) {
+        e.target.value = e.target.value.toUpperCase();
+    });
+</script>

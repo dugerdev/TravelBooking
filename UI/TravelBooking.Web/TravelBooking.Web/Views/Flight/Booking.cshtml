@@ -1,0 +1,357 @@
+@model TravelBooking.Web.ViewModels.Flights.FlightBookingViewModel
+@using System
+@{
+    ViewData["Title"] = "Flight Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var selectedCurrency = ViewBag.SelectedCurrency as string ?? "TRY";
+    var flightCurrency = Model?.Currency ?? "USD";
+    var basePriceForForm = Model?.IsRoundTrip == true ? Model.TotalPrice : (Model?.Price ?? 0);
+    var convertedBasePrice = CurrencyHelper.ConvertPrice(basePriceForForm, flightCurrency, selectedCurrency);
+    var meal15 = CurrencyHelper.ConvertPrice(15, "USD", selectedCurrency);
+    var meal25 = CurrencyHelper.ConvertPrice(25, "USD", selectedCurrency);
+    var meal40 = CurrencyHelper.ConvertPrice(40, "USD", selectedCurrency);
+    var bag20 = CurrencyHelper.ConvertPrice(20, "USD", selectedCurrency);
+    var bag40 = CurrencyHelper.ConvertPrice(40, "USD", selectedCurrency);
+    var bag60 = CurrencyHelper.ConvertPrice(60, "USD", selectedCurrency);
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_booking.css">
+}
+
+
+
+<!-- flight-booking-hero -->
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Flight Booking</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+
+
+
+
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Flight-Booking Start -->
+    <div class="page-content m-0">
+        <section class="flight-booking" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-8">
+                        <div class="booking-form">
+                            <form asp-controller="Flight" asp-action="InitiatePayment" method="post" class="form-wizard" id="flight-booking-form" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ExternalFlightId" value="@Model?.ExternalFlightId" />
+                                <input type="hidden" id="baseFlightPrice" name="BasePrice" value="@(convertedBasePrice.ToString(System.Globalization.CultureInfo.InvariantCulture))" />
+                                <input type="hidden" id="passengerCount" name="PassengerCount" value="@(ViewBag.InitialPassengerCount ?? 1)" />
+                                <input type="hidden" name="FlightNumber" value="@Model?.FlightNumber" />
+                                <input type="hidden" name="AirlineName" value="@Model?.AirlineName" />
+                                <input type="hidden" name="DepartureCity" value="@Model?.DepartureCity" />
+                                <input type="hidden" name="ArrivalCity" value="@Model?.ArrivalCity" />
+                                <input type="hidden" name="ScheduledDeparture" value="@(Model?.ScheduledDeparture.ToString("O") ?? "")" />
+                                <input type="hidden" name="ScheduledArrival" value="@(Model?.ScheduledArrival.ToString("O") ?? "")" />
+                                <input type="hidden" name="Currency" value="@selectedCurrency" />
+                                <input type="hidden" name="CabinClass" value="@(Model?.CabinClass ?? "Economy")" />
+
+                                <div class="wizard-content overflow-visible mb-24">
+                                    <fieldset id="step-2" class="tab-pane show wizard-fieldset p-0">
+                                        <div id="wizardValidator">
+                                            <div id="passenger-container">
+                                                <div class="passenger-block mb-32" id="passenger-1">
+                                                    <div class="detail-form p-24 bg-white shadow-sm br-12 border position-relative">
+                                                        <h4 class="black p-0 mb-40 passenger-title">Passenger 1 Details</h4>
+                                                        <div class="row">
+                                                            <!-- Gender Field -->
+                                                            <div class="col-sm-3 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_Gender" class="form-label">Gender</label>
+                                                                    <div class="select">
+                                                                        <select name="Passengers[0].Gender" id="Passengers_0_Gender" class="form-control wizard-required">
+                                                                            <option value="" selected disabled>Select Gender</option>
+                                                                            <option value="male">Male</option>
+                                                                            <option value="female">Female</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- First Name Field -->
+                                                            <div class="col-sm-5 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_FirstName" class="form-label fw-500">First Name *</label>
+                                                                    <div class="form-field-with-icon">
+                                                                        <i class="fa fa-user"></i>
+                                                                        <input type="text" id="Passengers_0_FirstName" class="form-control wizard-required" name="Passengers[0].FirstName" placeholder="Your first name">
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Last Name Field -->
+                                                            <div class="col-sm-4 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_LastName" class="form-label fw-500">Last Name *</label>
+                                                                    <div class="form-field-with-icon">
+                                                                        <i class="fa fa-user"></i>
+                                                                        <input type="text" id="Passengers_0_LastName" class="form-control wizard-required" name="Passengers[0].LastName" placeholder="Your last name">
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Email Field -->
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_Email" class="form-label fw-500">Email *</label>
+                                                                    <div class="form-field-with-icon">
+                                                                        <i class="fa fa-envelope"></i>
+                                                                        <input type="email" id="Passengers_0_Email" class="form-control wizard-required" name="Passengers[0].Email" placeholder="example@email.com">
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Country Field -->
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_Country" class="form-label fw-500">Country *</label>
+                                                                    <div class="select">
+                                                                        <select name="Passengers[0].Country" id="Passengers_0_Country" class="form-control wizard-required">
+                                                                            <option value="" selected disabled>Select country</option>
+                                                                            <option value="TR">Turkey</option>
+                                                                            <option value="US">United States</option>
+                                                                            <option value="GB">United Kingdom</option>
+                                                                            <option value="DE">Germany</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Phone Field -->
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="phone-input" class="form-label fw-500">Phone *</label>
+                                                                    <div class="form-field-with-icon">
+                                                                        <i class="fa fa-phone"></i>
+                                                                        <input type="tel" id="phone-input" class="form-control wizard-required only-numbers phone-input"
+                                                                               name="Passengers[0].Phone" placeholder="555 123 4567"
+                                                                               maxlength="10" inputmode="numeric" required>
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Birth Date Field -->
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label for="Passengers_0_BirthDate" class="form-label fw-500">Date of Birth *</label>
+                                                                    <div class="form-field-with-icon">
+                                                                        <i class="fa fa-calendar"></i>
+                                                                        <input type="text" id="Passengers_0_BirthDate" class="form-control wizard-required date-mask"
+                                                                               name="Passengers[0].BirthDate"
+                                                                               placeholder="dd/mm/yyyy" required>
+                                                                    </div>
+                                                                    <div class="wizard-form-error"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Flight Extras for this Passenger -->
+                                                    <div class="detail-form extra-item p-24 mt-3 bg-lightest-gray br-10 passenger-extras">
+                                                        <h5 class="black p-0 mb-24">Flight Extras for Passenger 1</h5>
+                                                        <div class="row">
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label class="form-label">Meal Type</label>
+                                                                    <div class="select">
+                                                                        <select name="Passengers[0].MealPrice" class="form-control wizard-required passenger-meal-select" onchange="calculateTotal()">
+                                                                            <option value="0" selected>No Meal (Standard)</option>
+                                                                            <option value="@(meal15.ToString(System.Globalization.CultureInfo.InvariantCulture))">Economy Breakfast (+ @CurrencyHelper.FormatPrice(meal15, selectedCurrency))</option>
+                                                                            <option value="@(meal25.ToString(System.Globalization.CultureInfo.InvariantCulture))">Hot Dinner & Drinks (+ @CurrencyHelper.FormatPrice(meal25, selectedCurrency))</option>
+                                                                            <option value="@(meal40.ToString(System.Globalization.CultureInfo.InvariantCulture))">Premium Chef's Menu (+ @CurrencyHelper.FormatPrice(meal40, selectedCurrency))</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-sm-6 mb-24">
+                                                                <div class="form-group">
+                                                                    <label class="form-label">Extra Baggage</label>
+                                                                    <div class="select">
+                                                                        <select name="Passengers[0].ExtraBaggagePrice" class="form-control wizard-required passenger-baggage-select" onchange="calculateTotal()">
+                                                                            <option value="0" selected>Standard (Included: @(Model?.BaggageWeight ?? 20) KG)</option>
+                                                                            <option value="@(bag20.ToString(System.Globalization.CultureInfo.InvariantCulture))">+10 KG Extra (+ @CurrencyHelper.FormatPrice(bag20, selectedCurrency))</option>
+                                                                            <option value="@(bag40.ToString(System.Globalization.CultureInfo.InvariantCulture))">+20 KG Extra (+ @CurrencyHelper.FormatPrice(bag40, selectedCurrency))</option>
+                                                                            <option value="@(bag60.ToString(System.Globalization.CultureInfo.InvariantCulture))">+30 KG Extra (+ @CurrencyHelper.FormatPrice(bag60, selectedCurrency))</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-40">
+                                                <button type="button" class="cus-btn btn-sec w-100"
+                                                        style="border: 2px dashed #4e73df; background: #f8f9fc; color: #4e73df; padding: 15px;"
+                                                        onclick="addNewPassenger()">
+                                                    <i class="fal fa-plus-circle"></i> Add Another Passenger
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-24">
+                                            <button type="submit" class="cus-btn w-100">
+                                                <i class="fal fa-arrow-right me-2"></i> Proceed to Payment
+                                            </button>
+                                        </div>
+                                    </fieldset>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 mb-lg-0 mb-32">
+                        <div class="flight-booking-detail light-shadow mb-32">
+                            <div class="flight-title">
+                                <h4 class="color-black">Your Booking Detail</h4>
+                            </div>
+                            <div class="box bg-white p-24">
+                                <h6 class="dark-gray mb-16">Departure</h6>
+                                <div class="flight-detail mb-32">
+                                    <div class="flight-departure">
+                                        <h5 class="color-black">@Model.ScheduledDeparture.ToString("HH:mm")</h5>
+                                        <h5 class="dark-gray text-end">@Model.DepartureCity</h5>
+                                    </div>
+                                    <div class="from-to text-center">
+                                        <h5 class="dark-gray">@Model.TotalDuration</h5>
+                                        <img src="~/assets/img/flynow/plane.png" alt="" style="width:24px;">
+                                        <h6 class="color-black">@(Model.StopCount == 0 ? "Non-stop" : Model.StopCount + " Stop")</h6>
+                                    </div>
+                                    <div class="flight-arrival">
+                                        <h5 class="color-black">@Model.ScheduledArrival.ToString("HH:mm")</h5>
+                                        <h5 class="dark-gray">@Model.ArrivalCity</h5>
+                                    </div>
+                                </div>
+                                @if (Model?.IsRoundTrip == true && Model.ReturnScheduledDeparture.HasValue && Model.ReturnScheduledArrival.HasValue)
+                                {
+                                    <hr class="my-24" />
+                                    <h6 class="dark-gray mb-16">Return</h6>
+                                    <div class="flight-detail">
+                                        <div class="flight-departure">
+                                            <h5 class="color-black">@Model.ReturnScheduledDeparture.Value.ToString("HH:mm")</h5>
+                                            <h5 class="dark-gray text-end">@(Model.ReturnDepartureCity ?? "")</h5>
+                                        </div>
+                                        <div class="from-to text-center">
+                                            <h5 class="dark-gray">@(Model.ReturnAirlineName ?? "")</h5>
+                                            <img src="~/assets/img/flynow/plane.png" alt="" style="width:24px;">
+                                            <h6 class="color-black">@(Model.ReturnFlightNumber ?? "")</h6>
+                                        </div>
+                                        <div class="flight-arrival">
+                                            <h5 class="color-black">@Model.ReturnScheduledArrival.Value.ToString("HH:mm")</h5>
+                                            <h5 class="dark-gray">@(Model.ReturnArrivalCity ?? "")</h5>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="flight-booking-detail light-shadow">
+                            <div class="flight-title">
+                                <h4 class="color-black">Price Summary</h4>
+                            </div>
+                            <div class="box bg-white p-24">
+                                <div class="d-flex align-items-center justify-content-between mb-24">
+                                    <div>
+                                        <h5 class="color-black">Ticket (Adult x <span id="display-passenger-count">1</span>)</h5>
+                                        <p class="dark-gray">Base fare for @Model.CabinClass</p>
+                                    </div>
+                                    <h5 id="summary-ticket" class="color-black">@CurrencyHelper.FormatPrice(convertedBasePrice, selectedCurrency)</h5>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-24">
+                                    <div><h5 class="color-black">Extras & Service</h5></div>
+                                    <h5 id="summary-extra" class="color-black">@CurrencyHelper.FormatPrice(0, selectedCurrency)</h5>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-24">
+                                    <div><h5 class="color-black">Taxes & Fees (10%)</h5></div>
+                                    <h5 id="summary-tax" class="color-black">@CurrencyHelper.FormatPrice(convertedBasePrice * 0.1m, selectedCurrency)</h5>
+                                </div>
+                                <hr class="bg-medium-gray mb-24">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div><h4 class="color-black">Total Amount</h4></div>
+                                    <h4 id="summary-total" class="color-black">@CurrencyHelper.FormatPrice(convertedBasePrice * 1.1m, selectedCurrency)</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Flight-Booking End -->
+
+</div>
+<!-- Main Content End -->
+
+@section Scripts {
+<script>
+    let currentPassengerCount = 1;
+    function applyDateMask(el) { if (!el || !el.length) return; $(el).inputmask("99/99/9999", { placeholder: "dd/mm/yyyy", showMaskOnHover: false }); }
+    function initPhoneInput(el) { if (!el) return; return window.intlTelInput(el, { initialCountry: "tr", separateDialCode: true, utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js" }); }
+    $(document).ready(function() {
+        applyDateMask($(".date-mask"));
+        initPhoneInput(document.querySelector(".phone-input"));
+        for (var i = 1; i < @(ViewBag.InitialPassengerCount ?? 1); i++) addNewPassenger();
+        calculateTotal();
+    });
+    function addNewPassenger() {
+        if (currentPassengerCount >= 9) return;
+        currentPassengerCount++;
+        var first = document.getElementById('passenger-1');
+        if (!first) return;
+        var clone = first.cloneNode(true);
+        clone.id = 'passenger-' + currentPassengerCount;
+        clone.querySelectorAll('input').forEach(function(i){ i.value = ''; });
+        clone.querySelectorAll('select').forEach(function(s){ s.selectedIndex = 0; });
+        clone.querySelector('.passenger-title').textContent = 'Passenger ' + currentPassengerCount + ' Details';
+        document.getElementById('passenger-container').appendChild(clone);
+        applyDateMask($(clone).find(".date-mask"));
+        reorderPassengerInputs();
+        calculateTotal();
+    }
+    function reorderPassengerInputs() {
+        document.querySelectorAll('.passenger-block').forEach(function(block, idx) {
+            block.querySelector('.passenger-title').textContent = 'Passenger ' + (idx + 1) + ' Details';
+            block.querySelectorAll('input, select').forEach(function(inp) {
+                if (inp.name) inp.name = inp.name.replace(/\[\d+\]/, '[' + idx + ']');
+            });
+        });
+        document.getElementById('passengerCount').value = document.querySelectorAll('.passenger-block').length;
+    }
+    function calculateTotal() {
+        var baseEl = document.getElementById('baseFlightPrice');
+        if (!baseEl) return;
+        var base = parseFloat(baseEl.value.replace(',', '.')) || 0;
+        var count = document.querySelectorAll('.passenger-block').length;
+        var extras = 0;
+        document.querySelectorAll('.passenger-block').forEach(function(b) {
+            var m = b.querySelector('.passenger-meal-select'); var bg = b.querySelector('.passenger-baggage-select');
+            extras += (parseInt(m?.value) || 0) + (parseInt(bg?.value) || 0);
+        });
+        var ticket = base * count;
+        var tax = (ticket + extras) * 0.1;
+        var total = ticket + extras + tax;
+        var cur = '@(ViewBag.SelectedCurrency ?? "TRY")';
+        var loc = cur === 'TRY' ? 'tr-TR' : (cur === 'EUR' ? 'de-DE' : 'en-US');
+        $("#display-passenger-count").text(count);
+        $("#summary-ticket").text(ticket.toLocaleString(loc, { style: 'currency', currency: cur }));
+        $("#summary-extra").text(extras.toLocaleString(loc, { style: 'currency', currency: cur }));
+        $("#summary-tax").text(tax.toLocaleString(loc, { style: 'currency', currency: cur }));
+        $("#summary-total").text(total.toLocaleString(loc, { style: 'currency', currency: cur }));
+    }
+    document.getElementById("flight-booking-form")?.addEventListener("submit", function() {
+        document.querySelectorAll(".phone-input").forEach(function(inp) {
+            var iti = window.intlTelInputGlobals?.getInstance?.(inp);
+            if (iti) inp.value = iti.getNumber();
+        });
+    });
+</script>
+}

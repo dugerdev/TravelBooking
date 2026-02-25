@@ -1,0 +1,114 @@
+﻿@using TravelBooking.Web.ViewModels
+@model SearchResultViewModel
+
+@{
+    ViewData["Title"] = "Arama Sonuclari";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="section-title text-center mb-5">
+        <h2>"@Model.SearchQuery" Icin Sonuclar</h2>
+        <p>Aradiginiz kriterlere uygun tum hizmetlerimiz asagida listelenmistir.</p>
+    </div>
+
+    <!-- Ucus sonuclari --->
+    <div class="search-category mb-5">
+        <h3 class="mb-3"><i class="fal fa-plane"></i> Ucuslar (@Model.Flights.Count)</h3>
+        <div class="row">
+            @if (!Model.Flights.Any())
+            {
+                <div class="col-12"><p class="alert alert-light">Aradiginiz kriterlere uygun ucus bulunamadi.</p></div>
+            }
+            else
+            {
+                @foreach (var flight in Model.Flights)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card shadow-sm p-3">
+                            <h5 class="text-primary">@flight.AirlineName</h5>
+                            <p class="mb-1"><strong>Kalkis:</strong> @flight.DepartureCity</p>
+                            <p class="mb-0"><strong>Varis:</strong> @flight.ArrivalCity</p>
+                            <hr />
+                            <span class="badge bg-success">@flight.Price.ToString("C2")</span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Bulunan haber listesi --->
+    <div class="search-category mb-5">
+        <h3 class="mb-3"><i class="fal fa-newspaper"></i> Haberler (@Model.NewsItems.Count)</h3>
+        <div class="row">
+            @if (!Model.NewsItems.Any())
+            {
+                <div class="col-12"><p class="alert alert-light">Ilgili haber veya icerik bulunamadi.</p></div>
+            }
+            else
+            {
+                @foreach (var news in Model.NewsItems)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <h5>@news.Title</h5>
+                                <p class="text-muted">@news.Content.Substring(0, Math.Min(news.Content.Length, 100))...</p>
+                                <a href="#" class="btn btn-link p-0">Devamini Oku</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Araba kiralama sonuclari -->
+    <div class="search-category mb-5">
+        <h3 class="mb-3"><i class="fal fa-car"></i> Kiralik Arabalar (@Model.Cars.Count)</h3>
+        <div class="row">
+            @if (!Model.Cars.Any())
+            {
+                <div class="col-12"><p class="alert alert-light">Uygun kiralik arac bulunamadi.</p></div>
+            }
+            else
+            {
+                @foreach (var car in Model.Cars)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card shadow-sm p-3">
+                            <h5>@car.CarBrand @car.CarModel</h5>
+                            <p class="mb-1">Vites: @car.Transmission</p>
+                            <p class="text-success font-weight-bold">Gunluk: @car.DailyPrice.ToString("C2")</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Tur ve gezi sonuclari -->
+    <div class="search-category mb-5">
+        <h3 class="mb-3"><i class="fal fa-map-marked-alt"></i> Turlar (@Model.ToursItems.Count)</h3>
+        <div class="row">
+            @if (!Model.ToursItems.Any())
+            {
+                <div class="col-12"><p class="alert alert-light">Aradiginiz bolgeye ait tur bulunamadi.</p></div>
+            }
+            else
+            {
+                @foreach (var tour in Model.ToursItems)
+                {
+                    <div class="col-md-4 mb-3">
+                        <div class="card shadow-sm p-3 border-left-info">
+                            <h5>@tour.TourName</h5>
+                            <p>Lokasyon: @tour.Destination</p>
+                            <p class="h6">@tour.Price.ToString("C2")</p>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

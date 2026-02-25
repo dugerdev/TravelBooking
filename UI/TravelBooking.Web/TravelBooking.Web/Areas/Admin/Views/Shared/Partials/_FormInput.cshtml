@@ -1,0 +1,21 @@
+@*
+    Label + Input + Validation message
+    Kullanım: @await Html.PartialAsync("Partials/_FormInput", new { Name = "Email", Label = "E-posta", Type = "email", Value = Model.Email, Required = true })
+*@
+@{
+    var name = ViewData["Name"] as string ?? "";
+    var label = ViewData["Label"] as string ?? name;
+    var type = ViewData["Type"] as string ?? "text";
+    var value = ViewData["Value"] as string ?? "";
+    var placeholder = ViewData["Placeholder"] as string ?? "";
+    var required = ViewData["Required"] as bool? ?? false;
+    var error = ViewData["Error"] as string ?? "";
+}
+<div class="form-group mb-3">
+    <label for="@name" class="form-label">@label @(required ? "*" : "")</label>
+    <input type="@type" class="form-control @(string.IsNullOrEmpty(error) ? "" : "is-invalid")" id="@name" name="@name" value="@value" placeholder="@placeholder" @(required ? "required" : "") />
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="invalid-feedback">@error</div>
+    }
+</div>

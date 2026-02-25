@@ -1,0 +1,170 @@
+﻿@model TravelBooking.Web.DTOs.Reservations.ReservationDto
+@using TravelBooking.Web.DTOs.Enums
+@{
+    ViewData["Title"] = "Rezervasyon Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Rezervasyon Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Rezervasyon Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">PNR:</th>
+                            <td><strong class="text-primary">@Model.PNR</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Kullanıcı ID:</th>
+                            <td>@Model.AppUserId</td>
+                        </tr>
+                        <tr>
+                            <th>Toplam Fiyat:</th>
+                            <td><strong>@Model.TotalPrice.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Durum:</th>
+                            <td>
+                                @switch (Model.Status.ToString())
+                                {
+                                    case "Pending":
+                                        <span class="badge badge-warning">Beklemede</span>
+                                        break;
+                                    case "Confirmed":
+                                        <span class="badge badge-success">Onaylandı</span>
+                                        break;
+                                    case "Cancelled":
+                                        <span class="badge badge-danger">İptal</span>
+                                        break;
+                                    case "Completed":
+                                        <span class="badge badge-info">Tamamlandı</span>
+                                        break;
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Ödeme Durumu:</th>
+                            <td>
+                                @if (Model.PaymentStatus.ToString() == "Paid")
+                                {
+                                    <span class="badge badge-success">Ödendi</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">Ödenmedi</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturma Tarihi:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        @if (Model.ReservationType == ReservationType.Car && (Model.CarPickUpDate.HasValue || Model.CarDropOffDate.HasValue || !string.IsNullOrWhiteSpace(Model.CarPickUpLocation) || !string.IsNullOrWhiteSpace(Model.CarDropOffLocation)))
+                        {
+                            <tr>
+                                <th>Alış yeri / tarihi:</th>
+                                <td>@(Model.CarPickUpLocation ?? "-") @(Model.CarPickUpDate.HasValue ? " · " + Model.CarPickUpDate.Value.ToString("dd.MM.yyyy") : "")</td>
+                            </tr>
+                            <tr>
+                                <th>Bırakış yeri / tarihi:</th>
+                                <td>@(Model.CarDropOffLocation ?? "-") @(Model.CarDropOffDate.HasValue ? " · " + Model.CarDropOffDate.Value.ToString("dd.MM.yyyy") : "")</td>
+                            </tr>
+                            @if (Model.CarPickUpDate.HasValue && Model.CarDropOffDate.HasValue)
+                            {
+                                var days = (int)(Model.CarDropOffDate.Value - Model.CarPickUpDate.Value).TotalDays;
+                                if (days < 1) { days = 1; }
+                                <tr>
+                                    <th>Kiralama süresi:</th>
+                                    <td><strong>@days gün</strong></td>
+                                </tr>
+                            }
+                        }
+                    </table>
+
+                    @if (Model.Tickets != null && Model.Tickets.Any())
+                    {
+                        <h5 class="mt-4 mb-3">Biletler (@Model.Tickets.Count)</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Bilet No</th>
+                                        <th>Yolcu</th>
+                                        <th>Email</th>
+                                        <th>Koltuk</th>
+                                        <th>Fiyat</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in Model.Tickets)
+                                    {
+                                        <tr>
+                                            <td>@ticket.TicketNumber</td>
+                                            <td>@(ticket.Passenger?.PassengerFirstName ?? "-") @(ticket.Passenger?.PassengerLastName ?? "")</td>
+                                            <td>@ticket.Email</td>
+                                            <td>@(ticket.SeatNumber ?? "-")</td>
+                                            <td>@ticket.TicketPrice.ToString("N2")</td>
+                                            <td>
+                                                @switch (ticket.Status.ToString())
+                                                {
+                                                    case "Active":
+                                                        <span class="badge badge-success">Aktif</span>
+                                                        break;
+                                                    case "Cancelled":
+                                                        <span class="badge badge-danger">İptal</span>
+                                                        break;
+                                                    case "Used":
+                                                        <span class="badge badge-info">Kullanıldı</span>
+                                                        break;
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.Status.ToString() != "Cancelled")
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Bu rezervasyonu iptal etmek istediğinizden emin misiniz?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-times-circle"></i> Rezervasyonu İptal Et
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            Bu rezervasyon zaten iptal edilmiş.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

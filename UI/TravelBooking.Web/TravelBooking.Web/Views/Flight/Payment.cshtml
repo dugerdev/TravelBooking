@@ -1,0 +1,204 @@
+@model TravelBooking.Web.ViewModels.Payments.FlightPaymentViewModel
+@{
+    ViewData["Title"] = "Secure Payment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var userCurrency = CookieHelper.GetCurrency();
+    var modelCurrency = Model.Currency ?? "TRY";
+    var convertedPrice = CurrencyHelper.ConvertPrice(Model.Price, modelCurrency, userCurrency);
+    var convertedSubtotal = CurrencyHelper.ConvertPrice(Model.Subtotal, modelCurrency, userCurrency);
+    var convertedTax = CurrencyHelper.ConvertPrice(Model.Tax, modelCurrency, userCurrency);
+    var convertedTotal = CurrencyHelper.ConvertPrice(Model.Total, modelCurrency, userCurrency);
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner mb-20">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">Secure <br class="title-break"> Payment</h1>
+                </div>
+                <span class="right-image right-image-icon" aria-hidden="true"><i class="icon-map-marker"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+
+<!-- Main Content Start -->
+<div class="page-content m-0">
+    <section class="flight-booking" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="booking-form">
+                        <form asp-controller="Flight" asp-action="CompletePayment" method="post">
+                            @Html.AntiForgeryToken()
+                            
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="FlightId" />
+                            <input type="hidden" asp-for="From" />
+                            <input type="hidden" asp-for="To" />
+                            <input type="hidden" asp-for="DepartureDate" />
+                            <input type="hidden" asp-for="ReturnDate" />
+                            <input type="hidden" asp-for="CabinClass" />
+                            <input type="hidden" asp-for="AdultCount" />
+                            <input type="hidden" asp-for="ChildCount" />
+                            <input type="hidden" asp-for="InfantCount" />
+                            <input type="hidden" asp-for="Price" />
+                            <input type="hidden" asp-for="Currency" />
+                            <input type="hidden" asp-for="PassengerName" />
+                            <input type="hidden" asp-for="PassengerEmail" />
+                            <input type="hidden" asp-for="PassengerPhone" />
+
+                            @await Html.PartialAsync("_ValidationSummary")
+
+                            <!-- Contact Information -->
+                            <div class="detail-form p-24 bg-white shadow-sm br-12 border mb-32">
+                                <h4 class="black p-0 mb-24">
+                                    <i class="fa fa-user me-2"></i>
+                                    Contact Information
+                                </h4>
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Full Name:</strong></p>
+                                        <p class="text-muted">@Model.PassengerName</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Email:</strong></p>
+                                        <p class="text-muted">@Model.PassengerEmail</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <p class="mb-2"><strong>Phone:</strong></p>
+                                        <p class="text-muted">@Model.PassengerPhone</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Form Partial -->
+                            @await Html.PartialAsync("~/Views/Shared/Partials/_PaymentForm.cshtml", Model)
+
+                            <div class="form-wizard-footer">
+                                <a asp-controller="Flight" asp-action="Booking" asp-route-flightId="@Model.FlightId" 
+                                   class="btn btn-secondary btn-lg me-3">
+                                    <i class="fa fa-arrow-left me-2"></i>
+                                    Back to Reservation
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fa fa-lock me-2"></i>
+                                    Complete Payment
+                                </button>
+                            </div>
+                            <hr class="my-4" />
+                            <div class="mb-3">
+                                <p class="text-muted small mb-2">Veya Stripe ile guvenli odeme:</p>
+                                <form asp-controller="Stripe" asp-action="CreateCheckoutSession" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="AmountKurus" value="@((long)Math.Round(Model.Total * 100))" />
+                                    <input type="hidden" name="Currency" value="@(Model.Currency?.ToLowerInvariant() ?? "try")" />
+                                    <input type="hidden" name="ProductName" value="Flight: @Model.From - @Model.To" />
+                                    <button type="submit" class="btn btn-outline-primary btn-lg">
+                                        <i class="fab fa-stripe me-2"></i>Pay with Stripe
+                                    </button>
+                                </form>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="flight-booking-detail light-shadow">
+                        <div class="flight-title">
+                            <h4 class="color-black">Order Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <div class="flight-route mb-24">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-center">
+                                        <h5 class="color-black mb-0">@Model.From</h5>
+                                        <p class="text-muted small">@Model.DepartureDate.ToString("MMM dd, yyyy")</p>
+                                    </div>
+                                    <div class="px-3">
+                                        <i class="fa fa-plane color-primary"></i>
+                                    </div>
+                                    <div class="text-center">
+                                        <h5 class="color-black mb-0">@Model.To</h5>
+                                        @if (Model.ReturnDate.HasValue)
+                                        {
+                                            <p class="text-muted small">@Model.ReturnDate.Value.ToString("MMM dd, yyyy")</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-chair me-2"></i>
+                                    Class:
+                                </span>
+                                <span class="light-black">@Model.CabinClass</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">
+                                    <i class="fa fa-users me-2"></i>
+                                    Passengers:
+                                </span>
+                                <span class="light-black">@Model.TotalPassengers</span>
+                            </div>
+                            
+                            @if (Model.AdultCount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-8">
+                                    <span class="text-muted small ms-4">Adults:</span>
+                                    <span class="text-muted small">@Model.AdultCount</span>
+                                </div>
+                            }
+                            @if (Model.ChildCount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-8">
+                                    <span class="text-muted small ms-4">Children:</span>
+                                    <span class="text-muted small">@Model.ChildCount</span>
+                                </div>
+                            }
+                            @if (Model.InfantCount > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-16">
+                                    <span class="text-muted small ms-4">Infants:</span>
+                                    <span class="text-muted small">@Model.InfantCount</span>
+                                </div>
+                            }
+                            
+                            <div class="d-flex justify-content-between mb-16">
+                                <span class="light-black">Subtotal:</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedSubtotal, userCurrency)</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-24">
+                                <span class="light-black">Tax & Fees (10%):</span>
+                                <span class="light-black">@CurrencyHelper.FormatPrice(convertedTax, userCurrency)</span>
+                            </div>
+                            
+                            <div class="border-top pt-16">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="color-black">Total:</h5>
+                                    <h5 class="color-primary">@CurrencyHelper.FormatPrice(convertedTotal, userCurrency)</h5>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3" role="alert">
+                                <i class="fa fa-info-circle me-2"></i>
+                                <small>Confirmation email will be sent after payment is processed.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

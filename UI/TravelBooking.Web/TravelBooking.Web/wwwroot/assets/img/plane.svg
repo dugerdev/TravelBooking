@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" fill="none">
+  <!-- Airplane - side view, prominent and recognizable -->
+  <g fill="#4d73fc">
+    <!-- Main body/fuselage -->
+    <path d="M20 140 L120 140 L180 120 L320 120 L360 140 L340 160 L120 160 L60 150 Z"/>
+    <!-- Tail fin -->
+    <path d="M20 130 L50 140 L20 150 Z"/>
+    <!-- Wings -->
+    <path d="M140 120 L140 60 L220 60 L220 120 Z"/>
+    <path d="M140 140 L140 200 L220 200 L220 140 Z"/>
+    <!-- Nose cone -->
+    <path d="M320 120 L360 140 L340 160 L320 150 Z"/>
+    <!-- Cockpit window -->
+    <ellipse cx="280" cy="140" rx="15" ry="12" fill="white" opacity="0.5"/>
+  </g>
+</svg>

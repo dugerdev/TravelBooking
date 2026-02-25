@@ -1,0 +1,28 @@
+<footer class="footer" data-aos="fade-up" data-aos-duration="1000">
+    <div class="footer-container">
+        <div class="footer-section about">
+            <a asp-controller="Home" asp-action="Index"><img src="~/assets/img/flynow/logo.png" alt="FlyNow Logo" class="footer-logo"></a>
+            <p>FlyNow is your trusted travel partner, offering fast, secure, and affordable flight booking services. From domestic trips to international adventures, we help you find the best deals and make your journey smooth and memorable.</p>
+        </div>
+        <div class="footer-section links">
+            <h4>Quick Links</h4>
+            <ul>
+                <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                <li><a asp-controller="Flight" asp-action="Listing">Flight Listing</a></li>
+                <li><a asp-controller="Flight" asp-action="Booking">Flight booking</a></li>
+                <li><a asp-controller="Account" asp-action="MyReservations">My Booking</a></li>
+                <li><a asp-controller="Pages" asp-action="AboutUs">About Us</a></li>
+                <li><a asp-controller="Pages" asp-action="Contact">Contact Us</a></li>
+            </ul>
+        </div>
+        <div class="footer-section contact">
+            <h4>Contact Us</h4>
+            <p>Email: support@flynow.com</p>
+            <p>Phone: +91 9876543210</p>
+            <p>Address: Bhopal, Madhya Pradesh, India</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© @DateTime.Now.Year FlyNow. All rights reserved.</p>
+    </div>
+</footer>

@@ -1,0 +1,371 @@
+@using System
+@using TravelBooking.Web.Helpers
+@{
+    ViewData["Title"] = "Car Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var selectedCurrency = ViewBag.SelectedCurrency as string ?? "TRY";
+    var currencySymbol = CurrencyHelper.GetCurrencySymbol(selectedCurrency);
+    var days = Math.Max(1, (int)(Model.ReturnDate - Model.PickupDate).TotalDays);
+    var pricePerDayConverted = CurrencyHelper.ConvertPrice(Model.Car.PricePerDay, Model.Car.Currency ?? "TRY", selectedCurrency);
+    var carHireBase = pricePerDayConverted * days;
+    var kaskoPriceConverted = CurrencyHelper.ConvertPrice(5000m, "TRY", selectedCurrency);
+}
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<!-- Hero Section -->
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Car Detail</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Benefits Start -->
+    <section class="benefit p-40 mb-64" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-xl-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-1.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">Free Cancellation</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-lg-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-2.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">No Hidden Charges</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 ">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-3.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">24/7 Customer Service</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Benefits End -->
+    <!-- Hotel Listing Start -->
+    <section class="hotel-listing mb-24">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xxl-8 col-xl-8 mb-xl-0 mb-32">
+                    <div class="hotel-block bg-white mb-32" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                        <div class="row align-items-center row-gap-4">
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <div class="bg-lightest-gray p-16 br-20">
+                                    <h5 class="light-black mb-4">@Model.Car.Brand @Model.Car.Model</h5>
+                                    <h6 class="dark-gray mb-48">@Model.Car.Category</h6>
+                                    <div class="image-block mb-12 text-center">
+                                        <a asp-controller="Car" asp-action="Detail" asp-route-id="@Model.Car.RawId"><img src="@ImageUrlHelper.GetImageSrc(Url, Model.Car.ImageUrl, "~/assets/img/car-1.svg", ApiOptions?.Value?.BaseUrl ?? "")" alt="@Model.Car.Brand @Model.Car.Model" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';"></a>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-24 mb-48">
+                                        <h4 class="color-black">@Model.Car.Seats&nbsp;<i class="fal fa-user"></i></h4>
+                                        <h4 class="color-black">@Model.Car.Doors&nbsp;<i class="fal fa-suitcase"></i></h4>
+                                        <h4 class="color-black">@Model.Car.Doors&nbsp;<i class="fal fa-car-alt"></i></h4>
+                                    </div>
+                                    <ul class="unstyled">
+                                        <li class="d-flex gap-2">
+                                            <h6 class="color-black mb-12"><i class="fal fa-check"></i>&nbsp;@Model.Car.Transmission Transmission</h6>
+                                        </li>
+                                        @if (Model.Car.HasAirConditioning)
+                                        {
+                                            <li class="d-flex gap-2">
+                                                <h6 class="color-black"><i class="fal fa-check"></i>&nbsp;Air Conditioning</h6>
+                                            </li>
+                                        }
+                                        @if (Model.Car.HasGPS)
+                                        {
+                                            <li class="d-flex gap-2">
+                                                <h6 class="color-black"><i class="fal fa-check"></i>&nbsp;GPS</h6>
+                                            </li>
+                                        }
+                                        <li class="d-flex gap-2">
+                                            <h6 class="color-black"><i class="fal fa-check"></i>&nbsp;@Model.Car.FuelType</h6>
+                                        </li>
+                                        <li class="d-flex gap-2">
+                                            <h6 class="color-black"><i class="fal fa-check"></i>&nbsp;Year: @Model.Car.Year</h6>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-5 col-sm-6">
+                                <div class="hotel-detail p-0">
+                                    <div class="d-flex gap-8 mb-16">
+                                        <i class="fal fa-map-marker-alt pt-1"></i>
+                                        <div>
+                                            <h6 class="light-black">Pick-Up Location:</h6>
+                                            <h6 class="dark-gray mb-16">@(string.IsNullOrEmpty(Model.Car.Location) ? "Meet & Greet" : Model.Car.Location)</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-8">
+                                        <i class="fal fa-gas-pump pt-1"></i>
+                                        <div>
+                                            <h6 class="light-black">Fuel Type:</h6>
+                                            <h6 class="dark-gray mb-16">@Model.Car.FuelType</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-8 mb-32">
+                                        <i class="fal fa-tachometer-alt-fast pt-1"></i>
+                                        <div>
+                                            <h6 class="light-black">Mileage:</h6>
+                                            <h6 class="dark-gray">Unlimited</h6>
+                                        </div>
+                                    </div>
+                                    <div class="brand-logo">
+                                        <img src="~/assets/img/flynow/icon-1.png" alt="" style="width:40px;height:40px;object-fit:contain;">
+                                        <h6 class="">@(Model.Car.Rating >= 9 ? "Very Good" : "Good")</h6>
+                                        <h6 class="rating color-white">@Model.Car.Rating.ToString("0.0")</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6">
+                                <div class="pricing-area">
+                                    <h6 class="pre-reg light-black mb-32">Pre-Registration Available</h6>
+                                    <h3 class="color-black fw-700">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.Car.PricePerDay, Model.Car.Currency, ViewBag.SelectedCurrency as string ?? "TRY") <span class="h6">/day</span></h3>
+                                    <h6 class="light-black mb-32">@Model.Car.ReviewCount reviews</h6>
+                                    <a asp-controller="Car" asp-action="Booking" 
+                                       asp-route-carId="@Model.Car.RawId"
+                                       asp-route-pickupDate="@Model.PickupDate.ToString("yyyy-MM-dd")"
+                                       asp-route-returnDate="@Model.ReturnDate.ToString("yyyy-MM-dd")"
+                                       asp-route-pickupLocation="@Model.PickupLocation"
+                                       class="cus-btn full-width mb-16">Select</a>
+                                    <a asp-controller="Pages" asp-action="Contact" class="cus-btn-2 btn-sec">Get a Quote</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="car-booking-detail" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                        <div class="car-title">
+                            <h5 class="color-black">Extras - <span class="h6">Payable on pickup</span></h5>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <p class="dark-gray fw-400 mb-24">Enhance your car rental experience by selecting the following extra services.</p>
+                            
+                            <!-- Kasko -->
+                            <div class="d-flex justify-content-between align-items-center mb-32 p-3 border rounded">
+                                <div class="d-flex align-items-center gap-32">
+                                    <i class="fal fa-shield-check fa-3x color-primary"></i>
+                                    <div>
+                                        <h5 class="light-black mb-8">Comprehensive Insurance - <span class="h6 color-primary">@currencySymbol @kaskoPriceConverted.ToString("N0")</span> <span class="h6 dark-gray">(one-time)</span></h5>
+                                        <p class="dark-gray fw-400">Vehicle damage insurance for the rental period. Covers damages to the rental vehicle.</p>
+                                    </div>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="kaskoCheck" style="width: 3em; height: 1.5em;">
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Driver -->
+                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                <div class="d-flex align-items-center gap-32">
+                                    <i class="fal fa-user-plus fa-2x color-primary"></i>
+                                    <div>
+                                        <h5 class="light-black mb-8">Additional Driver - <span class="h6 color-primary">@currencySymbol 50 / rental</span></h5>
+                                        <p class="dark-gray fw-400">Add a second driver to your rental.</p>
+                                    </div>
+                                </div>
+                                <div class="quantity quantity-wrap">
+                                    <input class="decrement" type="button" value="-">
+                                    <input type="text" name="quantity" value="0" maxlength="2" size="1" id="dec" class="number">
+                                    <input class="increment bg-primary color-white" type="button" value="+">
+                                </div>
+                            </div>
+                            
+                            <!-- Child Seat -->
+                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                <div class="d-flex align-items-center gap-32">
+                                    <i class="fal fa-baby-carriage fa-2x color-primary"></i>
+                                    <div>
+                                        <h5 class="light-black mb-8">Child Seat - <span class="h6 color-primary">@currencySymbol 30 / rental</span></h5>
+                                        <p class="dark-gray fw-400">Safety seat for small children.</p>
+                                    </div>
+                                </div>
+                                <div class="quantity quantity-wrap">
+                                    <input class="decrement" type="button" value="-">
+                                    <input type="text" name="quantity" value="0" maxlength="2" size="1" id="num" class="number">
+                                    <input class="increment bg-primary color-white" type="button" value="+">
+                                </div>
+                            </div>
+                            
+                            <!-- Booster Seat -->
+                            <div class="d-flex justify-content-between align-items-center mb-32">
+                                <div class="d-flex align-items-center gap-32">
+                                    <i class="fal fa-child fa-2x color-primary"></i>
+                                    <div>
+                                        <h5 class="light-black mb-8">Booster Seat - <span class="h6 color-primary">@currencySymbol 20 / rental</span></h5>
+                                        <p class="dark-gray fw-400">Booster seat for older children.</p>
+                                    </div>
+                                </div>
+                                <div class="quantity quantity-wrap">
+                                    <input class="decrement" type="button" value="-">
+                                    <input type="text" name="quantity" value="0" maxlength="2" size="1" id="inc" class="number">
+                                    <input class="increment bg-primary color-white" type="button" value="+">
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-center gap-16 mt-4">
+                                <div>
+                                    <a asp-controller="Pages" asp-action="Contact" class="cus-btn-2 btn-sec width-237">
+                                        <i class="fal fa-envelope me-2"></i>Get a Quote
+                                    </a>
+                                </div>
+                                <div>
+                                    <a asp-controller="Car" asp-action="Booking" 
+                                       asp-route-carId="@Model.Car.RawId"
+                                       asp-route-pickupDate="@Model.PickupDate.ToString("yyyy-MM-dd")"
+                                       asp-route-returnDate="@Model.ReturnDate.ToString("yyyy-MM-dd")"
+                                       asp-route-pickupLocation="@Model.PickupLocation"
+                                       class="cus-btn width-237">
+                                        <i class="fal fa-check me-2"></i>Make Reservation
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-4" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <div class="car-booking-detail light-shadow mb-32">
+                        <div class="car-title">
+                            <h4 class="color-black">Rental Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <div class="d-flex align-items-center gap-8 color-primary mb-12">
+                                <i class="fal fa-map-marker-alt"></i>
+                                <h6>Pick-up Location</h6>
+                            </div>
+                            <h5 class="color-black mb-12">@Model.PickupLocation</h5>
+                            <h6 class="color-black mb-32">@Model.PickupDate.ToString("ddd, dd MMM . hh:mm tt")</h6>
+                            <hr class="bg-dark-gray mb-32">
+                            <div class="d-flex align-items-center gap-8 color-primary mb-12">
+                                <i class="fal fa-map-marker-alt"></i>
+                                <h6>Drop-off Location</h6>
+                            </div>
+                            <h5 class="color-black mb-12">@Model.ReturnLocation</h5>
+                            <h6 class="color-black">@Model.ReturnDate.ToString("ddd, dd MMM . hh:mm tt")</h6>
+                        </div>
+                    </div>
+                    <div class="car-booking-detail light-shadow" id="car-price-summary"
+                         data-price-per-day="@pricePerDayConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                         data-days="@days"
+                         data-currency="@currencySymbol"
+                         data-kasko-price="@kaskoPriceConverted.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)"
+                         data-driver-price="50"
+                         data-child-price="30"
+                         data-booster-price="20">
+                        <div class="car-title">
+                            <h4 class="color-black">Price Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24">
+                            <div class="d-flex align-items-center justify-content-between mb-24">
+                                <div>
+                                    <h5 class="color-black">Car Hire Fee</h5>
+                                    <p class="dark-gray">@Model.Car.Brand @Model.Car.Model · @days day(s)</p>
+                                </div>
+                                <h5 class="color-black"><span id="summary-car-hire">@currencySymbol @carHireBase.ToString("N0")</span></h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-24" id="summary-row-kasko" style="display: none;">
+                                <div>
+                                    <h5 class="color-black">Comprehensive Insurance</h5>
+                                    <p class="dark-gray">One-time fee</p>
+                                </div>
+                                <h5 class="color-black"><span id="summary-kasko">@currencySymbol 0</span></h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-24" id="summary-row-driver" style="display: none;">
+                                <div>
+                                    <h5 class="color-black">Additional Driver</h5>
+                                    <p class="dark-gray">Extra driver</p>
+                                </div>
+                                <h5 class="color-black"><span id="summary-driver">@currencySymbol 0</span></h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-24" id="summary-row-child" style="display: none;">
+                                <div>
+                                    <h5 class="color-black">Child Toddler Seat</h5>
+                                    <p class="dark-gray">Child seat</p>
+                                </div>
+                                <h5 class="color-black"><span id="summary-child">@currencySymbol 0</span></h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-24" id="summary-row-booster" style="display: none;">
+                                <div>
+                                    <h5 class="color-black">Booster Seat</h5>
+                                    <p class="dark-gray">Booster seat</p>
+                                </div>
+                                <h5 class="color-black"><span id="summary-booster">@currencySymbol 0</span></h5>
+                            </div>
+                            <hr class="bg-medium-gray mb-24">
+                            <div class="d-flex align-items-center justify-content-between mb-24">
+                                <div>
+                                    <h4 class="color-black">Total</h4>
+                                </div>
+                                <h4 class="color-black"><span id="summary-total">@currencySymbol @carHireBase.ToString("N0")</span></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                    (function() {
+                        var box = document.getElementById('car-price-summary');
+                        if (!box) return;
+                        var pricePerDay = parseFloat(box.getAttribute('data-price-per-day')) || 0;
+                        var days = parseInt(box.getAttribute('data-days'), 10) || 1;
+                        var currency = box.getAttribute('data-currency') || '';
+                        var kaskoPrice = parseFloat(box.getAttribute('data-kasko-price')) || 5000;
+                        var driverPrice = parseFloat(box.getAttribute('data-driver-price')) || 50;
+                        var childPrice = parseFloat(box.getAttribute('data-child-price')) || 30;
+                        var boosterPrice = parseFloat(box.getAttribute('data-booster-price')) || 20;
+                        function parseIntVal(id) { var el = document.getElementById(id); return Math.max(0, parseInt(el && el.value, 10) || 0); }
+                        function updateSummary() {
+                            var kaskoChecked = document.getElementById('kaskoCheck') && document.getElementById('kaskoCheck').checked;
+                            var driverQty = parseIntVal('dec');
+                            var childQty = parseIntVal('num');
+                            var boosterQty = parseIntVal('inc');
+                            var carHire = pricePerDay * days;
+                            var kasko = kaskoChecked ? kaskoPrice : 0;
+                            var driver = driverQty * driverPrice;
+                            var child = childQty * childPrice;
+                            var booster = boosterQty * boosterPrice;
+                            var total = carHire + kasko + driver + child + booster;
+                            function setText(id, text) { var el = document.getElementById(id); if (el) el.textContent = text; }
+                            setText('summary-car-hire', currency + ' ' + carHire.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            setText('summary-kasko', currency + ' ' + kasko.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            setText('summary-driver', currency + ' ' + driver.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            setText('summary-child', currency + ' ' + child.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            setText('summary-booster', currency + ' ' + booster.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            setText('summary-total', currency + ' ' + total.toLocaleString('en-US', { maximumFractionDigits: 0 }));
+                            document.getElementById('summary-row-kasko').style.display = kasko ? '' : 'none';
+                            document.getElementById('summary-row-driver').style.display = driver ? '' : 'none';
+                            document.getElementById('summary-row-child').style.display = child ? '' : 'none';
+                            document.getElementById('summary-row-booster').style.display = booster ? '' : 'none';
+                        }
+                        ['kaskoCheck','dec','num','inc'].forEach(function(id) {
+                            var el = document.getElementById(id);
+                            if (el) { el.addEventListener('change', updateSummary); el.addEventListener('input', updateSummary); }
+                        });
+                        document.querySelectorAll('.hotel-listing .quantity-wrap').forEach(function(wrap) {
+                            wrap.addEventListener('click', function() { setTimeout(updateSummary, 100); });
+                        });
+                        updateSummary();
+                    })();
+                    </script>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hotel Listing End -->
+
+</div>
+<!-- Main Content End -->

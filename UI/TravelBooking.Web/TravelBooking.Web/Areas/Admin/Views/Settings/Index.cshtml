@@ -1,0 +1,135 @@
+﻿@model TravelBooking.Web.ViewModels.Admin.SettingsViewModel
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sistem Ayarları</h1>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+    @await Html.PartialAsync("_ValidationSummary")
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Genel Ayarlar</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateSettings" method="post" data-loading="true">
+                        @Html.AntiForgeryToken()
+
+                        <h5 class="mb-3">Site Bilgileri</h5>
+                        
+                        <div class="form-group">
+                            <label asp-for="SiteName"></label>
+                            <input asp-for="SiteName" class="form-control" />
+                            <span asp-validation-for="SiteName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="SiteEmail"></label>
+                            <input asp-for="SiteEmail" class="form-control" />
+                            <span asp-validation-for="SiteEmail" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h5 class="mb-3">Destek Bilgileri</h5>
+
+                        <div class="form-group">
+                            <label asp-for="SupportEmail"></label>
+                            <input asp-for="SupportEmail" class="form-control" />
+                            <span asp-validation-for="SupportEmail" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="SupportPhone"></label>
+                            <input asp-for="SupportPhone" class="form-control" />
+                            <span asp-validation-for="SupportPhone" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h5 class="mb-3">Sistem Ayarları</h5>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="MaintenanceMode" class="form-check-input" type="checkbox" />
+                            <label asp-for="MaintenanceMode" class="form-check-label"></label>
+                            <small class="form-text text-muted d-block">Bakım modu aktifken site kullanıcılara kapalı olur</small>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="AllowRegistration" class="form-check-input" type="checkbox" />
+                            <label asp-for="AllowRegistration" class="form-check-label"></label>
+                            <small class="form-text text-muted d-block">Yeni kullanıcı kayıtlarına izin ver</small>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="EmailVerificationRequired" class="form-check-input" type="checkbox" />
+                            <label asp-for="EmailVerificationRequired" class="form-check-label"></label>
+                            <small class="form-text text-muted d-block">Kayıt sonrası email doğrulama zorunlu olsun</small>
+                        </div>
+
+                        <hr class="my-4" />
+                        <h5 class="mb-3">Lokalizasyon</h5>
+
+                        <div class="form-group">
+                            <label asp-for="DefaultCurrency"></label>
+                            <select asp-for="DefaultCurrency" class="form-control">
+                                <option value="TRY">TRY - Türk Lirası</option>
+                                <option value="USD">USD - Amerikan Doları</option>
+                                <option value="EUR">EUR - Euro</option>
+                                <option value="GBP">GBP - İngiliz Sterlini</option>
+                            </select>
+                            <span asp-validation-for="DefaultCurrency" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DefaultLanguage"></label>
+                            <select asp-for="DefaultLanguage" class="form-control">
+                                <option value="tr-TR">Türkçe</option>
+                                <option value="en-US">English</option>
+                                <option value="de-DE">Deutsch</option>
+                                <option value="fr-FR">Français</option>
+                            </select>
+                            <span asp-validation-for="DefaultLanguage" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Ayarları Kaydet
+                            </button>
+                            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-secondary">
+                                İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Yardım</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Bakım Modu:</strong></p>
+                    <p class="small text-muted mb-3">Site bakımda iken sadece admin kullanıcılar erişebilir.</p>
+
+                    <p class="mb-2"><strong>Kayıt İzni:</strong></p>
+                    <p class="small text-muted mb-3">Kapalıysa yeni kullanıcı kayıtları engellenir.</p>
+
+                    <p class="mb-2"><strong>Email Doğrulama:</strong></p>
+                    <p class="small text-muted">Açıksa kullanıcılar email adreslerini doğrulamalıdır.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

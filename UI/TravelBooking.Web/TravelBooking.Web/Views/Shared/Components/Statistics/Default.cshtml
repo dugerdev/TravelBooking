@@ -1,0 +1,52 @@
+@model TravelBooking.Web.ViewsComponents.StatisticsViewModel
+
+<!-- Achievement Section Start -->
+<section class="achievement p-40">
+    <div class="container-fluid">
+        <div class="bg-white light-shadow br-20 achievements-block">
+            <div class="row align-items-center">
+                <div class="col-xl-6 col-lg-12 mb-xl-0 mb-24" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <h5 class="color-primary mb-16">Achievement</h5>
+                    <h3 class="h3 bold mb-8">Your Destination Awaits, Book Now</h3>
+                    <p class="dark-gray mb-24 w-90">Discover amazing destinations and create unforgettable memories. We've helped thousands of travelers explore the world with confidence and comfort.</p>
+                    <div class="counter-section mb-24">
+                        <div class="row row-gap-4">
+                            <div class="col-sm-6">
+                                <div class="counter-count bg-lightest-gray">
+                                    <div>
+                                        <span class="count h3 bold color-primary">@Model.TotalUsers.ToString("N0")</span>
+                                        <span class="h3 bold color-primary">+</span>
+                                        <h5 class="title white">Happy Customers</h5>
+                                    </div>
+                                    <i class="fas fa-users fa-2x color-primary opacity-50" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="counter-count bg-lightest-gray">
+                                    <div>
+                                        <span class="count h3 bold color-primary">@Model.TotalReservations.ToString("N0")</span>
+                                        <span class="h3 bold color-primary">+</span>
+                                        <h5 class="title white">Reservations Made</h5>
+                                    </div>
+                                    <img src="~/assets/img/user-2.png" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-md-flex gap-32 align-items-center">
+                        <h5 class="lightest-black mb-md-0 mb-16">
+                            Let's Connect Reach Out for More Information
+                        </h5>
+                        <a asp-controller="Pages" asp-action="Contact" class="cus-btn">Contact us</a>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-12 d-flex align-items-center justify-content-center" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <div class="achievement-illustration bg-lightest-gray br-20 p-40 d-flex align-items-center justify-content-center" style="min-height: 280px;">
+                        <i class="fas fa-globe-americas fa-5x color-primary opacity-25" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Achievement Section End -->

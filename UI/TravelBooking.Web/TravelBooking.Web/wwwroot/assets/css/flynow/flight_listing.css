@@ -1,0 +1,135 @@
+/* .flight-booking-hero{
+    padding: 20px;
+    background-color: #D0D7F3;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.flight-booking-hero h1{
+ font-size: 50px;
+ font-weight: 600;
+} */
+
+.flight-booking-hero {
+    background-color: #D0D7F3;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+.flight-booking-hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    color: #000000;
+    text-align: center;
+    flex: 1;
+}
+
+/* images ko responsive banate hai */
+.flight-booking-hero img {
+    max-width: 200px;
+    height: auto;
+}
+
+/* form  */
+.flight-listing{
+    margin-top: 12px;
+    margin-bottom: 15px;
+    width: 100%;
+    justify-items: center;
+}
+
+.flight-listing-1{
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: white;
+    border-radius: 12px;
+    width: 80%;
+    height: 150px;
+}
+
+.flight-detail-1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.flight-detail-1 img{
+    border-radius: 50%;
+}
+
+.flight-detail-1 div{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    
+}
+
+.flight-detail-2{
+    text-align: center;
+    line-height: 35px;
+}
+
+.flight-detail-2 button{
+    width: 120px;
+    height: 30px;
+    background-color: #0b8cd3;
+    border: none;
+    border-radius: 10px;
+    font-size: 17px;
+    color: white;
+    cursor: pointer;
+}
+
+.flight-detail-2 button:hover{
+    background-color: whitesmoke;
+    box-shadow: 3px 0px 3px  3px rgb(0,0,1,0.4);
+    color: black;
+    transition: 0.6s ease;
+}
+
+
+/* 📱 Tablet/Mobile responsive */
+@media (max-width: 768px) {
+    .flight-booking-hero {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .flight-listing-1{
+        flex-direction: column;
+        height: auto;
+    }
+    .flight-detail-1{
+        flex-direction: column;
+        height: auto;
+    }
+
+    .flight-booking-hero h1 {
+        font-size: 32px;
+    }
+
+    .flight-booking-hero img {
+        max-width: 150px;
+    }
+
+}
+
+/* 📱 Small phones */
+@media (max-width: 480px) {
+    .flight-booking-hero h1 {
+        font-size: 24px;
+    }
+
+    .flight-booking-hero img {
+        max-width: 120px;
+    }
+}

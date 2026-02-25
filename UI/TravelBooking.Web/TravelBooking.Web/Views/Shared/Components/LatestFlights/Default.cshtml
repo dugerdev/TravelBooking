@@ -1,0 +1,135 @@
+@model List<TravelBooking.Web.DTOs.Tours.TourDto>
+@using TravelBooking.Web.Helpers
+
+@{
+    var currency = CookieHelper.GetCurrency();
+    var placeholderImage = Url.Content("~/assets/img/placeholder.svg");
+}
+
+<!-- Tour Card Slider Start -->
+<section class="flight-card p-40 mb-40" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+    <div class="container-fluid">
+        <h3 class="lightest-black h3 bold mb-40">Featured Tours</h3>
+        <div class="flight-card-slider">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var tour in Model)
+                {
+                    var imageSrc = ImageUrlHelper.ImageSrc((IUrlHelper)Url, tour.ImageUrl, "~/assets/img/tour-1.svg");
+                    var convertedPrice = CurrencyHelper.ConvertPrice(tour.Price, tour.Currency, currency);
+                    
+                    <div class="flight-deal-block bg-white p-24">
+                        <div class="image-box mb-24">
+                            <a asp-controller="Tour" asp-action="Detail" asp-route-id="@tour.Id">
+                                <img src="@imageSrc" 
+                                     alt="@tour.Name" 
+                                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;"
+                                     onerror="this.onerror=null; this.src='@placeholderImage';">
+                            </a>
+                        </div>
+                        <div class="content-box">
+                            <h5 class="color-black mb-8">
+                                <a asp-controller="Tour" asp-action="Detail" asp-route-id="@tour.Id">
+                                    @tour.Name
+                                </a>
+                            </h5>
+                            <p class="light-black mb-24">
+                                <i class="far fa-map-marker-alt me-1"></i>@tour.Destination
+                                <span class="badge bg-primary-light primary ms-2">@tour.Duration Gun</span>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="price">
+                                    <h6 class="light-black mb-8 fw-500">@tour.Difficulty</h6>
+                                    <h5 class="lightest-black fw-500">@CurrencyHelper.FormatPrice(convertedPrice, currency)</h5>
+                                    <p class="color-medium-gray small mb-0">kisi basi</p>
+                                </div>
+                                <a asp-controller="Tour" asp-action="Detail" asp-route-id="@tour.Id"
+                                   class="cus-btn small-pad">Incele</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Fallback to static tour examples if no data -->
+                <div class="flight-deal-block bg-white p-24">
+                    <div class="image-box mb-24">
+                        <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Kapadokya">
+                            <img src="~/assets/img/destinations/cappadocia.jpg" alt="Kapadokya Turu" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                        </a>
+                    </div>
+                    <div class="content-box">
+                        <h5 class="color-black mb-8">
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Kapadokya">Kapadokya Balon Turu</a>
+                        </h5>
+                        <p class="light-black mb-24">
+                            <i class="far fa-map-marker-alt me-1"></i>Kapadokya
+                            <span class="badge bg-primary-light primary ms-2">3 Gun</span>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="price">
+                                <h6 class="light-black mb-8 fw-500">Orta Zorluk</h6>
+                                <h5 class="lightest-black fw-500">@CurrencyHelper.FormatPrice(2500, currency)</h5>
+                                <p class="color-medium-gray small mb-0">kisi basi</p>
+                            </div>
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Kapadokya"
+                               class="cus-btn small-pad">Incele</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flight-deal-block bg-white p-24">
+                    <div class="image-box mb-24">
+                        <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Antalya">
+                            <img src="~/assets/img/tour-1.svg" alt="Antalya Turu" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                        </a>
+                    </div>
+                    <div class="content-box">
+                        <h5 class="color-black mb-8">
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Antalya">Antalya Kultur Turu</a>
+                        </h5>
+                        <p class="light-black mb-24">
+                            <i class="far fa-map-marker-alt me-1"></i>Antalya
+                            <span class="badge bg-primary-light primary ms-2">5 Gun</span>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="price">
+                                <h6 class="light-black mb-8 fw-500">Kolay</h6>
+                                <h5 class="lightest-black fw-500">@CurrencyHelper.FormatPrice(1800, currency)</h5>
+                                <p class="color-medium-gray small mb-0">kisi basi</p>
+                            </div>
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Antalya"
+                               class="cus-btn small-pad">Incele</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="flight-deal-block bg-white p-24">
+                    <div class="image-box mb-24">
+                        <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Efes">
+                            <img src="~/assets/img/tour-1.svg" alt="Efes Turu" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
+                        </a>
+                    </div>
+                    <div class="content-box">
+                        <h5 class="color-black mb-8">
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Efes">Efes Antik Kenti</a>
+                        </h5>
+                        <p class="light-black mb-24">
+                            <i class="far fa-map-marker-alt me-1"></i>Izmir - Efes
+                            <span class="badge bg-primary-light primary ms-2">2 Gun</span>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="price">
+                                <h6 class="light-black mb-8 fw-500">Kolay</h6>
+                                <h5 class="lightest-black fw-500">@CurrencyHelper.FormatPrice(1200, currency)</h5>
+                                <p class="color-medium-gray small mb-0">kisi basi</p>
+                            </div>
+                            <a asp-controller="Tour" asp-action="Packages" asp-route-destination="Efes"
+                               class="cus-btn small-pad">Incele</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- Tour Card Slider End -->

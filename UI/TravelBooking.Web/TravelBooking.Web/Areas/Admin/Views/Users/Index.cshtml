@@ -1,0 +1,101 @@
+﻿@model TravelBooking.Web.DTOs.Common.PagedResultDto<TravelBooking.Web.Services.Admin.UserDto>
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Kullanıcı Yönetimi</h1>
+    </div>
+
+    @await Html.PartialAsync("_Notifications")
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tüm Kullanıcılar</h6>
+        </div>
+        <div class="card-body">
+            @if (Model?.Items != null && Model.Items.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Kullanıcı Adı</th>
+                                <th>Email</th>
+                                <th>Telefon</th>
+                                <th>Email Onaylı</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Items)
+                            {
+                                <tr>
+                                    <td>@user.UserName</td>
+                                    <td>@user.Email</td>
+                                    <td>@(user.PhoneNumber ?? "-")</td>
+                                    <td>
+                                        @if (user.EmailConfirmed)
+                                        {
+                                            <span class="badge badge-success">Onaylı</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">Onaysız</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
+                                        {
+                                            <span class="badge badge-danger">Kilitli</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">Aktif</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Detay
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Düzenle
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Sil
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                    <a class="page-link" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Henüz kullanıcı bulunmamaktadır.
+                </div>
+            }
+        </div>
+    </div>
+</div>

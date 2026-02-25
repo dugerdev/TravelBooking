@@ -1,0 +1,243 @@
+@model TravelBooking.Web.ViewModels.Flights.ManageBookingViewModel
+@{
+    ViewData["Title"] = "Manage Booking";
+}
+
+<section class="breadcrumb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="breadcrumb-content">
+                    <h2 class="color-white">Manage Booking</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Manage Booking</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="booking-details py-80">
+    <div class="container">
+        @if (Model.Reservation != null)
+        {
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="booking-info-card bg-white p-32 br-10 mb-24">
+                        <div class="d-flex justify-content-between align-items-center mb-32">
+                            <h3 class="color-black">Booking Details</h3>
+                            <span class="badge bg-success text-white px-3 py-2">@Model.Reservation.Status</span>
+                        </div>
+
+                        <div class="booking-reference mb-32">
+                            <h5 class="color-black mb-16">Booking Reference (PNR)</h5>
+                            <div class="pnr-code">
+                                <h2 class="primary">@Model.PNR</h2>
+                            </div>
+                        </div>
+
+                        @if (Model.Reservation.Flight != null)
+                        {
+                            <div class="flight-details mb-32">
+                                <h5 class="color-black mb-16">Flight Information</h5>
+                                <div class="flight-card bg-light p-24 br-10">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <h6 class="color-medium-gray mb-2">Departure</h6>
+                                            <h4 class="color-black">@Model.Reservation.Flight.DepartureAirportIATA</h4>
+                                            <p class="color-medium-gray">@Model.Reservation.Flight.ScheduledDeparture.ToString("dd MMM yyyy, HH:mm")</p>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <i class="fas fa-plane color-primary" style="font-size: 32px;"></i>
+                                            <p class="color-medium-gray mt-2">
+                                                @if (Model.Reservation.Flight.ScheduledArrival > Model.Reservation.Flight.ScheduledDeparture)
+                                                {
+                                                    var duration = Model.Reservation.Flight.ScheduledArrival - Model.Reservation.Flight.ScheduledDeparture;
+                                                    <text>@((int)duration.TotalHours)h @duration.Minutes m</text>
+                                                }
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <h6 class="color-medium-gray mb-2">Arrival</h6>
+                                            <h4 class="color-black">@Model.Reservation.Flight.ArrivalAirportIATA</h4>
+                                            <p class="color-medium-gray">@Model.Reservation.Flight.ScheduledArrival.ToString("dd MMM yyyy, HH:mm")</p>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.Reservation.Flight.FlightNumber))
+                                    {
+                                        <div class="mt-3">
+                                            <span class="badge bg-primary-light primary">Flight @Model.Reservation.Flight.FlightNumber</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.Reservation.Passengers != null && Model.Reservation.Passengers.Any())
+                        {
+                            <div class="passenger-details mb-32">
+                                <h5 class="color-black mb-16">Passenger Information</h5>
+                                @foreach (var passenger in Model.Reservation.Passengers)
+                                {
+                                    <div class="passenger-card bg-light p-24 br-10 mb-16">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="color-black">@passenger.FirstName @passenger.LastName</h6>
+                                                <p class="color-medium-gray mb-1">@passenger.PassengerType</p>
+                                                @if (!string.IsNullOrEmpty(passenger.Email))
+                                                {
+                                                    <p class="color-medium-gray mb-0"><i class="far fa-envelope me-2"></i>@passenger.Email</p>
+                                                }
+                                            </div>
+                                            <div class="col-md-6 text-end">
+                                                @if (!string.IsNullOrEmpty(passenger.PassportNumber))
+                                                {
+                                                    <p class="color-medium-gray mb-1">Passport: @passenger.PassportNumber</p>
+                                                }
+                                                @if (passenger.DateOfBirthDisplay.HasValue)
+                                                {
+                                                    <p class="color-medium-gray mb-0">DOB: @passenger.DateOfBirthDisplay.Value.ToString("dd MMM yyyy")</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        @if (Model.Reservation.Tickets != null && Model.Reservation.Tickets.Any())
+                        {
+                            <div class="ticket-details">
+                                <h5 class="color-black mb-16">Ticket Information</h5>
+                                @foreach (var ticket in Model.Reservation.Tickets)
+                                {
+                                    <div class="ticket-card bg-light p-24 br-10 mb-16">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="color-black">Ticket Number: @ticket.TicketNumber</h6>
+                                                @if (!string.IsNullOrEmpty(ticket.SeatNumber))
+                                                {
+                                                    <p class="color-medium-gray mb-0">Seat: @ticket.SeatNumber</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="color-medium-gray mb-0">Seat: Not assigned</p>
+                                                }
+                                            </div>
+                                            <div class="text-end">
+                                                <h6 class="primary">@ticket.Price.ToString("C")</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="booking-summary bg-white p-32 br-10 mb-24">
+                        <h5 class="color-black mb-24">Booking Summary</h5>
+                        
+                        <div class="summary-item d-flex justify-content-between mb-16">
+                            <span class="color-medium-gray">Booking Date</span>
+                            <span class="color-black">@Model.Reservation.CreatedAt.ToString("dd MMM yyyy")</span>
+                        </div>
+
+                        <div class="summary-item d-flex justify-content-between mb-16">
+                            <span class="color-medium-gray">Status</span>
+                            <span class="color-black fw-bold">@Model.Reservation.Status</span>
+                        </div>
+
+                        @if (Model.Reservation.Payment != null)
+                        {
+                            <div class="summary-item d-flex justify-content-between mb-16">
+                                <span class="color-medium-gray">Payment Method</span>
+                                <span class="color-black">@Model.Reservation.Payment.PaymentMethod</span>
+                            </div>
+
+                            <div class="summary-item d-flex justify-content-between mb-16">
+                                <span class="color-medium-gray">Payment Status</span>
+                                <span class="badge bg-success text-white">@Model.Reservation.Payment.Status</span>
+                            </div>
+                        }
+
+                        <hr class="my-24">
+
+                        <div class="total-amount d-flex justify-content-between">
+                            <h5 class="color-black">Total Amount</h5>
+                            <h5 class="primary">@Model.Reservation.TotalAmount.ToString("C")</h5>
+                        </div>
+
+                        @if (Model.Reservation.Status == TravelBooking.Web.DTOs.Enums.ReservationStatus.Confirmed)
+                        {
+                            <div class="mt-32">
+                                <form asp-action="CheckIn" method="post" class="mb-16">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingReference" value="@Model.PNR" />
+                                    <input type="hidden" name="lastName" value="@Model.Reservation.Passengers?.FirstOrDefault()?.LastName" />
+                                    <button type="submit" class="cus-btn w-100">
+                                        <i class="fas fa-check-circle me-2"></i>Check-in Now
+                                    </button>
+                                </form>
+                                
+                                <button onclick="window.print()" class="cus-btn btn-outline w-100">
+                                    <i class="fas fa-print me-2"></i>Print Booking
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="help-card bg-light p-24 br-10">
+                        <h6 class="color-black mb-16">Need Help?</h6>
+                        <p class="color-medium-gray mb-16">Contact our support team for assistance with your booking.</p>
+                        <a href="#" class="color-primary">Contact Support <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Booking information not available.
+            </div>
+        }
+    </div>
+</section>
+
+@section FlyNowStyles {
+    <style>
+        .pnr-code {
+            background: linear-gradient(135deg, #4D73FC 0%, #3a5dd9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .pnr-code h2 {
+            color: white !important;
+            letter-spacing: 8px;
+            font-weight: 700;
+            margin: 0;
+        }
+        .booking-info-card, .booking-summary {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .flight-card, .passenger-card, .ticket-card {
+            border: 1px solid #e0e0e0;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #4D73FC;
+            color: #4D73FC;
+        }
+        .btn-outline:hover {
+            background: #4D73FC;
+            color: white;
+        }
+    </style>
+}

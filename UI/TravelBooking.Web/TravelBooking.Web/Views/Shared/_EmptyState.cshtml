@@ -1,0 +1,58 @@
+@model (string Title, string Message, string Icon, string ActionText, string ActionUrl)
+
+@* Empty State Component *@
+<div class="empty-state-container">
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="@(Model.Icon ?? "fas fa-inbox")"></i>
+        </div>
+        <h3 class="empty-state-title">@(Model.Title ?? "No Results Found")</h3>
+        <p class="empty-state-message">@(Model.Message ?? "No results found matching your search criteria.")</p>
+        @if (!string.IsNullOrEmpty(Model.ActionText) && !string.IsNullOrEmpty(Model.ActionUrl))
+        {
+            <a href="@Model.ActionUrl" class="btn btn-primary mt-3">
+                @Model.ActionText
+            </a>
+        }
+    </div>
+</div>
+
+<style>
+    .empty-state-container {
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        max-width: 500px;
+    }
+
+    .empty-state-icon {
+        font-size: 5rem;
+        color: #cbd5e0;
+        margin-bottom: 1.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state-message {
+        color: #718096;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+</style>

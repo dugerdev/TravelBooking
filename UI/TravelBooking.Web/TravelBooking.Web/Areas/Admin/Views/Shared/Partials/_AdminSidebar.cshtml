@@ -1,0 +1,90 @@
+@using TravelBooking.Web.Configuration
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var user = HttpContextAccessor.HttpContext?.User;
+    var swaggerUrl = HttpContextAccessor.HttpContext?.Items["SwaggerUrl"] as string ?? "https://localhost:7283/swagger";
+
+    bool CanSeeItem(AdminMenuItem item)
+    {
+        if (user == null) return false;
+        if (item.RequiredRoles == null || item.RequiredRoles.Length == 0)
+            return user.IsInRole("Admin");
+        return item.RequiredRoles.Any(r => user.IsInRole(r));
+    }
+}
+<!-- Sidebar -->
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+    <!-- Sidebar - Brand -->
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-plane"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">TravelBooking Admin</div>
+    </a>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0">
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider">
+
+    @foreach (var group in AdminMenuConfig.GetMenuGroups())
+    {
+        var visibleItems = group.Items.Where(CanSeeItem).ToList();
+        if (visibleItems.Count == 0) continue;
+
+        <!-- Heading -->
+        <div class="sidebar-heading">@group.Heading</div>
+
+        @foreach (var item in visibleItems)
+        {
+            <li class="nav-item">
+                @if (item.IsExternal && !string.IsNullOrEmpty(item.ExternalUrl))
+                {
+                    var url = item.ExternalUrl!.Contains("swagger") ? swaggerUrl : item.ExternalUrl;
+                    <a class="nav-link" href="@url" target="_blank" rel="noopener">
+                        <i class="@item.Icon"></i>
+                        <span>@item.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="nav-link" asp-area="Admin" asp-controller="@item.Controller" asp-action="@item.Action">
+                        <i class="@item.Icon"></i>
+                        <span>@item.Label</span>
+                        @if (!string.IsNullOrEmpty(item.BadgeKey))
+                        {
+                            var count = HttpContextAccessor.HttpContext?.Items[item.BadgeKey] as int? ?? 0;
+                            @if (count > 0)
+                            {
+                                <span class="badge badge-@(item.BadgeKey == "PendingTestimonialsCount" ? "warning" : "danger") badge-counter">@count</span>
+                            }
+                        }
+                    </a>
+                }
+            </li>
+        }
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+    }
+
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block">
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+
+</ul>
+<!-- End of Sidebar -->

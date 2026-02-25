@@ -1,0 +1,44 @@
+<header class="navbar flynow-navbar" id="mainNavbar">
+    <a asp-controller="Home" asp-action="Index" class="navbar-brand">
+        <img src="~/assets/img/flynow/logo.png" alt="FlyNow Logo" class="logo" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="500">
+    </a>
+    <nav class="navbar-nav-wrap">
+        <ul id="nav-links">
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-controller="Flight" asp-action="Listing">Flights</a></li>
+            <li><a asp-controller="Car" asp-action="Listing">Cars</a></li>
+            <li><a asp-controller="Hotel" asp-action="Listing">Hotels</a></li>
+            <li><a asp-controller="Account" asp-action="MyReservations">My Booking</a></li>
+            <li><a asp-controller="Pages" asp-action="AboutUs">About</a></li>
+            <li><a asp-controller="Pages" asp-action="Contact">Contact</a></li>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li><a asp-controller="Account" asp-action="Logout" class="logout-link" data-method="post">Logout</a></li>
+            }
+            else
+            {
+                <li class="d-lg-none"><a onclick="showLogin()" class="login-nav">Login</a></li>
+                <li class="d-lg-none"><a onclick="showSignup()" class="login-nav1">Signup</a></li>
+            }
+        </ul>
+    </nav>
+    <div class="navbar-actions">
+        <div class="login">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="nav-btn nav-btn-logout">Logout</button>
+                </form>
+            }
+            else
+            {
+                <a onclick="showLogin()" class="nav-btn nav-btn-outline after">Login</a>
+                <a onclick="showSignup()" class="nav-btn nav-btn-primary after2">Sign Up</a>
+            }
+        </div>
+        <button type="button" class="navbar-toggle" onclick="showNavbar()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>

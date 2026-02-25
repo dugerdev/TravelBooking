@@ -1,0 +1,381 @@
+﻿@model TravelBooking.Web.DTOs.Reservations.ReservationDto
+@using TravelBooking.Web.DTOs.Enums
+@{
+    ViewData["Title"] = "Reservation Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="page-content m-0">
+    <section class="signup bg-white">
+        <div class="container">
+            <h2 class="mb-4">Reservation Details</h2>
+            @if (TempData["ReservationError"] is string err)
+            {
+                <div class="alert alert-danger">@err</div>
+            }
+            
+            <!-- Rezervasyon Bilgileri Karti -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Reservation Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>PNR:</strong> <span class="badge bg-primary fs-6">@Model.PNR</span></p>
+                            <p class="mb-2"><strong>Rezervasyon Tipi:</strong> @Model.ReservationType</p>
+                            <p class="mb-2"><strong>Date:</strong> @Model.ReservationDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>Total:</strong> <span class="text-success fs-5">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.TotalPrice, Model.Currency.ToString(), ViewBag.SelectedCurrency as string ?? "TRY")</span></p>
+                            <p class="mb-2"><strong>Status:</strong> 
+                                @if (Model.Status == ReservationStatus.Confirmed)
+                                {
+                                    <span class="badge bg-success">Confirmed</span>
+                                }
+                                else if (Model.Status == ReservationStatus.Pending)
+                                {
+                                    <span class="badge bg-warning">Pending</span>
+                                }
+                                else if (Model.Status == ReservationStatus.Cancelled)
+                                {
+                                    <span class="badge bg-danger">Cancelled</span>
+                                }
+                                else if (Model.Status == ReservationStatus.PaymentFailed)
+                                {
+                                    <span class="badge bg-danger">Payment Failed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.Status</span>
+                                }
+                            </p>
+                            <p class="mb-2"><strong>Payment Status:</strong> 
+                                @if (Model.PaymentStatus == PaymentStatus.Paid)
+                                {
+                                    <span class="badge bg-success">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Unpaid</span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    
+                    @if (Model.ReservationType == ReservationType.Flight)
+                    {
+                        @if (Model.Flight != null)
+                        {
+                            var depCity = !string.IsNullOrEmpty(Model.Flight.DepartureAirport?.City) ? Model.Flight.DepartureAirport.City : AirportDisplayHelper.GetCityName(Model.Flight.DepartureAirportIATA);
+                            var arrCity = !string.IsNullOrEmpty(Model.Flight.ArrivalAirport?.City) ? Model.Flight.ArrivalAirport.City : AirportDisplayHelper.GetCityName(Model.Flight.ArrivalAirportIATA);
+                            var depIATA = Model.Flight.DepartureAirportIATA ?? "-";
+                            var arrIATA = Model.Flight.ArrivalAirportIATA ?? "-";
+                            var fromTo = $"{depCity} ({depIATA}) → {arrCity} ({arrIATA})";
+                            <div class="alert alert-primary">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div>
+                                        <h5 class="mb-1"><i class="fas fa-plane me-2"></i>Flight Route</h5>
+                                        <h3 class="mb-0 text-primary">@fromTo</h3>
+                                        <small class="text-muted mt-1">
+                                            <i class="far fa-clock me-1"></i>Departure: @Model.Flight.ScheduledDeparture.ToString("dd.MM.yyyy HH:mm")
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="d-block fw-bold">@Model.Flight.FlightNumber</small>
+                                        <small class="text-muted">@Model.Flight.AirlineName</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (!string.IsNullOrEmpty(Model.ReservationSummary) && Model.ReservationSummary != "Ucus")
+                        {
+                            <div class="alert alert-primary">
+                                <h5 class="mb-1"><i class="fas fa-plane me-2"></i>Flight Route</h5>
+                                <h3 class="mb-0 text-primary">@AirportDisplayHelper.GetRouteDisplay(Model.ReservationSummary)</h3>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-plane me-2"></i>External Flight (Route information not available)
+                            </div>
+                        }
+                    }
+                    else if (Model.ReservationType == ReservationType.Car && !string.IsNullOrEmpty(Model.ReservationSummary))
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-car me-2"></i>@Model.ReservationSummary
+                        </div>
+                    }
+                    else if (!string.IsNullOrEmpty(Model.ReservationSummary))
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>@Model.ReservationSummary
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Arac Kiralama Bileti (Car rezervasyonlari icin - ucak bileti gibi) -->
+            @if (Model.ReservationType == ReservationType.Car)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Car Rental Ticket</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="border-bottom p-0" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                            <div class="card border-0 mb-0 bg-transparent">
+                                <div class="card-body p-4 text-white">
+                                    <div class="row align-items-center mb-3">
+                                        <div class="col-md-8">
+                                            <h4 class="mb-2"><i class="fas fa-car me-2"></i>@(Model.ReservationSummary ?? "Car Rental")</h4>
+                                            <p class="mb-0 opacity-75">PNR: <strong>@Model.PNR</strong></p>
+                                            <p class="mb-0 opacity-75">Rezervasyon Tarihi: @Model.ReservationDate.ToString("dd.MM.yyyy HH:mm")</p>
+                                            @if (Model.CarPickUpDate.HasValue || Model.CarDropOffDate.HasValue || !string.IsNullOrWhiteSpace(Model.CarPickUpLocation) || !string.IsNullOrWhiteSpace(Model.CarDropOffLocation))
+                                            {
+                                                <p class="mb-0 opacity-75 mt-2">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    <strong>Pick-up:</strong> @(Model.CarPickUpLocation ?? "-")
+                                                    @if (Model.CarPickUpDate.HasValue) { <text> · @Model.CarPickUpDate.Value.ToString("dd.MM.yyyy")</text> }
+                                                </p>
+                                                <p class="mb-0 opacity-75">
+                                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                                    <strong>Drop-off:</strong> @(Model.CarDropOffLocation ?? "-")
+                                                    @if (Model.CarDropOffDate.HasValue) { <text> · @Model.CarDropOffDate.Value.ToString("dd.MM.yyyy")</text> }
+                                                </p>
+                                                @if (Model.CarPickUpDate.HasValue && Model.CarDropOffDate.HasValue)
+                                                {
+                                                    var days = (int)(Model.CarDropOffDate.Value - Model.CarPickUpDate.Value).TotalDays;
+                                                    if (days < 1) { days = 1; }
+                                                    <p class="mb-0 opacity-75"><i class="fas fa-clock me-1"></i><strong>Rental Duration:</strong> @days days</p>
+                                                }
+                                            }
+                                        </div>
+                                        <div class="col-md-4 text-md-end">
+                                            <h3 class="mb-0">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.TotalPrice, Model.Currency.ToString(), ViewBag.SelectedCurrency as string ?? "TRY")</h3>
+                                            <p class="mb-0 small opacity-75">Total</p>
+                                            <span class="badge bg-success mt-2">@(Model.Status == ReservationStatus.Confirmed ? "Confirmed" : Model.Status.ToString())</span>
+                                        </div>
+                                    </div>
+                                    @if ((Model.Passengers ?? new List<TravelBooking.Web.DTOs.Passengers.PassengerDto>()).Any())
+                                    {
+                                        <hr class="my-3 border-white opacity-50">
+                                        <h6 class="mb-2"><i class="fas fa-user me-2"></i>Renter / Passenger</h6>
+                                        <div class="row">
+                                            @foreach (var p in Model.Passengers)
+                                            {
+                                                <div class="col-md-6 col-lg-4">
+                                                    <p class="mb-1">@p.PassengerFirstName @p.PassengerLastName</p>
+                                                    @if (!string.IsNullOrWhiteSpace(p.Email))
+                                                    {
+                                                        <p class="mb-0 small opacity-75">@p.Email</p>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Ucus Detaylari (sadece ucus rezervasyonlari icin) -->
+            @if (Model.ReservationType == ReservationType.Flight && Model.Flight != null)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-plane me-2"></i>Flight Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Flight Number:</strong> @Model.Flight.FlightNumber</p>
+                                <p class="mb-2"><strong>Havayolu:</strong> @Model.Flight.AirlineName</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Departure:</strong> @(Model.Flight.DepartureAirport?.City ?? "-") (@(Model.Flight.DepartureAirportIATA ?? "-"))</p>
+                                <p class="mb-2"><strong>Arrival:</strong> @(Model.Flight.ArrivalAirport?.City ?? "-") (@(Model.Flight.ArrivalAirportIATA ?? "-"))</p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Kalkis Tarihi:</strong> @Model.Flight.ScheduledDeparture.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-2"><strong>Arrival Date:</strong> @Model.Flight.ScheduledArrival.ToString("dd.MM.yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Biletler (ucus rezervasyonlari icin) -->
+            @if ((Model.Tickets ?? new List<TravelBooking.Web.DTOs.Reservations.TicketDto>()).Any())
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Tickets</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @foreach (var ticket in Model.Tickets)
+                        {
+                            <div class="border-bottom p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="card shadow-lg border-0 mb-0">
+                                    <div class="card-body p-4">
+                                        <!-- Ucus Guzergahi (From → To) -->
+                                        @if (Model.Flight != null)
+                                        {
+                                            <div class="row mb-4 align-items-center">
+                                                <div class="col-4 text-center">
+                                                    <h3 class="mb-0 text-primary fw-bold">@(Model.Flight.DepartureAirportIATA ?? "---")</h3>
+                                                    <small class="text-muted">@(Model.Flight.DepartureAirport?.City ?? "Departure")</small>
+                                                    <div class="mt-2">
+                                                        <small class="d-block fw-semibold">@Model.Flight.ScheduledDeparture.ToString("dd MMM yyyy")</small>
+                                                        <small class="d-block text-primary fw-bold">@Model.Flight.ScheduledDeparture.ToString("HH:mm")</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <i class="fas fa-plane fa-2x text-primary"></i>
+                                                    <div class="mt-2">
+                                                        <small class="d-block text-muted">@Model.Flight.FlightNumber</small>
+                                                        <small class="d-block text-muted">@Model.Flight.AirlineName</small>
+                                                    </div>
+                                                </div>
+                                                <div class="col-4 text-center">
+                                                    <h3 class="mb-0 text-success fw-bold">@(Model.Flight.ArrivalAirportIATA ?? "---")</h3>
+                                                    <small class="text-muted">@(Model.Flight.ArrivalAirport?.City ?? "Arrival")</small>
+                                                    <div class="mt-2">
+                                                        <small class="d-block fw-semibold">@Model.Flight.ScheduledArrival.ToString("dd MMM yyyy")</small>
+                                                        <small class="d-block text-success fw-bold">@Model.Flight.ScheduledArrival.ToString("HH:mm")</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="my-3">
+                                        }
+
+                                        <!-- Yolcu Bilgileri -->
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-2"><i class="fas fa-user me-2"></i>Passenger Information</h6>
+                                                <p class="mb-1"><strong>Full Name:</strong> @(ticket.Passenger?.PassengerFirstName ?? "-") @(ticket.Passenger?.PassengerLastName ?? "")</p>
+                                                <p class="mb-1"><strong>Email:</strong> @ticket.Email</p>
+                                                @if (ticket.Passenger != null && ticket.Passenger.DateOfBirthDisplay.HasValue)
+                                                {
+                                                    <p class="mb-1"><strong>Date of Birth:</strong> @ticket.Passenger.DateOfBirthDisplay.Value.ToString("dd.MM.yyyy")</p>
+                                                }
+                                                @if (!string.IsNullOrWhiteSpace(ticket.ContactPhoneNumber))
+                                                {
+                                                    <p class="mb-1"><strong>Phone:</strong> @ticket.ContactPhoneNumber</p>
+                                                }
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary mb-2"><i class="fas fa-info-circle me-2"></i>Ticket Details</h6>
+                                                <p class="mb-1"><strong>Ticket No:</strong> <span class="badge bg-dark">@ticket.TicketNumber</span></p>
+                                                <p class="mb-1"><strong>Seat:</strong> <span class="badge bg-info">@(ticket.SeatNumber ?? "-")</span></p>
+                                                <p class="mb-1"><strong>Sinif:</strong> @ticket.SeatClass</p>
+                                                <p class="mb-1"><strong>Baggage:</strong> @ticket.BaggageOption</p>
+                                                @if (ticket.BaggageFee > 0)
+                                                {
+                                                    <p class="mb-1"><strong>Bagaj Ucreti:</strong> @CurrencyHelper.FormatPriceInSelectedCurrency(ticket.BaggageFee, Model.Currency.ToString(), ViewBag.SelectedCurrency as string ?? "TRY")</p>
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- Bilet Fiyati -->
+                                        <div class="row">
+                                            <div class="col-12 text-end">
+                                                <h5 class="mb-0 text-success">
+                                                    <i class="fas fa-tag me-2"></i>
+                                                    @CurrencyHelper.FormatPriceInSelectedCurrency(ticket.TicketPrice, Model.Currency.ToString(), ViewBag.SelectedCurrency as string ?? "TRY")
+                                                </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else if ((Model.Passengers ?? new List<TravelBooking.Web.DTOs.Passengers.PassengerDto>()).Any() && Model.ReservationType != ReservationType.Car)
+            {
+                <!-- Yolcular (Tur, Otel - Arac icin bilet kartinda gosteriliyor) -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-users me-2"></i>Passengers</h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var passenger in Model.Passengers)
+                        {
+                            <div class="card mb-3 border-start border-success border-4">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><strong>Full Name:</strong> @passenger.PassengerFirstName @passenger.PassengerLastName</p>
+                                            @if (!string.IsNullOrEmpty(passenger.Email))
+                                            {
+                                                <p class="mb-1"><strong>Email:</strong> @passenger.Email</p>
+                                            }
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><strong>Passenger Type:</strong> @passenger.PassengerType</p>
+                                            @if (passenger.DateOfBirthDisplay.HasValue)
+                                            {
+                                                <p class="mb-1"><strong>Date of Birth:</strong> @passenger.DateOfBirthDisplay.Value.ToString("dd.MM.yyyy")</p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                var isTourHotelOrCar = Model.ReservationType == ReservationType.Tour || Model.ReservationType == ReservationType.Hotel || Model.ReservationType == ReservationType.Car;
+                if (isTourHotelOrCar)
+                {
+                    <!-- Tur/Otel/Arac: Rezervasyon sahibi + bilgilendirme mesaji -->
+                    @if (!string.IsNullOrWhiteSpace(Model.UserName))
+                    {
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0 text-dark"><i class="fas fa-user me-2"></i>Reservation Holder</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0"><strong>@Model.UserName</strong></p>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <!-- Ucus: Yolcu listesi bos veya yuklenemedi -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Passenger list for this reservation is currently not available.
+                        You can verify your reservation with PNR: <strong>@Model.PNR</strong>.
+                        Try refreshing the page or contact support.
+                    </div>
+                }
+            }
+
+            <!-- Aksiyon butonlari -->
+            <div class="d-flex flex-wrap gap-2 align-items-center mt-4">
+                @if (Model.Status != ReservationStatus.Cancelled && Model.Status != ReservationStatus.PaymentFailed)
+                {
+                    <form asp-action="CancelReservation" method="post" class="d-inline" onsubmit="return confirm('Bu rezervasyonu iptal etmek istediginize emin misiniz?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-times-circle me-2"></i>Cancel Reservation</button>
+                    </form>
+                }
+                <a asp-action="MyReservations" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Back to My Reservations</a>
+            </div>
+        </div>
+    </section>
+</div>

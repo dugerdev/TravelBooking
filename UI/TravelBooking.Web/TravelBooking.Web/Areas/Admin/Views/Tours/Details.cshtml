@@ -1,0 +1,126 @@
+@model TravelBooking.Web.DTOs.Tours.TourDto
+@{
+    ViewData["Title"] = "Tur Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Tur Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Tur Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.ImageUrl, "~/assets/img/tour-1.svg")" alt="@Model.Name" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';" />
+                        </div>
+                    }
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Tur Adı:</th>
+                            <td><strong class="text-primary">@Model.Name</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Varış Noktası:</th>
+                            <td>@Model.Destination</td>
+                        </tr>
+                        <tr>
+                            <th>Süre:</th>
+                            <td>@Model.Duration gün</td>
+                        </tr>
+                        <tr>
+                            <th>Fiyat:</th>
+                            <td><strong>@Model.Price.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Puan:</th>
+                            <td>@Model.Rating.ToString("N1") (@Model.ReviewCount yorum)</td>
+                        </tr>
+                        <tr>
+                            <th>Zorluk:</th>
+                            <td>@Model.Difficulty</td>
+                        </tr>
+                        <tr>
+                            <th>Maks. Grup:</th>
+                            <td>@Model.MaxGroupSize kişi</td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturulma:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <tr>
+                                <th>Açıklama:</th>
+                                <td>@Model.Description</td>
+                            </tr>
+                        }
+                        @if (Model.Highlights != null && Model.Highlights.Any())
+                        {
+                            <tr>
+                                <th>Öne Çıkanlar:</th>
+                                <td>
+                                    <ul class="mb-0">
+                                        @foreach (var h in Model.Highlights)
+                                        {
+                                            <li>@h</li>
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.Included != null && Model.Included.Any())
+                        {
+                            <tr>
+                                <th>Dahil Olanlar:</th>
+                                <td>
+                                    <ul class="mb-0">
+                                        @foreach (var inc in Model.Included)
+                                        {
+                                            <li>@inc</li>
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="fas fa-list"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,280 @@
+@using System
+@model TravelBooking.Web.ViewModels.Tours.TourPackagesViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Tour Package</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+    
+    @if (TempData["BookingError"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>
+                @TempData["BookingError"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    <!-- Benefits Start -->
+    <section class="benefit p-40" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-xl-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/benefit-1.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">Free Cancellation</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-lg-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/benefit-2.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">No Hidden Charges</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 ">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/benefit-3.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">24/7 Customer Service</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Benefits End -->
+    <!-- Hotel Listing Start -->
+    <section class="hotel-listing p-40 mb-24">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 mb-xl-0 mb-32">
+                    <div class="hotel-sidebar mb-32">
+                        <div class="hotel-sidebar_title">
+                            <h4 class="color-black">Search</h4>
+                        </div>
+                        <form asp-controller="Tour" asp-action="Packages" method="get" class="bg-white contact-form">
+                            <div class="hotel-info mb-16">
+                                <div class="custom-sel-input-block location-select">
+                                    <label for="destination" class="h6 color-medium-gray mb-2">Destinasyon</label>
+                                    <i class="fal fa-search"></i>
+                                    <input type="text" name="destination" value="@Model?.SearchDestination" class="sel-input location-input" id="destination" placeholder="Destinasyon ara...">
+                                </div>
+                            </div>
+                            <div class="hotel-info mb-16">
+                                <label for="minDuration" class="h6 color-medium-gray mb-2">Min. Sure (Gun)</label>
+                                <select name="minDuration" id="minDuration" class="form-control sel-input">
+                                    <option value="">Tumu</option>
+                                    <option value="1" selected="@(Model?.MinDuration == 1)">1+ gun</option>
+                                    <option value="3" selected="@(Model?.MinDuration == 3)">3+ gun</option>
+                                    <option value="5" selected="@(Model?.MinDuration == 5)">5+ gun</option>
+                                    <option value="7" selected="@(Model?.MinDuration == 7)">7+ gun</option>
+                                    <option value="14" selected="@(Model?.MinDuration == 14)">14+ gun</option>
+                                </select>
+                            </div>
+                            <div class="hotel-info mb-16">
+                                <label for="maxDuration" class="h6 color-medium-gray mb-2">Max. Sure (Gun)</label>
+                                <select name="maxDuration" id="maxDuration" class="form-control sel-input">
+                                    <option value="">Tumu</option>
+                                    <option value="3" selected="@(Model?.MaxDuration == 3)">3 gun</option>
+                                    <option value="7" selected="@(Model?.MaxDuration == 7)">7 gun</option>
+                                    <option value="14" selected="@(Model?.MaxDuration == 14)">14 gun</option>
+                                    <option value="21" selected="@(Model?.MaxDuration == 21)">21 gun</option>
+                                    <option value="30" selected="@(Model?.MaxDuration == 30)">30 gun</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="cus-btn full-width">Ara</button>
+                        </form>
+                    </div>
+                    <div class="hotel-sidebar">
+                        <div class="hotel-sidebar_title">
+                            <h4 class="color-black">Filtrele:</h4>
+                        </div>
+                        <div class="filter-block p-24 bg-white">
+                            <div class="title mb-24">
+                                <h5 class="color-black">Tur Suresi</h5>
+                                <p class="dark-gray small mb-0">Yukaridaki arama formundan sure araligi secebilirsiniz</p>
+                            </div>
+                            
+                            @if (Model?.Packages != null && Model.Packages.Any())
+                            {
+                                <hr class="bg-sec-gray mb-24">
+                                <div class="title mb-16">
+                                    <h5 class="color-black">Sonuclar</h5>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-16">
+                                    <span class="dark-gray">Toplam Tur:</span>
+                                    <span class="color-primary fw-600">@Model.Packages.Count</span>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.SearchDestination))
+                                {
+                                    <div class="d-flex justify-content-between align-items-center mb-16">
+                                        <span class="dark-gray">Destinasyon:</span>
+                                        <span class="color-black fw-500">@Model.SearchDestination</span>
+                                    </div>
+                                }
+                                @if (Model.MinDuration.HasValue || Model.MaxDuration.HasValue)
+                                {
+                                    <div class="d-flex justify-content-between align-items-center mb-16">
+                                        <span class="dark-gray">Sure:</span>
+                                        <span class="color-black fw-500">
+                                            @if (Model.MinDuration.HasValue && Model.MaxDuration.HasValue)
+                                            {
+                                                @($"{Model.MinDuration}-{Model.MaxDuration} gun")
+                                            }
+                                            else if (Model.MinDuration.HasValue)
+                                            {
+                                                @($"{Model.MinDuration}+ gun")
+                                            }
+                                            else
+                                            {
+                                                @($"Max {Model.MaxDuration} gun")
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                            }
+
+                            <hr class="bg-sec-gray mb-24 mt-24">
+                            <div class="title mb-16">
+                                <h5 class="color-black">Hizli Filtreler</h5>
+                            </div>
+                            <div class="mb-16">
+                                <a asp-controller="Tour" asp-action="Packages" asp-route-minDuration="1" asp-route-maxDuration="3" class="btn btn-outline-primary btn-sm w-100 mb-8">
+                                    Kisa Turlar (1-3 gun)
+                                </a>
+                            </div>
+                            <div class="mb-16">
+                                <a asp-controller="Tour" asp-action="Packages" asp-route-minDuration="4" asp-route-maxDuration="7" class="btn btn-outline-primary btn-sm w-100 mb-8">
+                                    Orta Turlar (4-7 gun)
+                                </a>
+                            </div>
+                            <div class="mb-16">
+                                <a asp-controller="Tour" asp-action="Packages" asp-route-minDuration="8" class="btn btn-outline-primary btn-sm w-100 mb-8">
+                                    Uzun Turlar (8+ gun)
+                                </a>
+                            </div>
+                            <div class="mt-24">
+                                <a asp-controller="Tour" asp-action="Packages" class="btn btn-secondary btn-sm w-100">
+                                    <i class="fal fa-redo me-2"></i>Filtreleri Temizle
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    @if (Model?.Packages == null || Model.Packages.Count == 0)
+                    {
+                        <div class="hotel-block bg-white mb-32 p-24">
+                            <p class="text-center dark-gray mb-0">Henuz tur paketi bulunmamaktadir.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var pkg in Model.Packages)
+                        {
+                            <div class="hotel-block bg-white mb-32">
+                                <div class="row align-items-center">
+                                    <div class="col-xxl-4 col-xl-5 col-md-4 col-sm-12" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                                        <div class="image-box tour-package">
+                                            <a asp-controller="Tour" asp-action="Detail" asp-route-id="@pkg.RawId"><img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, pkg.ImageUrl, "~/assets/img/tour-1.svg")" alt="@pkg.PackageName" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';"></a>
+                                            <h5 class="tour-days color-sec">@pkg.Duration Days</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-5 col-xl-4 col-md-5 col-sm-6" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                                        <div class="hotel-detail p-0 mt-sm-0 mt-2">
+                                            <a asp-controller="Tour" asp-action="Detail" asp-route-id="@pkg.RawId" class="mb-32 h4">@pkg.PackageName</a>
+                                            @if (pkg.Destinations?.Count > 0)
+                                            {
+                                                <div class="d-flex gap-1">
+                                                    <img src="~/assets/img/location-bk.svg" alt="">
+                                                    <h6 class="light-black">Destination:</h6>
+                                                </div>
+                                                <h6 class="dark-gray pl-28 mb-16">@string.Join(", ", pkg.Destinations)</h6>
+                                            }
+                                            @if (!string.IsNullOrEmpty(pkg.Description))
+                                            {
+                                                <h6 class="dark-gray mb-16">@(pkg.Description.Length > 100 ? pkg.Description.Substring(0, 100) + "..." : pkg.Description)</h6>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                                        <div class="pricing-area p-0">
+                                            <h6 class="pre-reg light-black mb-32">Pre-Registration available</h6>
+                                            <h3 class="color-black fw-700">@CurrencyHelper.FormatPriceInSelectedCurrency(pkg.Price, pkg.Currency, ViewBag.SelectedCurrency as string ?? "TRY") <span class="h6">/person</span></h3>
+                                            <a asp-controller="Tour" asp-action="Detail" asp-route-id="@pkg.RawId" class="cus-btn full-width mb-16">@Localizer["Select"]</a>
+                                            <a asp-controller="Pages" asp-action="Contact" class="cus-btn-2 btn-sec">@Localizer["EmailQuotes"]</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    @if (Model?.TotalPages > 1)
+                    {
+                        <div class="paginations">
+                            <ul class="unstyled">
+                                @if (Model.PageNumber > 1)
+                                {
+                                    <li class="arrow">
+                                        <a asp-controller="Tour" asp-action="Packages" asp-route-page="@(Model.PageNumber - 1)" asp-route-destination="@Model.SearchDestination" asp-route-minDuration="@Model.MinDuration" asp-route-maxDuration="@Model.MaxDuration" class="h4 fw-600 mb-0"><i class="far fa-chevron-left"></i></a>
+                                    </li>
+                                }
+                                @for (var i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="@(i == Model.PageNumber ? "active" : "")">
+                                        <a asp-controller="Tour" asp-action="Packages" asp-route-page="@i" asp-route-destination="@Model.SearchDestination" asp-route-minDuration="@Model.MinDuration" asp-route-maxDuration="@Model.MaxDuration" class="h6 fw-600 mb-0">@i</a>
+                                    </li>
+                                }
+                                @if (Model.PageNumber < Model.TotalPages)
+                                {
+                                    <li class="arrow">
+                                        <a asp-controller="Tour" asp-action="Packages" asp-route-page="@(Model.PageNumber + 1)" asp-route-destination="@Model.SearchDestination" asp-route-minDuration="@Model.MinDuration" asp-route-maxDuration="@Model.MaxDuration" class="h4 fw-600 mb-0"><i class="far fa-chevron-right"></i></a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    @if (Model?.TotalCount > 0 && Model.TotalPages <= 1)
+                    {
+                        <p class="dark-gray small mt-16">@Model.Packages.Count tur listeleniyor.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hotel Listing End -->
+
+
+</div>
+<!-- Main Content End -->

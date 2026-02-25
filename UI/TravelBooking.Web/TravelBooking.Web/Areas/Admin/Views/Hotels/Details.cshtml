@@ -1,0 +1,211 @@
+@model TravelBooking.Web.DTOs.Hotels.HotelDto
+@{
+    ViewData["Title"] = "Otel Detayı";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Otel Detayı</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert alert-info">@TempData["InfoMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Otel Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.ImageUrl, "~/assets/img/hotel.svg")" alt="@Model.Name" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;" />
+                        </div>
+                    }
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="200">Otel Adı:</th>
+                            <td><strong class="text-primary">@Model.Name</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Şehir:</th>
+                            <td>@Model.City</td>
+                        </tr>
+                        <tr>
+                            <th>Ülke:</th>
+                            <td>@Model.Country</td>
+                        </tr>
+                        <tr>
+                            <th>Adres:</th>
+                            <td>@Model.Address</td>
+                        </tr>
+                        <tr>
+                            <th>Yıldız:</th>
+                            <td>@Model.StarRating yıldız</td>
+                        </tr>
+                        <tr>
+                            <th>Gece Fiyatı:</th>
+                            <td><strong>@Model.PricePerNight.ToString("N2") @Model.Currency</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Puan:</th>
+                            <td>@Model.Rating.ToString("N1") (@Model.ReviewCount yorum)</td>
+                        </tr>
+                        <tr>
+                            <th>Ücretsiz WiFi:</th>
+                            <td>
+                                @if (Model.HasFreeWifi)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Otopark:</th>
+                            <td>
+                                @if (Model.HasParking)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Havuz:</th>
+                            <td>
+                                @if (Model.HasPool)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Restoran:</th>
+                            <td>
+                                @if (Model.HasRestaurant)
+                                {
+                                    <span class="badge badge-success">Var</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Yok</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Aktif:</th>
+                            <td>
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge badge-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">Pasif</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Oluşturulma:</th>
+                            <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <tr>
+                                <th>Açıklama:</th>
+                                <td>@Model.Description</td>
+                            </tr>
+                        }
+                    </table>
+                    @if (Model.Rooms != null && Model.Rooms.Any())
+                    {
+                        <h6 class="font-weight-bold text-primary mt-4 mb-3">Odalar ve Fiyatlar</h6>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> <strong>Not:</strong> Oda fiyatlarını değiştirmek için veritabanından manuel güncelleme yapmanız gerekiyor. 
+                            Standart: $30, Deluxe: $40, Suite: $60 (listing sayfasında standart oda fiyatı gösterilir).
+                        </div>
+                        <table class="table table-sm table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Oda Tipi</th>
+                                    <th>Fiyat</th>
+                                    <th>Para Birimi</th>
+                                    <th>Max Misafir</th>
+                                    <th>Açıklama</th>
+                                    <th>Müsait</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var room in Model.Rooms)
+                                {
+                                    <tr>
+                                        <td><strong>@room.Type</strong></td>
+                                        <td class="text-success font-weight-bold">@room.Price.ToString("N2")</td>
+                                        <td>@room.Currency</td>
+                                        <td>@room.MaxGuests kişi</td>
+                                        <td>@room.Description</td>
+                                        <td>
+                                            @if (room.IsAvailable)
+                                            {
+                                                <span class="badge badge-success">Evet</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-secondary">Hayır</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-exclamation-triangle"></i> Bu otelde henüz oda tanımlanmamış. API'yi yeniden başlatarak otomatik oda ekleme yapılabilir.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">İşlemler</h6>
+                </div>
+                <div class="card-body">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-block mb-2">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="fas fa-list"></i> Listeye Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

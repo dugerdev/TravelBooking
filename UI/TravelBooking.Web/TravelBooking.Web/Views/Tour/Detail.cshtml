@@ -1,0 +1,200 @@
+@using System
+@model TravelBooking.Web.ViewModels.Tours.TourDetailViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model?.Tour?.Name ?? "Tour Detail";
+    var tour = Model?.Tour;
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">@(tour?.Name ?? "Tour")<br class="title-break"> Detail</h1>
+                </div>
+                <span class="right-image right-image-icon" aria-hidden="true"><i class="icon-map-marker"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    @if (tour == null)
+    {
+        <div class="container-fluid p-40">
+            <div class="alert alert-warning">Tur bulunamadi.</div>
+            <a asp-controller="Tour" asp-action="Packages" class="cus-btn">Tur Listesine Don</a>
+        </div>
+    }
+    else
+    {
+        <!-- Benefits Start -->
+        <section class="benefit p-40 bg-white" data-sal="slide-up" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-4 col-lg-6 col-md-6 mb-xl-0 mb-24">
+                        <div class="benefit-block bg-white">
+                            <div class="image-box">
+                                <img src="~/assets/img/benefit-1.png" alt="">
+                            </div>
+                            <div class="text-box">
+                                <h4 class="lightest-black">Free Cancellation</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6 mb-lg-0 mb-24">
+                        <div class="benefit-block bg-white">
+                            <div class="image-box">
+                                <img src="~/assets/img/benefit-2.png" alt="">
+                            </div>
+                            <div class="text-box">
+                                <h4 class="lightest-black">No Hidden Charges</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-6">
+                        <div class="benefit-block bg-white">
+                            <div class="image-box">
+                                <img src="~/assets/img/benefit-3.png" alt="">
+                            </div>
+                            <div class="text-box">
+                                <h4 class="lightest-black">24/7 Customer Service</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Benefits End -->
+        <!-- Tour Content Start -->
+        <section class="tour-images-wrapper bg-white p-4">
+            <div class="container-fluid">
+                <div class="row row-gap-4">
+                    <div class="col-lg-8">
+                        <div class="image-container mb-32">
+                            <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, tour.ImageUrl, "~/assets/img/tour-1.svg")" alt="@tour.Name" class="br-20" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';">
+                        </div>
+                        <div class="hotel-detail p-0 mt-sm-0 mt-2">
+                            <h2 class="mb-8">@tour.Name</h2>
+                            @if (tour.Rating > 0)
+                            {
+                                <div class="rating-star mb-24">
+                                    @for (var i = 0; i < 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i < Math.Round(tour.Rating) ? "color-sec" : "")"></i>
+                                    }
+                                    <span class="dark-gray ms-2">@tour.Rating.ToString("N1")</span>
+                                    @if (tour.ReviewCount > 0)
+                                    {
+                                        <span class="dark-gray">(@tour.ReviewCount reviews)</span>
+                                    }
+                                </div>
+                            }
+                            <div class="d-flex align-items-center flex-wrap gap-4 mb-24">
+                                @if (!string.IsNullOrEmpty(tour.Destination))
+                                {
+                                    <div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <img src="~/assets/img/location-bk.svg" alt="">
+                                            <h6 class="light-black">Destination:</h6>
+                                        </div>
+                                        <h6 class="dark-gray pl-28 mb-0">@tour.Destination</h6>
+                                    </div>
+                                }
+                                <div>
+                                    <div class="d-flex align-items-center gap-1">
+                                        <i class="fal fa-calendar-alt"></i>
+                                        <h6 class="light-black">Duration:</h6>
+                                    </div>
+                                    <h6 class="dark-gray pl-28 mb-0">@tour.Duration day(s)</h6>
+                                </div>
+                                @if (tour.MaxGroupSize > 0)
+                                {
+                                    <div>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <i class="fal fa-users"></i>
+                                            <h6 class="light-black">Max group:</h6>
+                                        </div>
+                                        <h6 class="dark-gray pl-28 mb-0">@tour.MaxGroupSize</h6>
+                                    </div>
+                                }
+                            </div>
+                            @if (!string.IsNullOrEmpty(tour.Description))
+                            {
+                                <h5 class="mb-16">Overview</h5>
+                                <p class="dark-gray mb-24">@tour.Description</p>
+                            }
+                            @if (Model?.Itinerary != null && Model.Itinerary.Any())
+                            {
+                                <h5 class="mb-16">Itinerary</h5>
+                                <ul class="dark-gray mb-24">
+                                    @foreach (var item in Model.Itinerary)
+                                    {
+                                        <li class="mb-8">@item</li>
+                                    }
+                                </ul>
+                            }
+                            @if (tour.Highlights != null && tour.Highlights.Any())
+                            {
+                                <h5 class="mb-16">Highlights</h5>
+                                <ul class="dark-gray mb-24">
+                                    @foreach (var h in tour.Highlights)
+                                    {
+                                        <li class="mb-8">@h</li>
+                                    }
+                                </ul>
+                            }
+                            @if (tour.Included != null && tour.Included.Any())
+                            {
+                                <h5 class="mb-24">What's included</h5>
+                                <div class="row row-gap-4">
+                                    @foreach (var inc in tour.Included)
+                                    {
+                                        <div class="col-lg-4 col-md-6 col-sm-6">
+                                            <div class="feature-block">
+                                                <div class="icon">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 25" fill="none">
+                                                        <path d="M11.415 24.5008C11.5454 24.6964 11.7649 24.814 12 24.814C12.2351 24.814 12.4546 24.6965 12.585 24.5008C14.2491 22.0049 16.7 18.9223 18.408 15.7873C19.7736 13.2806 20.4375 11.1427 20.4375 9.25146C20.4375 4.59903 16.6524 0.813965 12 0.813965C7.34756 0.813965 3.5625 4.59903 3.5625 9.25146C3.5625 11.1427 4.22639 13.2806 5.59205 15.7873C7.29872 18.9199 9.75436 22.01 11.415 24.5008ZM12 2.22021C15.877 2.22021 19.0312 5.37443 19.0312 9.25146C19.0312 10.9017 18.4234 12.8195 17.1731 15.1145C15.7009 17.8168 13.6 20.558 12 22.8625C10.4002 20.5584 8.29922 17.817 6.82692 15.1145C5.57658 12.8195 4.96875 10.9017 4.96875 9.25146C4.96875 5.37443 8.12297 2.22021 12 2.22021Z" fill="#212627" />
+                                                        <path d="M12 13.4702C14.3262 13.4702 16.2187 11.5777 16.2187 9.25146C16.2187 6.92525 14.3262 5.03271 12 5.03271C9.67378 5.03271 7.78125 6.92525 7.78125 9.25146C7.78125 11.5777 9.67378 13.4702 12 13.4702ZM12 6.43896C13.5508 6.43896 14.8125 7.70065 14.8125 9.25146C14.8125 10.8023 13.5508 12.064 12 12.064C10.4492 12.064 9.1875 10.8023 9.1875 9.25146C9.1875 7.70065 10.4492 6.43896 12 6.43896Z" fill="#212627" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p class="dark-gray mb-0">@inc</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-xl-0 mb-32">
+                        <div class="hotel-sidebar mb-32 position-sticky" style="top: 24px;">
+                            <div class="hotel-sidebar_title">
+                                <h4 class="color-black">Price &amp; Booking</h4>
+                            </div>
+                            <div class="filter-block p-24 bg-white br-12 border shadow-sm">
+                                <h3 class="color-black fw-700 mb-16">@CurrencyHelper.FormatPriceInSelectedCurrency(tour.Price, tour.Currency ?? "TRY", ViewBag.SelectedCurrency as string ?? "TRY") <span class="h6 fw-400">/ person</span></h3>
+                                <p class="dark-gray small mb-24">@tour.Duration day(s) · @(string.IsNullOrEmpty(tour.Difficulty) ? "All levels" : tour.Difficulty)</p>
+                                <a asp-controller="Tour" asp-action="Booking" asp-route-tourId="@tour.RawId" class="cus-btn full-width mb-16">
+                                    <i class="fal fa-calendar-check me-2"></i> Book This Tour
+                                </a>
+                                <a asp-controller="Tour" asp-action="Packages" class="cus-btn-2 btn-sec full-width">
+                                    <i class="fal fa-arrow-left me-2"></i> Back to Packages
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Tour Content End -->
+    }
+
+</div>
+<!-- Main Content End -->

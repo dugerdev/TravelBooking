@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="@(System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@(ViewData["Title"] ?? "FlyNow") - Airline Ticket Booking</title>
+    <link rel="shortcut icon" href="~/assets/img/flynow/benefit-2.png" type="image/x-icon">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- SWIPER.JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- AOS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" />
+
+    <link rel="stylesheet" href="~/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    <link rel="stylesheet" href="~/assets/css/app.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/style.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/navbar.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/responsive.css">
+    @RenderSection("FlyNowStyles", required: false)
+</head>
+
+<body onload="updateNavbar(); initNavbarScroll();">
+    @await Component.InvokeAsync("Navbars")
+    @await Html.PartialAsync("Partials/_FlyNowAuthPartial")
+
+    <main>
+        @RenderBody()
+    </main>
+
+    @await Component.InvokeAsync("Footers")
+
+    <!-- AOS JS -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <script>AOS.init();</script>
+
+    <!-- SWIPER.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="~/assets/js/flynow/swiper.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://unpkg.com/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="~/assets/js/jquery-3.6.3.min.js"></script>
+    <script src="~/assets/js/popper.min.js"></script>
+    <script src="~/assets/js/bootstrap.min.js"></script>
+
+    <!-- Main script -->
+    <script src="~/assets/js/flynow/script.js"></script>
+    <script>
+        function initNavbarScroll() {
+            var navbar = document.getElementById('mainNavbar');
+            if (navbar) {
+                window.addEventListener('scroll', function() {
+                    navbar.classList.toggle('scrolled', window.scrollY > 20);
+                });
+            }
+        }
+    </script>
+
+    <!-- Legacy scripts for Flight Booking, etc. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+    <script src="~/assets/js/app.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+
+</html>

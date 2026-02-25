@@ -1,0 +1,241 @@
+@model TravelBooking.Web.ViewModels.Flights.CheckInViewModel
+@{
+    ViewData["Title"] = "Check-in Confirmation";
+}
+
+<section class="breadcrumb-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="breadcrumb-content">
+                    <h2 class="color-white">Check-in Confirmation</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Check-in</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="checkin-confirmation py-80">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="success-message text-center mb-48">
+                    <div class="success-icon mb-24">
+                        <i class="fas fa-check-circle" style="font-size: 80px; color: #28a745;"></i>
+                    </div>
+                    <h2 class="color-black mb-16">Check-in Successful!</h2>
+                    <p class="color-medium-gray">Your boarding pass is ready. Please arrive at the airport at least 2 hours before departure.</p>
+                </div>
+
+                @if (Model.Reservation != null)
+                {
+                    <div class="boarding-pass bg-white p-40 br-10 mb-32" style="box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="boarding-pass-header mb-32">
+                                    <h4 class="color-black mb-8">Boarding Pass</h4>
+                                    <p class="color-medium-gray">Please present this at the gate</p>
+                                </div>
+
+                                @if (Model.Reservation.Passengers != null && Model.Reservation.Passengers.Any())
+                                {
+                                    var passenger = Model.Reservation.Passengers.First();
+                                    <div class="passenger-info mb-32">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h6 class="color-medium-gray mb-2">Passenger Name</h6>
+                                                <h5 class="color-black">@passenger.FirstName @passenger.LastName</h5>
+                                            </div>
+                                            <div class="col-6">
+                                                <h6 class="color-medium-gray mb-2">Booking Reference</h6>
+                                                <h5 class="primary">@Model.PNR</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Reservation.Flight != null)
+                                {
+                                    <div class="flight-info mb-32">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <h6 class="color-medium-gray mb-2">From</h6>
+                                                <h4 class="color-black">@Model.Reservation.Flight.DepartureAirportIATA</h4>
+                                                <p class="color-medium-gray">@Model.Reservation.Flight.ScheduledDeparture.ToString("HH:mm")</p>
+                                            </div>
+                                            <div class="col-4 text-center">
+                                                <h6 class="color-medium-gray mb-2">Flight</h6>
+                                                <h4 class="color-black">@Model.Reservation.Flight.FlightNumber</h4>
+                                                <p class="color-medium-gray">
+                                                    @if (Model.Reservation.Flight.ScheduledArrival > Model.Reservation.Flight.ScheduledDeparture)
+                                                    {
+                                                        var duration = Model.Reservation.Flight.ScheduledArrival - Model.Reservation.Flight.ScheduledDeparture;
+                                                        <text>@((int)duration.TotalHours)h @duration.Minutes m</text>
+                                                    }
+                                                </p>
+                                            </div>
+                                            <div class="col-4 text-end">
+                                                <h6 class="color-medium-gray mb-2">To</h6>
+                                                <h4 class="color-black">@Model.Reservation.Flight.ArrivalAirportIATA</h4>
+                                                <p class="color-medium-gray">@Model.Reservation.Flight.ScheduledArrival.ToString("HH:mm")</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flight-date mb-32">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <h6 class="color-medium-gray mb-2">Departure Date</h6>
+                                                <h5 class="color-black">@Model.Reservation.Flight.ScheduledDeparture.ToString("dd MMMM yyyy")</h5>
+                                            </div>
+                                            <div class="col-6">
+                                                <h6 class="color-medium-gray mb-2">Check-in Time</h6>
+                                                <h5 class="color-black">@Model.CheckInTime.ToString("dd MMM yyyy, HH:mm")</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.AssignedSeats != null && Model.AssignedSeats.Any())
+                                {
+                                    <div class="seat-info">
+                                        <h6 class="color-medium-gray mb-16">Assigned Seats</h6>
+                                        <div class="seat-numbers d-flex gap-3 flex-wrap">
+                                            @foreach (var seat in Model.AssignedSeats)
+                                            {
+                                                <div class="seat-badge">
+                                                    <span class="badge bg-primary text-white px-4 py-3" style="font-size: 18px; font-weight: 600;">@seat</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="barcode-section text-center">
+                                    <div class="barcode-placeholder bg-light p-24 br-10 mb-16">
+                                        <svg width="150" height="150" viewBox="0 0 150 150">
+                                            <rect width="150" height="150" fill="#f8f9fa"/>
+                                            <text x="75" y="75" text-anchor="middle" fill="#6c757d" font-size="12">QR Code</text>
+                                            <text x="75" y="90" text-anchor="middle" fill="#6c757d" font-size="10">@Model.PNR</text>
+                                        </svg>
+                                    </div>
+                                    <p class="color-medium-gray small">Scan at airport</p>
+                                </div>
+
+                                <div class="gate-info text-center mt-32">
+                                    <h6 class="color-medium-gray mb-2">Gate</h6>
+                                    <h3 class="primary">TBA</h3>
+                                    <p class="color-medium-gray small">Check airport displays</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-32" style="border-top: 2px dashed #dee2e6;">
+
+                        <div class="boarding-pass-footer">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <p class="color-medium-gray small mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Please arrive at the gate 30 minutes before departure
+                                    </p>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <button onclick="window.print()" class="cus-btn">
+                                        <i class="fas fa-print me-2"></i>Print Boarding Pass
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="important-info bg-light p-32 br-10">
+                        <h5 class="color-black mb-24">Important Information</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-16">
+                                <div class="info-item">
+                                    <i class="fas fa-clock color-primary mb-2" style="font-size: 24px;"></i>
+                                    <h6 class="color-black mt-2">Arrive Early</h6>
+                                    <p class="color-medium-gray small">2 hours before departure</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-16">
+                                <div class="info-item">
+                                    <i class="fas fa-id-card color-primary mb-2" style="font-size: 24px;"></i>
+                                    <h6 class="color-black mt-2">Valid ID</h6>
+                                    <p class="color-medium-gray small">Bring passport or ID card</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-16">
+                                <div class="info-item">
+                                    <i class="fas fa-suitcase color-primary mb-2" style="font-size: 24px;"></i>
+                                    <h6 class="color-black mt-2">Baggage</h6>
+                                    <p class="color-medium-gray small">Check airline baggage policy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-32">
+                        <a asp-controller="Home" asp-action="Index" class="cus-btn btn-outline">
+                            <i class="fas fa-home me-2"></i>Back to Home
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+@section FlyNowStyles {
+    <style>
+        .boarding-pass {
+            border: 2px solid #4D73FC;
+            position: relative;
+        }
+        .boarding-pass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4D73FC 0%, #3a5dd9 100%);
+        }
+        .barcode-placeholder {
+            border: 2px dashed #dee2e6;
+        }
+        .seat-badge .badge {
+            min-width: 60px;
+        }
+        .info-item {
+            text-align: center;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #4D73FC;
+            color: #4D73FC;
+        }
+        .btn-outline:hover {
+            background: #4D73FC;
+            color: white;
+        }
+        @@media print {
+            .breadcrumb-area, .important-info, .text-center, nav, footer {
+                display: none !important;
+            }
+            .boarding-pass {
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+}

@@ -1,0 +1,87 @@
+@model TravelBooking.Web.DTOs.Common.PagedResultDto<TravelBooking.Web.DTOs.Reservations.ReservationDto>
+@{
+    ViewData["Title"] = "My Booking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+    <link rel="stylesheet" href="~/assets/css/flynow/my_booking.css">
+}
+
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>My Booking</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+
+<section class="my_booking_ticket">
+    @if (TempData["ReservationError"] is string err)
+    {
+        <div class="alert alert-danger" style="max-width:90%; margin:20px auto;">@err</div>
+    }
+    @if (TempData["ReservationSuccess"] is string succ)
+    {
+        <div class="alert alert-success" style="max-width:90%; margin:20px auto;">@succ</div>
+    }
+
+    @if (Model?.Items != null && Model.Items.Any())
+    {
+        @foreach (var r in Model.Items)
+        {
+            <div class="ticket-card" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="700">
+                <div class="ticket-header">
+                    <h2>Reservation</h2>
+                    <span>@r.PNR</span>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-row">
+                        <span class="ticket-label">Date:</span>
+                        <span class="ticket-value">@r.ReservationDate.ToString("dd.MM.yyyy")</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Total:</span>
+                        <span class="ticket-value">@CurrencyHelper.FormatPriceInSelectedCurrency(r.TotalPrice, r.Currency.ToString(), ViewBag.SelectedCurrency as string ?? "TRY")</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Status:</span>
+                        <span class="ticket-value">@r.Status</span>
+                    </div>
+                </div>
+                <div class="ticket-actions">
+                    <a asp-controller="Account" asp-action="ReservationDetail" asp-route-id="@r.Id" class="btn btn-edit">Detail</a>
+                    @if (r.Status != TravelBooking.Web.DTOs.Enums.ReservationStatus.Cancelled && r.Status != TravelBooking.Web.DTOs.Enums.ReservationStatus.PaymentFailed)
+                    {
+                        <form asp-action="CancelReservation" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this reservation?');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-delete">Cancel</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        }
+        <div style="text-align:center; padding:20px;">
+            <p>Page @Model.PageNumber / @Model.TotalPages (total @Model.TotalCount records)</p>
+            @if (Model.PageNumber > 1)
+            {
+                <a asp-action="MyReservations" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize" class="btn btn-edit">Previous</a>
+            }
+            @if (Model.PageNumber < Model.TotalPages)
+            {
+                <a asp-action="MyReservations" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize" class="btn btn-edit">Next</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="ticket-card" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="700">
+            <div class="ticket-body">
+                <p style="text-align:center; padding:40px;">You don't have any reservations yet.</p>
+            </div>
+        </div>
+    }
+    <div style="text-align:center; padding:20px;">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-edit">Back to Home</a>
+    </div>
+</section>

@@ -1,0 +1,232 @@
+@model TravelBooking.Web.ViewModels.Hotels.HotelBookingViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Hotel Booking";
+    var nights = (int)(Model.CheckOut - Model.CheckIn).TotalDays;
+    if (nights < 1) nights = 1;
+}
+<!-- Title-Banner Start -->
+<div class="title-banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">Hotel <br class="title-break">  Booking</h1>
+                </div>
+                <img src="~/assets/img/hotel.svg" alt="" class="right-image">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Hotel-Booking Start -->
+    <section class="flight-booking" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 mb-xl-0 mb-32 position-sticky top-0">
+                    <div class="flight-booking-detail light-shadow mb-32 bg-white br-12 border shadow-sm">
+                        <div class="flight-title">
+                            <h4 class="color-black">Hotel Info</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <h4 class="color-black mb-12">@Model.HotelName</h4>
+                            <p class="dark-gray mb-32">Complete your booking details to reserve this room.</p>
+                        </div>
+                    </div>
+
+                    <div class="flight-booking-detail light-shadow mb-32">
+                        <div class="flight-title">
+                            <h4 class="color-black">Your Booking Detail</h4>
+                        </div>
+                        <div class="content-block bg-white p-24 light-shadow">
+                            <div class="d-flex justify-content-between mb-32">
+                                <div class="flight-departure">
+                                    <h6 class="dark-gray">Check-In</h6>
+                                    <h5 class="color-black">@Model.CheckIn.ToString("dd MMM, yyyy")</h5>
+                                </div>
+                                <div class="vr-line d-xl-flex d-none"></div>
+                                <div class="flight-departure">
+                                    <h6 class="dark-gray">Check-Out</h6>
+                                    <h5 class="color-black">@Model.CheckOut.ToString("dd MMM, yyyy")</h5>
+                                </div>
+                            </div>
+                            <div class="text mb-32">
+                                <h6 class="color-medium-gray mb-2">Total Length of Stay</h6>
+                                <h5 class="color-black">@nights Night(s)</h5>
+                            </div>
+                            <hr class="bg-medium-gray mb-32">
+                            <div class="text">
+                                <h6 class="color-primary mb-2">You Selected</h6>
+                                <h5 class="color-black">@Model.RoomType for @Model.Guests Guest(s)</h5>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flight-booking-detail light-shadow">
+                        <div class="flight-title">
+                            <h4 class="color-black">Price Summary</h4>
+                        </div>
+                        <div class="content-block bg-white p-24">
+                            <div class="d-flex align-items-center justify-content-between mb-24">
+                                <div>
+                                    <h5 class="color-black">Room (@nights night(s))</h5>
+                                    <p class="dark-gray">@Model.RoomType</p>
+                                </div>
+                                <h5 class="color-black">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.TotalPrice, Model.Currency, ViewBag.SelectedCurrency as string ?? "TRY")</h5>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mb-24">
+                                <div>
+                                    <h5 class="color-black">Tax & Service</h5>
+                                    <p class="dark-gray">10% of subtotal</p>
+                                </div>
+                                <h5 class="color-black">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.TotalPrice * 0.1m, Model.Currency, ViewBag.SelectedCurrency as string ?? "TRY")</h5>
+                            </div>
+                            <hr class="bg-medium-gray mb-24">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="color-black">Total</h4>
+                                </div>
+                                <h4 class="color-black">@CurrencyHelper.FormatPriceInSelectedCurrency(Model.TotalPrice * 1.1m, Model.Currency, ViewBag.SelectedCurrency as string ?? "TRY")</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8">
+                    <div class="booking-form">
+                        <form asp-controller="Hotel" asp-action="InitiatePayment" id="hotel-booking-form" method="post" role="form" novalidate>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="RawHotelId" />
+                            <input type="hidden" asp-for="HotelName" />
+                            <input type="hidden" asp-for="RoomType" />
+                            <input type="hidden" asp-for="CheckIn" />
+                            <input type="hidden" asp-for="CheckOut" />
+                            <input type="hidden" asp-for="Guests" />
+                            <input type="hidden" asp-for="TotalPrice" />
+                            <input type="hidden" asp-for="Currency" />
+
+                            <div class="form-wizard-header">
+                                <ul class="nav list-unstyled form-wizard-steps clearfix">
+                                    <li class="nav-item activated">
+                                        <button type="button" class="nav-link">
+                                            <span class="number">1</span><i class="fal fa-check"></i>
+                                        </button>
+                                        <h5 class="color-black">Your Selection</h5>
+                                    </li>
+                                    <li class="nav-item active">
+                                        <button type="button" class="nav-link">
+                                            <span class="number">2</span><i class="fal fa-check"></i>
+                                        </button>
+                                        <h5 class="color-black">Your Details</h5>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button type="button" class="nav-link">
+                                            <span class="number">3</span><i class="fal fa-check"></i>
+                                        </button>
+                                        <h5 class="color-black">Payment</h5>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <div class="wizard-content overflow-visible mb-24">
+                                <div class="detail-form mb-32 p-24 bg-white light-shadow br-12 border">
+                                    <h4 class="black p-0 mb-40">Enter Your Details</h4>
+                                    
+                                    @if (TempData["BookingError"] != null)
+                                    {
+                                        <div class="alert alert-danger" role="alert">
+                                            @TempData["BookingError"]
+                                        </div>
+                                    }
+                                    
+                                    <div class="card border-0 shadow-sm rounded-3 p-24 mb-24">
+                                        <h6 class="text-uppercase fw-600 color-primary mb-20">
+                                            <i class="fal fa-user me-8"></i>Personal Information
+                                        </h6>
+                                        <div class="row g-3">
+                                            <div class="col-12">
+                                                <label class="form-label fw-500">Ad Soyad *</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fal fa-user"></i></span>
+                                                    <input type="text" class="form-control form-control-lg" asp-for="ContactName" 
+                                                           placeholder="Adiniz ve soyadiniz" required>
+                                                </div>
+                                                <span asp-validation-for="ContactName" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-500">Email *</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fal fa-envelope"></i></span>
+                                                    <input type="email" class="form-control form-control-lg" asp-for="ContactEmail" 
+                                                           placeholder="example@email.com" required>
+                                                </div>
+                                                <span asp-validation-for="ContactEmail" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="form-label fw-500">Telefon *</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">+90</span>
+                                                    <input type="tel" class="form-control form-control-lg phone-input" asp-for="ContactPhone" 
+                                                           placeholder="555 123 4567" maxlength="10" inputmode="tel" required>
+                                                </div>
+                                                <span asp-validation-for="ContactPhone" class="text-danger small"></span>
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label fw-500">ID / Passport Number (optional)</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fal fa-id-badge"></i></span>
+                                                    <input type="text" class="form-control form-control-lg" asp-for="IdOrPassport" 
+                                                           placeholder="For check-in">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-form mb-32">
+                                    <h4 class="black p-0 mb-24">Booking Summary</h4>
+                                    <div class="content-block bg-light p-24 mb-24 border rounded">
+                                        <h5 class="color-black mb-16">@Model.HotelName</h5>
+                                        <p class="mb-2"><strong>Room Type:</strong> @Model.RoomType</p>
+                                        <p class="mb-2"><strong>Check-In:</strong> @Model.CheckIn.ToString("dd MMM, yyyy")</p>
+                                        <p class="mb-2"><strong>Check-Out:</strong> @Model.CheckOut.ToString("dd MMM, yyyy")</p>
+                                        <p class="mb-2"><strong>Guests:</strong> @Model.Guests</p>
+                                        <p class="mb-2"><strong>Nights:</strong> @nights</p>
+                                    </div>
+                                </div>
+
+                                <div class="detail-form mb-32">
+                                    <div class="filter-checkbox mb-24">
+                                        <label class="d-flex align-items-center gap-2 dark-gray" style="cursor: pointer;">
+                                            <input type="checkbox" id="accept_terms" class="form-check-input" style="width: 1.2rem; height: 1.2rem;">
+                                            <span>I have read and accept the <a asp-controller="Pages" asp-action="TermsConditions" class="color-primary" target="_blank">Terms of Use</a> and <a asp-controller="Pages" asp-action="PrivacyPolicy" class="color-primary" target="_blank">Privacy Policy</a>.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-24">
+                                <a asp-controller="Hotel" asp-action="Detail" asp-route-id="@Model.RawHotelId" class="btn btn-secondary w-100">
+                                    <i class="fal fa-arrow-left"></i> Back
+                                </a>
+                                <button type="submit" class="cus-btn w-100">
+                                    <i class="fal fa-arrow-right"></i> Continue to Payment
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hotel-Booking End -->
+
+</div>
+<!-- Main Content End -->
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

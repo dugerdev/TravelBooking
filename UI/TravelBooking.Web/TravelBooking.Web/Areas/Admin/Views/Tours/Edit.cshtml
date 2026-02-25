@@ -1,0 +1,76 @@
+﻿@model TravelBooking.Web.DTOs.Tours.CreateTourDto
+@{
+    ViewData["Title"] = "Edit Tour";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var id = ViewBag.TourId as Guid? ?? Guid.Empty;
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Edit Tour</h1>
+        <a asp-area="Admin" asp-controller="Tours" asp-action="Index" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back</a>
+    </div>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+    <div class="card shadow mb-4">
+        <div class="card-header py-3"><h6 class="m-0 font-weight-bold text-primary">Tour Details</h6></div>
+        <div class="card-body">
+            <form asp-area="Admin" asp-controller="Tours" asp-action="Edit" asp-route-id="@id" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Name">Name *</label>
+                        <input asp-for="Name" class="form-control" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label asp-for="Destination">Destination *</label>
+                        <input asp-for="Destination" class="form-control" required />
+                        <span asp-validation-for="Destination" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Duration">Duration (days)</label>
+                        <input asp-for="Duration" type="number" min="1" class="form-control" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Price">Price</label>
+                        <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Currency">Currency</label>
+                        <input asp-for="Currency" class="form-control" />
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="Difficulty">Difficulty</label>
+                        <select asp-for="Difficulty" class="form-control">
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 form-group">
+                        <label asp-for="MaxGroupSize">Max Group Size</label>
+                        <input asp-for="MaxGroupSize" type="number" min="1" class="form-control" />
+                    </div>
+                    <div class="col-12 form-group">
+                        <label asp-for="ImageUrl">Image URL</label>
+                        <input asp-for="ImageUrl" class="form-control" />
+                    </div>
+                    <div class="col-12 form-group">
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Tour</button>
+                        <a asp-area="Admin" asp-controller="Tours" asp-action="Details" asp-route-id="@id" class="btn btn-info">Details</a>
+                        <a asp-area="Admin" asp-controller="Tours" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

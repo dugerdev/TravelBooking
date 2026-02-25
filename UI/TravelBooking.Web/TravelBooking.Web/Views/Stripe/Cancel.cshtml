@@ -1,0 +1,39 @@
+@{
+    ViewData["Title"] = "Payment Cancelled";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="title-banner mb-20">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <div class="content-box text-alignment">
+                    <h1 class="fw-700 lightest-black">Odeme Iptal Edildi</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="page-content m-0">
+    <section class="flight-booking">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm p-4">
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                <i class="fa fa-times-circle text-warning" style="font-size: 4rem;"></i>
+                            </div>
+                            <h2 class="h4 text-muted mb-3">Payment cancelled</h2>
+                            <p class="text-muted mb-4">You left the payment page. You can try again whenever you want.</p>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                                <i class="fa fa-home me-2"></i>Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

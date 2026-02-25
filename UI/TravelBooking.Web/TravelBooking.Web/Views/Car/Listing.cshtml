@@ -1,0 +1,536 @@
+@using System
+@model TravelBooking.Web.ViewModels.Cars.CarListingViewModel
+@{
+    ViewData["Title"] = "Car Listing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section FlyNowStyles {
+    <link rel="stylesheet" href="~/assets/css/flynow/flight_listing.css">
+}
+<section class="flight-booking-hero" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="600">
+    <img src="~/assets/img/flynow/vacation.png" alt="vacation-img" height="250">
+    <h1>Car Listing</h1>
+    <img src="~/assets/img/flynow/plane.png" alt="plane-img" height="130">
+</section>
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    @if (TempData["BookingError"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>@TempData["BookingError"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="container-fluid mt-3">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle me-2"></i>@TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    }
+
+    <!-- Benefits Start -->
+    <section class="benefit p-40" data-sal="slide-down" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-xl-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-1.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">Free Cancellation</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 mb-lg-0 mb-24">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-2.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black">No Hidden Charges</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-6 col-md-6 ">
+                    <div class="benefit-block bg-white">
+                        <div class="image-box">
+                            <img src="~/assets/img/flynow/benefit-3.png" alt="">
+                        </div>
+                        <div class="text-box">
+                            <h4 class="lightest-black ">24/7 Customer Service</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Benefits End -->
+    <!-- Car Listing Start -->
+    <section class="hotel-listing mb-24 p-40">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xxl-4 col-xl-4 mb-xl-0 mb-32">
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-6 col-md-6">
+                            <div class="hotel-sidebar mb-32 shadow-sm">
+                                <div class="hotel-sidebar_title bg-primary text-white p-3 rounded-top">
+                                    <h4 class="color-white mb-0"><i class="fas fa-search me-2"></i>Car Search</h4>
+                                </div>
+                                <form asp-controller="Car" asp-action="Listing" method="get" class="bg-white contact-form p-3">
+                                    <div class="hotel-info mb-16">
+                                        <div class="custom-sel-input-block location-select">
+                                            <label for="pickLocation" class="h6 color-medium-gray mb-8">Pick-up Location *</label>
+                                            <i class="fal fa-map-marker-alt"></i>
+                                            <input type="text" name="location" class="sel-input location-input" id="pickLocation" 
+                                                   placeholder="Enter pick-up location" value="@Model.SearchLocation" required>
+                                            <div class="slector-wrapper"></div>
+                                        </div>
+                                    </div>
+                                    <div class="hotel-info car-listing mb-16">
+                                        <div class="custom-sel-input-block m-lg-0 mb-16">
+                                            <label for="dateStart" class="h6 color-medium-gray">Pick-up Date *</label>
+                                            <div class="d-flex align-items-center gap-8">
+                                                <i class="fal fa-calendar-alt"></i>
+                                                <input type="date" name="pickupDate" class="sel-input" id="dateStart" 
+                                                       value="@Model.PickupDate?.ToString("yyyy-MM-dd")" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hotel-info car-listing mb-16">
+                                        <div class="custom-sel-input-block m-lg-0 mb-16">
+                                            <label for="locationDrop" class="h6 color-medium-gray">Return Date *</label>
+                                            <div class="d-flex align-items-center gap-8">
+                                                <i class="fal fa-calendar-alt"></i>
+                                                <input type="date" name="returnDate" class="sel-input" id="locationDrop" 
+                                                       value="@Model.ReturnDate?.ToString("yyyy-MM-dd")" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="filter-checkbox mb-16">
+                                        <input type="checkbox" id="return">
+                                        <label for="return">Return to different location</label>
+                                    </div>
+                                    <div class="hotel-info mb-16">
+                                        <div class="custom-sel-input-block location-select">
+                                            <label for="dropOff" class="h6 color-medium-gray mb-8">Drop-off Location</label>
+                                            <i class="fal fa-map-marker-alt"></i>
+                                            <input type="text" class="sel-input location-input" id="dropOff" placeholder="Drop-off location (optional)">
+                                            <div class="slector-wrapper"></div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="cus-btn full-width"><i class="fas fa-search me-2"></i>Search Cars</button>
+                                </form>
+                                
+                                @* Arama yapildiysa ozet goster *@
+                                @if (Model.SearchLocation != null || Model.PickupDate.HasValue || Model.ReturnDate.HasValue)
+                                {
+                                    <div class="bg-light p-3 mt-3 rounded border">
+                                        <h6 class="color-primary mb-2"><i class="fas fa-info-circle me-2"></i>Search Criteria</h6>
+                                        @if (!string.IsNullOrEmpty(Model.SearchLocation))
+                                        {
+                                            <p class="mb-1 small"><strong>Location:</strong> @Model.SearchLocation</p>
+                                        }
+                                        @if (Model.PickupDate.HasValue)
+                                        {
+                                            <p class="mb-1 small"><strong>Pick-up:</strong> @Model.PickupDate.Value.ToString("dd MMM yyyy")</p>
+                                        }
+                                        @if (Model.ReturnDate.HasValue)
+                                        {
+                                            <p class="mb-0 small"><strong>Return:</strong> @Model.ReturnDate.Value.ToString("dd MMM yyyy")</p>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-6 col-md-6">
+                            <div class="hotel-sidebar">
+                                <div class="hotel-sidebar_title">
+                                    <h4 class="color-black">Filter Search:</h4>
+                                </div>
+                                <div class="filter-block p-24 bg-white" id="car-filters">
+                                    <div class="title mb-32">
+                                        <h4 class="color-black">Price Range (Per Day)</h4>
+                                    </div>
+                                    <div class="content-block">
+                                        <div class="slider-track mb-32">
+                                            <div class="d-flex justify-content-between mb-4p">
+                                                <span id="car-price-min">0</span>
+                                                <span id="car-price-max">500</span>
+                                            </div>
+                                            <input type="text" id="car-price-slider" class="form-control" value="">
+                                        </div>
+                                    </div>
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Car Type</h4>
+                                    <div class="mb-24">
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-car-category" id="filter-cat-economy" value="economy">
+                                                <label for="filter-cat-economy" class="color-black">Economy</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-car-category" id="filter-cat-sedan" value="sedan">
+                                                <label for="filter-cat-sedan" class="color-black">Sedan</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-car-category" id="filter-cat-compact" value="compact">
+                                                <label for="filter-cat-compact" class="color-black">Compact</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-car-category" id="filter-cat-suv" value="suv">
+                                                <label for="filter-cat-suv" class="color-black">SUV</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-car-category" id="filter-cat-luxury" value="luxury">
+                                                <label for="filter-cat-luxury" class="color-black">Luxury</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Transmission</h4>
+                                    <div class="mb-24">
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-transmission" id="filter-trans-auto" value="automatic">
+                                                <label for="filter-trans-auto" class="color-black">Automatic</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-transmission" id="filter-trans-manual" value="manual">
+                                                <label for="filter-trans-manual" class="color-black">Manual</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Fuel Type</h4>
+                                    <div class="mb-24">
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-fuel" id="filter-fuel-petrol" value="petrol">
+                                                <label for="filter-fuel-petrol" class="color-black">Petrol</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-fuel" id="filter-fuel-diesel" value="diesel">
+                                                <label for="filter-fuel-diesel" class="color-black">Diesel</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-fuel" id="filter-fuel-electric" value="electric">
+                                                <label for="filter-fuel-electric" class="color-black">Electric</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" name="filter-fuel" id="filter-fuel-hybrid" value="hybrid">
+                                                <label for="filter-fuel-hybrid" class="color-black">Hybrid</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Features</h4>
+                                    <div class="mb-24">
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" id="filter-car-ac">
+                                                <label for="filter-car-ac" class="color-black">Air Conditioning</label>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-12">
+                                            <div class="filter-checkbox">
+                                                <input type="checkbox" id="filter-car-gps">
+                                                <label for="filter-car-gps" class="color-black">GPS</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Pick-up Location </h4>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="terminal">
+                                            <label for="terminal" class="color-black">In Terminal</label>
+                                        </div>
+                                        <h6 class="color-black">(02) </h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="shuttle">
+                                            <label for="shuttle" class="color-black">Free Shuttle Bus</label>
+                                        </div>
+                                        <h6 class="color-black">(04) </h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="meet">
+                                            <label for="meet" class="color-black">Meet & Greet</label>
+                                        </div>
+                                        <h6 class="color-black">(06) </h6>
+                                    </div>
+
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Mileage </h4>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="limited">
+                                            <label for="limited" class="color-black">Limited</label>
+                                        </div>
+                                        <h6 class="color-black">(02) </h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="unlimited">
+                                            <label for="unlimited" class="color-black">Unlimited</label>
+                                        </div>
+                                        <h6 class="color-black">(04) </h6>
+                                    </div>
+
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Fuel Policy </h4>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="full">
+                                            <label for="full" class="color-black">Full to Full</label>
+                                        </div>
+                                        <h6 class="color-black">(02) </h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="same">
+                                            <label for="same" class="color-black">Same to Same</label>
+                                        </div>
+                                        <h6 class="color-black">(04) </h6>
+                                    </div>
+
+                                    <hr class="bg-sec-gray mb-32">
+                                    <h4 class="color-black mb-24">Eco Friendly</h4>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="electric">
+                                            <label for="electric" class="color-black">Electric </label>
+                                        </div>
+                                        <h6 class="color-black">(02) </h6>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-16">
+                                        <div class="filter-checkbox">
+                                            <input type="checkbox" id="hybrid">
+                                            <label for="hybrid" class="color-black">Hybrid</label>
+                                        </div>
+                                        <h6 class="color-black">(04) </h6>
+                                    </div>
+
+                                    <hr class="bg-sec-gray mb-32">
+
+                                    <div class="filter-block box-1">
+                                        <div class="title d-flex justify-content-between mb-24" data-count="1">
+                                            <h4 class="color-black">Supplier </h4>
+                                            <i class="fal fa-chevron-up color-primary"></i>
+                                        </div>
+                                        <div class="content-block">
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="europcar">
+                                                    <label for="europcar" class="color-black">Europcar</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Europcar">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="hertz">
+                                                    <label for="hertz" class="color-black">Hertz</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Hertz">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="thrifty">
+                                                    <label for="thrifty" class="color-black">Thrifty</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Thrifty">
+                                                </div>
+
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="avis">
+                                                    <label for="avis" class="color-black">Avis</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Avis">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="sixt">
+                                                    <label for="sixt" class="color-black">Sixt</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Sixt">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="dollar">
+                                                    <label for="dollar" class="color-black">Dollar</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="Dollar">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-16">
+                                                <div class="filter-checkbox">
+                                                    <input type="checkbox" id="national">
+                                                    <label for="national" class="color-black">National</label>
+                                                    <img src="~/assets/img/flynow/icon-1.png" alt="National">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xxl-8 col-xl-8">
+                    <div id="car-no-results" class="hotel-block bg-white mb-32 p-24" style="display: none;">
+                        <p class="text-center dark-gray mb-0">No cars match your filters. Please adjust your criteria.</p>
+                    </div>
+                    
+                    @* Arama yapilmadiysa veya sonuc yoksa bilgi goster *@
+                    @if (!Model.Cars.Any() && (Model.SearchLocation == null && string.IsNullOrWhiteSpace(Model.Category)))
+                    {
+                        <div class="hotel-block bg-white mb-32 p-5 text-center">
+                            <div class="py-5">
+                                <i class="fas fa-car fa-4x text-primary mb-4"></i>
+                                <h4 class="color-black mb-3">View Car Listing</h4>
+                                <p class="dark-gray mb-4">Enter a location in the left panel or start from the <a asp-controller="Home" asp-action="Index">Home page</a>.</p>
+                                <p class="text-muted small">You can search by location or category.</p>
+                            </div>
+                        </div>
+                    }
+                    else if (Model?.Cars == null || Model.Cars.Count == 0)
+                    {
+                        <div class="hotel-block bg-white mb-32 p-24">
+                            <p class="text-center dark-gray mb-0">No cars match your search criteria.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div id="car-listing-cards">
+                        @foreach (var car in Model.Cars)
+                        {
+                            <div class="hotel-block bg-white mb-32 car-card" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out"
+                                 data-price="@car.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                 data-category="@(car.Category ?? "")"
+                                 data-transmission="@(car.Transmission ?? "")"
+                                 data-fuel="@(car.FuelType ?? "")"
+                                 data-ac="@(car.HasAirConditioning ? "1" : "0")"
+                                 data-gps="@(car.HasGPS ? "1" : "0")">
+                                <div class="row align-items-center row-gap-4">
+                                    <div class="col-lg-5 col-md-4 col-sm-12">
+                                        <div class="bg-lightest-gray p-16 br-20">
+                                            <h5 class="light-black mb-1"><a asp-controller="Car" asp-action="Detail" asp-route-id="@car.RawId">@car.Brand @car.Model</a></h5>
+                                            <h6 class="dark-gray mb-48">@car.Category</h6>
+                                            <div class="image-block mb-12 text-center">
+                                                <a asp-controller="Car" asp-action="Detail" asp-route-id="@car.RawId"><img src="@ImageUrlHelper.GetImageSrc(Url, car.ImageUrl, "~/assets/img/car-1.svg", ApiOptions?.Value?.BaseUrl ?? "")" alt="@car.Brand @car.Model" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';"></a>
+                                            </div>
+                                            <div class="d-flex justify-content-center gap-24 mb-48">
+                                                <h4 class="color-black">@car.Seats&nbsp;<i class="fal fa-user"></i></h4>
+                                                <h4 class="color-black">@car.Doors&nbsp;<i class="fal fa-suitcase"></i></h4>
+                                                <h4 class="color-black">@car.Doors&nbsp;<i class="fal fa-car-alt"></i></h4>
+                                            </div>
+                                            <ul class="unstyled">
+                                                <li class="d-flex gap-2">
+                                                    <h6 class="color-black mb-12"><i class="fal fa-check"></i>&nbsp;@car.Transmission</h6>
+                                                </li>
+                                                @if (car.HasAirConditioning)
+                                                {
+                                                    <li class="d-flex gap-2">
+                                                        <h6 class="color-black"><i class="fal fa-check"></i>&nbsp;Air Conditioning</h6>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-md-5 col-sm-6">
+                                        <div class="hotel-detail p-0">
+                                            @if (Model.PickupDate.HasValue && Model.ReturnDate.HasValue)
+                                            {
+                                                <h5 class="light-black mb-32">
+                                                    <i class="fal fa-calendar-alt"></i>&nbsp;@Model.PickupDate.Value.ToString("dd MMM") <span class="h6 dark-gray">@Model.PickupDate.Value.ToString("(ddd)")</span> - @Model.ReturnDate.Value.ToString("dd MMM") <span class="h6 dark-gray">@Model.ReturnDate.Value.ToString("(ddd)")</span>
+                                                </h5>
+                                            }
+                                            <div class="d-flex gap-8">
+                                                <i class="fal fa-map-marker-alt pt-1"></i>
+                                                <div>
+                                                    <h6 class="light-black">Pick-Up Location:</h6>
+                                                    <h6 class="dark-gray mb-16">@(string.IsNullOrEmpty(car.Location) ? "Meet & Greet" : car.Location)</h6>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex gap-8">
+                                                <i class="fal fa-gas-pump pt-1"></i>
+                                                <div>
+                                                    <h6 class="light-black">Fuel Policy:</h6>
+                                                    <h6 class="dark-gray mb-16">Full to Full</h6>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex gap-8 mb-32">
+                                                <i class="fal fa-tachometer-alt-fast pt-1"></i>
+                                                <div>
+                                                    <h6 class="light-black">Mileage:</h6>
+                                                    <h6 class="dark-gray">Unlimited</h6>
+                                                </div>
+                                            </div>
+                                            <div class="brand-logo">
+                                                <img src="~/assets/img/flynow/icon-1.png" alt="" style="width:40px;height:40px;object-fit:contain;">
+                                                <h6 class="">@(car.Rating >= 9 ? "Very Good" : "Good")</h6>
+                                                <h6 class="rating color-white">@car.Rating.ToString("0.0")</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-6">
+                                        <div class="pricing-area">
+                                            <h6 class="pre-reg light-black mb-32">Pre-Registration available</h6>
+                                            <h3 class="color-black fw-700">@CurrencyHelper.FormatPriceInSelectedCurrency(car.PricePerDay, car.Currency, ViewBag.SelectedCurrency as string ?? "TRY") <span class="h6">/day</span></h3>
+                                            <h6 class="light-black mb-32">From @CurrencyHelper.FormatPriceInSelectedCurrency(car.PricePerDay, car.Currency, ViewBag.SelectedCurrency as string ?? "TRY") /day</h6>
+                                            <a asp-controller="Car" asp-action="Booking" 
+                                               asp-route-carId="@car.RawId"
+                                               asp-route-pickupDate="@Model.PickupDate?.ToString("yyyy-MM-dd")"
+                                               asp-route-returnDate="@Model.ReturnDate?.ToString("yyyy-MM-dd")"
+                                               asp-route-pickupLocation="@Model.SearchLocation"
+                                               class="cus-btn full-width mb-16">@Localizer["Select"]</a>
+                                            <a asp-controller="Pages" asp-action="Contact" class="cus-btn-2 btn-sec">@Localizer["EmailQuotes"]</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- Main Content End -->
+
+@section Scripts {
+    <script src="~/assets/js/listing-filters.js"></script>
+    <script>
+        $(document).ready(function () {
+            if (typeof window.initCarFilters === 'function') window.initCarFilters();
+        });
+    </script>
+}

@@ -1,0 +1,64 @@
+@model List<TravelBooking.Web.ViewsComponents.TestimonialViewModel>
+
+<!-- Testimonials Section Start -->
+<section class="testimonials p-40">
+    <div class="container-fluid">
+        <div class="testimonials-box bg-white light-shadow br-20">
+            <div class="row align-items-center row-gap-4">
+                <div class="col-xl-4" data-sal="slide-left" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+                    <div class="text-area">
+                        <h5 class="color-primary mb-16">Testimonials</h5>
+                        <h3 class="h1 bold lightest-black">What our clients think about us?</h3>
+                    </div>
+                </div>
+                <div class="col-xl-7 offset-xl-1" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out">
+
+                    <div class="testimonial-slider">
+                        @foreach (var testimonial in Model)
+                        {
+                            <div class="review-block bg-lightest-gray pad-32 br-10">
+                                <div class="mb-24">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= testimonial.Rating)
+                                        {
+                                            <i class="fas fa-star text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="far fa-star text-muted"></i>
+                                        }
+                                    }
+                                </div>
+                                <h6 class="light-black mb-32">
+                                    @testimonial.Comment
+                                </h6>
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(testimonial.AvatarUrl))
+                                    {
+                                        <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, testimonial.AvatarUrl, "~/assets/img/placeholder.svg")" alt="@testimonial.Name" class="rounded-circle mr-3" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="rounded-circle mr-3 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; display: none;">
+                                        @testimonial.Name.Substring(0, 1).ToUpper()
+                                    </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded-circle mr-3 bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 20px; font-weight: bold;">
+                                            @testimonial.Name.Substring(0, 1).ToUpper()
+                                        </div>
+                                    }
+                                    <div>
+                                        <h5 class="light-black mb-1">@testimonial.Name</h5>
+                                        <p class="dark-gray mb-0">@testimonial.Location</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Testimonials Section End -->
+}

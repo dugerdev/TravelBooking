@@ -1,0 +1,138 @@
+@model TravelBooking.Web.ViewModels.News.NewsDetailViewModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.News.Title;
+}
+
+<!-- Title-Banner Start -->
+<div class="title-banner">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="banner-area">
+                <img src="~/assets/img/vacation.svg" alt="" class="left-image">
+                <div class="content-box">
+                    <h1 class="fw-700 lightest-black">News <br class="title-break">  Detail</h1>
+                </div>
+                <img src="~/assets/img/plane.svg" alt="" class="right-image">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Title-Banner End -->
+<!-- Main Content Start -->
+<div class="page-content m-0">
+
+    <!-- Our Latest Blogs Start -->
+    <section class="blog-detail p-60 mb-60">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xxl-9 col-xl-8 col-lg-12 mb-xl-0 mb-48">
+                    <!-- Blog Bar Start -->
+
+                    <div class="blog_info_bar bg-white light-shadow p-24 mb-24 br-10">
+                        <div class="author">
+                            <h5 class="light-black"><i class="fal fa-user-alt dark-gray"></i>&nbsp;Author:</h5>
+                            <h6 class="dark-gray fw-400">@Model.News.Author</h6>
+                        </div>
+                        <div class="author">
+                            <h5 class="light-black"><i class="fal fa-calendar-alt dark-gray"></i>&nbsp;Published Date:</h5>
+                            <h6 class="dark-gray fw-400">@Model.News.PublishDate.ToString("dd MMM, yyyy")</h6>
+                        </div>
+                        <div class="author">
+                            <h5 class="light-black"><i class="fal fa-eye dark-gray"></i>&nbsp;Views:</h5>
+                            <h6 class="dark-gray fw-400">@Model.News.ViewCount</h6>
+                        </div>
+                    </div>
+                    <!-- Blog Bar End -->
+                    <h3 class="h1 light-black fw-700 mb-24">@Model.News.Title</h3>
+                    @if (Model.News.Tags != null && Model.News.Tags.Any())
+                    {
+                        <div class="result-tags mb-24">
+                            @foreach (var tag in Model.News.Tags)
+                            {
+                                <h5 class="dark-gray">#@tag</h5>
+                            }
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.News.Summary))
+                    {
+                        <div class="row mb-32">
+                            <p class="light-black fw-400 mb-xl-0 mb-24 lead">
+                                <strong>@Model.News.Summary</strong>
+                            </p>
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Model.News.ImageUrl))
+                    {
+                        <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, Model.News.ImageUrl, "~/assets/img/blog-1.svg")" alt="@Model.News.Title" class="br-25 light-shadow mb-24 w-100" data-sal="slide-right" data-sal-duration="800" data-sal-delay="100" data-sal-easing="ease-in-out" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';">
+                    }
+                    
+                    <div class="news-content light-black fw-400 mb-24">
+                        @* Content is sanitized on the server side before saving. If not sanitized, use @Model.News.Content instead of @Html.Raw *@
+                        @Html.Raw(Model.News.Content)
+                    </div>
+                </div>
+                <div class="col-xxl-3 col-xl-4 col-lg-6">
+                    <div class="sidebar bg-lightest-gray br-30 p-24">
+                        <div class="filters">
+                            <form asp-controller="News" asp-action="Listing" method="get" class="form-group contact-from mb-32">
+                                <input type="text" class="form-control" placeholder="Search" name="query">
+                                <button type="submit" class="">Search</button>
+                            </form>
+
+                            <div class="filter-block blog-side-bar mb-32">
+                                <div class="title mb-24">
+                                    <h4 class="light-black">Categories</h4>
+                                </div>
+                                <div class="tags">
+                                    <div class="medics-tag">
+                                        <h6 class="light-black fw-400"><a asp-controller="News" asp-action="Listing">Anime</a></h6>
+                                    </div>
+                                    <div class="medics-tag">
+                                        <h6 class="light-black fw-400"><a asp-controller="News" asp-action="Listing">Manga</a></h6>
+                                    </div>
+                                    <div class="medics-tag">
+                                        <h6 class="light-black fw-400"><a asp-controller="News" asp-action="Listing">Cosplay</a></h6>
+                                    </div>
+                                    <div class="medics-tag">
+                                        <h6 class="light-black fw-400"><a asp-controller="News" asp-action="Listing">Light Noval</a></h6>
+                                    </div>
+
+                                </div>
+                            </div>
+                            @if (Model.RelatedNews.Any())
+                            {
+                                <div class="filter-block blog-side-bar">
+                                    <div class="title mb-24">
+                                        <h4 class="light-black">Related Articles</h4>
+                                    </div>
+                                    @foreach (var relatedNews in Model.RelatedNews)
+                                    {
+                                        <div class="article-block mb-24">
+                                            <div class="article-img-box br-15">
+                                                <a asp-controller="News" asp-action="Detail" asp-route-id="@relatedNews.RawId">
+                                                    <img src="@ImageUrlHelper.ImageSrc((IUrlHelper)Url, relatedNews.ImageUrl, "~/assets/img/blog-1.svg")" alt="@relatedNews.Title" class="article-img" onerror="this.onerror=null; this.src='@Url.Content("~/assets/img/placeholder.svg")';">
+                                                </a>
+                                            </div>
+                                            <div class="article-content">
+                                                <h6 class="light-black fw-600 mb-8">
+                                                    <a asp-controller="News" asp-action="Detail" asp-route-id="@relatedNews.RawId">@relatedNews.Title</a>
+                                                </h6>
+                                                <small class="text-muted d-block mb-2">@relatedNews.PublishDate.ToString("dd MMM yyyy")</small>
+                                                <a asp-controller="News" asp-action="Detail" asp-route-id="@relatedNews.RawId" class="fw-600 color-primary">Read More&nbsp;&nbsp;<i class="fal fa-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Our Latest Blogs End -->
+
+</div>
+<!-- Main Content End -->
